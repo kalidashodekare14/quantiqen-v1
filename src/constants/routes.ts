@@ -3,7 +3,7 @@ export const routes = {
 
   dashboard: "/dashboard",
   analytics: "/analytics",
-  decisionCenter: "/decision-center",
+  decisionCenter: "/decision",
   assets: "/assets",
   apiManagement: "/api-management",
   monitoring: "/monitoring",
