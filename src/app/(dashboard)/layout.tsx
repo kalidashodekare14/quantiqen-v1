@@ -1,10 +1,23 @@
+import { ReactNode } from "react";
 
-const layout = () => {
-    return (
-        <div>
-            <h1>Layout</h1>
-        </div>
-    );
-};
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-export default layout;
+import { AppHeader, AppSidebar } from "@/components/layout";
+
+interface DashboardLayoutProps {
+  children: ReactNode;
+}
+
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+
+      <SidebarInset>
+        <AppHeader />
+
+        <main className="flex flex-1 flex-col overflow-auto p-6">{children}</main>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}
