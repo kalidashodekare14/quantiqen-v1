@@ -1,0 +1,43 @@
+{
+  "reports": [
+    {
+      "id": "RPT-001",
+      "title": "Executive Report",
+      "description": "High-level security posture summary for leadership and stakeholders.",
+      "type": "Executive",
+      "generatedAt": "2026-06-29T08:00:00Z",
+      "size": "2.4 MB",
+      "format": "PDF"
+    },
+    {
+      "id": "RPT-002",
+      "title": "Technical Report",
+      "description": "Detailed technical analysis of vulnerabilities, assets and decisions.",
+      "type": "Technical",
+      "generatedAt": "2026-06-29T08:00:00Z",
+      "size": "5.1 MB",
+      "format": "PDF"
+    },
+    {
+      "id": "RPT-003",
+      "title": "Compliance Report",
+      "description": "Compliance status against industry standards including ISO 27001 and SOC 2.",
+      "type": "Compliance",
+      "generatedAt": "2026-06-29T08:00:00Z",
+      "size": "3.8 MB",
+      "format": "PDF"
+    },
+    {
+      "id": "RPT-004",
+      "title": "Weekly Report",
+      "description": "Weekly summary of security events, decisions and risk changes.",
+      "type": "Weekly",
+      "generatedAt": "2026-06-28T08:00:00Z",
+      "size": "1.9 MB",
+      "format": "PDF"
+    }
+  ],
+  "meta": {
+    "total": 4
+  }
+}

@@ -1,11 +1,7 @@
-
+import ViewReports from "@/features/reports";
 
 const page = () => {
-    return (
-        <div>
-            <h1>Reports</h1>
-        </div>
-    );
+  return <ViewReports />;
 };
 
 export default page;
