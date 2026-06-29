@@ -7,8 +7,7 @@
     "users": 42,
     "assets": 1240,
     "domains": 8,
-    "apiKeys": 5,
-    "logo": null
+    "apiKeys": 5
   },
 
   "securitySummary": {

@@ -1,13 +1,19 @@
 "use client";
-import { useDashboard } from "@/hooks/useDashboard";
+
+import WelcomeBar from "./components/WelcomeBar";
+import { useDashboard } from "./hooks/useDashboard";
 
 const ViewDashboard = () => {
   const { data, isLoading } = useDashboard();
 
+  //   if (isLoading) return <LoadingSkeleton />
+  // if (isError) return <p>Error loading data</p>
+  if (!data) return null;
+
   console.log("checking data", data);
   return (
     <div>
-      <h1>Dashboard</h1>
+      <WelcomeBar organization={data.organization} summary={data?.securitySummary} />
     </div>
   );
 };
