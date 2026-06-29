@@ -1,5 +1,6 @@
 "use client";
 
+import StatsRow from "./components/StatsRow";
 import WelcomeBar from "./components/WelcomeBar";
 import { useDashboard } from "./hooks/useDashboard";
 
@@ -14,6 +15,7 @@ const ViewDashboard = () => {
   return (
     <div>
       <WelcomeBar organization={data.organization} summary={data?.securitySummary} />
+      <StatsRow summary={data.securitySummary} />
     </div>
   );
 };
