@@ -2,11 +2,11 @@ export const routes = {
   login: "/login",
 
   dashboard: "/dashboard",
-  analytics: "/analytics",
+  monitoring: "/monitoring",
   decisionCenter: "/decision",
+  analytics: "/analytics",
   assets: "/assets",
   apiManagement: "/api-management",
-  monitoring: "/monitoring",
   aiRecommendations: "/ai-recommendations",
   reports: "/reports",
   organization: "/organization",

@@ -22,14 +22,19 @@ export const navigationItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Analytics",
-    href: routes.analytics,
-    icon: BarChart3,
+    title: "Monitoring",
+    href: routes.monitoring,
+    icon: Activity,
   },
   {
     title: "Decision Center",
     href: routes.decisionCenter,
     icon: GitBranch,
+  },
+  {
+    title: "Analytics",
+    href: routes.analytics,
+    icon: BarChart3,
   },
   {
     title: "Assets",
@@ -40,11 +45,6 @@ export const navigationItems = [
     title: "API Management",
     href: routes.apiManagement,
     icon: ServerCog,
-  },
-  {
-    title: "Monitoring",
-    href: routes.monitoring,
-    icon: Activity,
   },
   {
     title: "AI Recommendations",
