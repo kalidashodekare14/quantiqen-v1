@@ -1,0 +1,77 @@
+{
+  "unreadCount": 4,
+  "notifications": [
+    {
+      "id": "NOTIF-001",
+      "type": "New Risk",
+      "title": "Critical Risk Detected",
+      "message": "A critical SQL injection vulnerability has been detected on api.acmecorp.com",
+      "timestamp": "2024-06-29T10:30:00.000Z",
+      "severity": "critical",
+      "read": false
+    },
+    {
+      "id": "NOTIF-002",
+      "type": "Decision Generated",
+      "title": "New AI Decision Ready",
+      "message": "AI has generated 3 new security decisions for your review in the Decision Center",
+      "timestamp": "2024-06-29T09:15:00.000Z",
+      "severity": "success",
+      "read": false
+    },
+    {
+      "id": "NOTIF-003",
+      "type": "API Limit Warning",
+      "title": "API Usage at 85%",
+      "message": "You have used 85% of your monthly API request limit. Consider upgrading your plan.",
+      "timestamp": "2024-06-29T08:00:00.000Z",
+      "severity": "warning",
+      "read": false
+    },
+    {
+      "id": "NOTIF-004",
+      "type": "Subscription Expiry",
+      "title": "Subscription Expiring Soon",
+      "message": "Your Enterprise plan expires in 30 days. Renew now to avoid service interruption.",
+      "timestamp": "2024-06-28T14:00:00.000Z",
+      "severity": "warning",
+      "read": false
+    },
+    {
+      "id": "NOTIF-005",
+      "type": "System Update",
+      "title": "System Maintenance Scheduled",
+      "message": "QUANTIQEN will undergo scheduled maintenance on July 5, 2024 from 2:00 AM to 4:00 AM UTC.",
+      "timestamp": "2024-06-28T10:00:00.000Z",
+      "severity": "info",
+      "read": true
+    },
+    {
+      "id": "NOTIF-006",
+      "type": "New Risk",
+      "title": "High Risk: Exposed S3 Bucket",
+      "message": "Public S3 bucket detected on AWS account. Immediate action recommended.",
+      "timestamp": "2024-06-27T16:45:00.000Z",
+      "severity": "critical",
+      "read": true
+    },
+    {
+      "id": "NOTIF-007",
+      "type": "Decision Generated",
+      "title": "Decision Resolved",
+      "message": "Security decision DEC-042 has been successfully resolved by the Cloud Team.",
+      "timestamp": "2024-06-27T12:30:00.000Z",
+      "severity": "success",
+      "read": true
+    },
+    {
+      "id": "NOTIF-008",
+      "type": "System Update",
+      "title": "New Feature Released",
+      "message": "Analytics module has been updated with 3 new chart types and improved performance.",
+      "timestamp": "2024-06-26T09:00:00.000Z",
+      "severity": "info",
+      "read": true
+    }
+  ]
+}

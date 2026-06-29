@@ -1,11 +1,7 @@
-import React from 'react';
+import ViewNotifications from "@/features/notifications"
 
-const page = () => {
-    return (
-        <div>
-            <h1>Notification</h1>
-        </div>
-    );
-};
+const NotificationsPage = () => {
+  return <ViewNotifications />
+}
 
-export default page;
+export default NotificationsPage
