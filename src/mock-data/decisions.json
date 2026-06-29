@@ -1,0 +1,186 @@
+{
+  "decisions": [
+    {
+      "id": "DEC-2041",
+      "organization": "Acme Corp",
+      "asset": "s3://acme-public-bucket",
+      "risk": "Public S3 Bucket Exposure",
+      "businessImpact": "High",
+      "confidence": 97,
+      "owner": "Cloud Team",
+      "status": "Pending",
+      "priority": "Critical",
+      "time": "2026-06-29T09:38:00Z",
+      "details": {
+        "description": "An S3 bucket has been found publicly accessible, exposing sensitive customer data.",
+        "affectedAssets": ["s3://acme-public-bucket", "s3://acme-backup-bucket"],
+        "recommendedAction": "Restrict public access on the S3 bucket immediately.",
+        "estimatedFixTime": "15 minutes",
+        "responsibleTeam": "Cloud Team",
+        "riskScore": 94,
+        "cvss": 9.1,
+        "tags": ["s3", "data-exposure", "cloud"]
+      }
+    },
+    {
+      "id": "DEC-2040",
+      "organization": "Acme Corp",
+      "asset": "api.acmecorp.com",
+      "risk": "Unauthenticated API Endpoint",
+      "businessImpact": "High",
+      "confidence": 91,
+      "owner": "Backend Team",
+      "status": "In Review",
+      "priority": "High",
+      "time": "2026-06-29T08:55:00Z",
+      "details": {
+        "description": "A critical API endpoint is accessible without authentication, allowing unauthorized data access.",
+        "affectedAssets": ["api.acmecorp.com/v1/users", "api.acmecorp.com/v1/transactions"],
+        "recommendedAction": "Add JWT authentication middleware to all unprotected endpoints.",
+        "estimatedFixTime": "2 hours",
+        "responsibleTeam": "Backend Team",
+        "riskScore": 88,
+        "cvss": 8.5,
+        "tags": ["api", "authentication", "unauthorized-access"]
+      }
+    },
+    {
+      "id": "DEC-2039",
+      "organization": "Acme Corp",
+      "asset": "admin.acmecorp.com",
+      "risk": "Brute Force Attack Detected",
+      "businessImpact": "Critical",
+      "confidence": 88,
+      "owner": "Security Team",
+      "status": "Resolved",
+      "priority": "Critical",
+      "time": "2026-06-29T08:30:00Z",
+      "details": {
+        "description": "Multiple failed login attempts detected on admin panel from suspicious IP addresses.",
+        "affectedAssets": ["admin.acmecorp.com"],
+        "recommendedAction": "Block suspicious IPs and enable rate limiting on login endpoint.",
+        "estimatedFixTime": "30 minutes",
+        "responsibleTeam": "Security Team",
+        "riskScore": 85,
+        "cvss": 7.8,
+        "tags": ["brute-force", "admin", "login"]
+      }
+    },
+    {
+      "id": "DEC-2038",
+      "organization": "Acme Corp",
+      "asset": "db.acmecorp.internal",
+      "risk": "Unencrypted Database Connection",
+      "businessImpact": "Medium",
+      "confidence": 79,
+      "owner": "DevOps Team",
+      "status": "Pending",
+      "priority": "High",
+      "time": "2026-06-29T07:45:00Z",
+      "details": {
+        "description": "Database connections are being made without SSL/TLS encryption, risking data interception.",
+        "affectedAssets": ["db.acmecorp.internal:5432"],
+        "recommendedAction": "Enable SSL mode on all database connections.",
+        "estimatedFixTime": "1 hour",
+        "responsibleTeam": "DevOps Team",
+        "riskScore": 76,
+        "cvss": 7.2,
+        "tags": ["database", "encryption", "ssl"]
+      }
+    },
+    {
+      "id": "DEC-2037",
+      "organization": "Acme Corp",
+      "asset": "cdn.acmecorp.com",
+      "risk": "Outdated SSL Certificate",
+      "businessImpact": "Medium",
+      "confidence": 99,
+      "owner": "Infrastructure Team",
+      "status": "In Review",
+      "priority": "Medium",
+      "time": "2026-06-29T07:00:00Z",
+      "details": {
+        "description": "SSL certificate on CDN domain expires in 7 days. Renewal required immediately.",
+        "affectedAssets": ["cdn.acmecorp.com"],
+        "recommendedAction": "Renew SSL certificate before expiry date.",
+        "estimatedFixTime": "45 minutes",
+        "responsibleTeam": "Infrastructure Team",
+        "riskScore": 65,
+        "cvss": 6.1,
+        "tags": ["ssl", "certificate", "cdn"]
+      }
+    },
+    {
+      "id": "DEC-2036",
+      "organization": "Acme Corp",
+      "asset": "app.acmecorp.com",
+      "risk": "Cross-Site Scripting (XSS) Vulnerability",
+      "businessImpact": "High",
+      "confidence": 84,
+      "owner": "Frontend Team",
+      "status": "Pending",
+      "priority": "High",
+      "time": "2026-06-28T16:30:00Z",
+      "details": {
+        "description": "XSS vulnerability found in user input fields allowing script injection.",
+        "affectedAssets": ["app.acmecorp.com/profile", "app.acmecorp.com/comments"],
+        "recommendedAction": "Sanitize all user inputs and implement Content Security Policy headers.",
+        "estimatedFixTime": "3 hours",
+        "responsibleTeam": "Frontend Team",
+        "riskScore": 82,
+        "cvss": 7.5,
+        "tags": ["xss", "injection", "frontend"]
+      }
+    },
+    {
+      "id": "DEC-2035",
+      "organization": "Acme Corp",
+      "asset": "mail.acmecorp.com",
+      "risk": "Missing DMARC Record",
+      "businessImpact": "Low",
+      "confidence": 99,
+      "owner": "IT Team",
+      "status": "Resolved",
+      "priority": "Low",
+      "time": "2026-06-28T14:00:00Z",
+      "details": {
+        "description": "No DMARC DNS record found, making domain vulnerable to email spoofing.",
+        "affectedAssets": ["mail.acmecorp.com"],
+        "recommendedAction": "Add DMARC TXT record to DNS configuration.",
+        "estimatedFixTime": "20 minutes",
+        "responsibleTeam": "IT Team",
+        "riskScore": 45,
+        "cvss": 4.3,
+        "tags": ["email", "dmarc", "dns"]
+      }
+    },
+    {
+      "id": "DEC-2034",
+      "organization": "Acme Corp",
+      "asset": "192.168.1.45",
+      "risk": "Open RDP Port Detected",
+      "businessImpact": "Critical",
+      "confidence": 93,
+      "owner": "Security Team",
+      "status": "In Review",
+      "priority": "Critical",
+      "time": "2026-06-28T11:20:00Z",
+      "details": {
+        "description": "RDP port 3389 is open to the public internet, creating risk of remote exploitation.",
+        "affectedAssets": ["192.168.1.45:3389"],
+        "recommendedAction": "Close public RDP access and use VPN for remote connections.",
+        "estimatedFixTime": "1 hour",
+        "responsibleTeam": "Security Team",
+        "riskScore": 91,
+        "cvss": 9.8,
+        "tags": ["rdp", "port", "remote-access"]
+      }
+    }
+  ],
+  "meta": {
+    "total": 8,
+    "pending": 3,
+    "inReview": 3,
+    "resolved": 2
+  }
+}
