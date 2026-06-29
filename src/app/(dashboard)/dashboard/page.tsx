@@ -1,5 +1,7 @@
+import ViewDashboard from "@/features/dashboard/view-dashboard";
+
 const page = () => {
-  return <div></div>;
+  return <ViewDashboard />;
 };
 
 export default page;

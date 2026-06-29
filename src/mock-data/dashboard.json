@@ -1,0 +1,166 @@
+{
+  "organization": {
+    "name": "Acme Corp",
+    "industry": "Financial Services",
+    "plan": "Enterprise",
+    "planExpiry": "2026-12-31",
+    "users": 42,
+    "assets": 1240,
+    "domains": 8,
+    "apiKeys": 5,
+    "logo": null
+  },
+
+  "securitySummary": {
+    "securityScore": 87,
+    "totalAssets": 1240,
+    "activeAPIs": 34,
+    "apiRequestsToday": 8921,
+    "activeRisks": 12,
+    "pendingDecisions": 5,
+    "lastUpdated": "2026-06-29T09:42:00Z"
+  },
+
+  "kpiCards": [
+    {
+      "id": "security_decision_score",
+      "label": "Security Decision Score",
+      "value": 87,
+      "unit": "score",
+      "percentageChange": 3.2,
+      "trend": "up",
+      "icon": "shield",
+      "color": "blue",
+      "lastUpdated": "2026-06-29T09:40:00Z",
+      "sparkline": [72, 75, 70, 78, 80, 83, 87]
+    },
+    {
+      "id": "business_risk_score",
+      "label": "Business Risk Score",
+      "value": 42,
+      "unit": "score",
+      "percentageChange": -1.5,
+      "trend": "down",
+      "icon": "trending-up",
+      "color": "amber",
+      "lastUpdated": "2026-06-29T09:37:00Z",
+      "sparkline": [55, 52, 58, 50, 47, 44, 42]
+    },
+    {
+      "id": "assets_monitored",
+      "label": "Assets Monitored",
+      "value": 1240,
+      "unit": "count",
+      "percentageChange": 5.0,
+      "trend": "up",
+      "icon": "server",
+      "color": "green",
+      "lastUpdated": "2026-06-29T09:41:00Z",
+      "sparkline": [1100, 1130, 1150, 1170, 1195, 1220, 1240]
+    },
+    {
+      "id": "active_threats",
+      "label": "Active Threats",
+      "value": 12,
+      "unit": "count",
+      "percentageChange": 2,
+      "trend": "up",
+      "icon": "alert-triangle",
+      "color": "red",
+      "lastUpdated": "2026-06-29T09:42:00Z",
+      "sparkline": [6, 8, 7, 9, 10, 10, 12]
+    },
+    {
+      "id": "ai_decisions_generated",
+      "label": "AI Decisions Generated",
+      "value": 3847,
+      "unit": "count",
+      "percentageChange": 12.0,
+      "trend": "up",
+      "icon": "brain",
+      "color": "purple",
+      "lastUpdated": "2026-06-29T09:39:00Z",
+      "sparkline": [2900, 3100, 3200, 3400, 3500, 3700, 3847]
+    },
+    {
+      "id": "api_requests",
+      "label": "API Requests",
+      "value": 8921,
+      "unit": "count",
+      "percentageChange": 8.0,
+      "trend": "up",
+      "icon": "api",
+      "color": "teal",
+      "lastUpdated": "2026-06-29T09:42:00Z",
+      "sparkline": [7200, 7500, 7800, 8000, 8300, 8600, 8921]
+    },
+    {
+      "id": "organization_health",
+      "label": "Organization Health",
+      "value": 94,
+      "unit": "percent",
+      "percentageChange": 2.1,
+      "trend": "up",
+      "icon": "heart-rate-monitor",
+      "color": "pink",
+      "lastUpdated": "2026-06-29T09:32:00Z",
+      "sparkline": [88, 89, 88, 90, 91, 93, 94]
+    },
+    {
+      "id": "system_status",
+      "label": "System Status",
+      "value": "Active",
+      "unit": "status",
+      "percentageChange": null,
+      "trend": "stable",
+      "icon": "activity",
+      "color": "gray",
+      "lastUpdated": "2026-06-29T09:42:00Z",
+      "sparkline": [1, 1, 1, 1, 1, 1, 1],
+      "statusDetails": {
+        "api": "operational",
+        "database": "operational",
+        "aiEngine": "operational",
+        "monitoring": "operational"
+      }
+    }
+  ],
+
+  "recentActivity": [
+    {
+      "id": "act_001",
+      "type": "decision_created",
+      "message": "New AI decision generated for Public S3 Bucket exposure",
+      "timestamp": "2026-06-29T09:38:00Z",
+      "severity": "high"
+    },
+    {
+      "id": "act_002",
+      "type": "risk_changed",
+      "message": "Risk level escalated on asset api.acmecorp.com",
+      "timestamp": "2026-06-29T09:25:00Z",
+      "severity": "critical"
+    },
+    {
+      "id": "act_003",
+      "type": "asset_updated",
+      "message": "12 new subdomains discovered during scan",
+      "timestamp": "2026-06-29T09:10:00Z",
+      "severity": "medium"
+    },
+    {
+      "id": "act_004",
+      "type": "decision_delivered",
+      "message": "Decision DEC-2041 delivered to Cloud Team",
+      "timestamp": "2026-06-29T08:55:00Z",
+      "severity": "low"
+    },
+    {
+      "id": "act_005",
+      "type": "security_event",
+      "message": "Brute force attempt detected on admin.acmecorp.com",
+      "timestamp": "2026-06-29T08:30:00Z",
+      "severity": "critical"
+    }
+  ]
+}
