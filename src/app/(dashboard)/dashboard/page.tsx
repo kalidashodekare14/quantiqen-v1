@@ -1,8 +1,5 @@
-import { DashboardView } from "@/features/dashboard";
-import React from "react";
-
 const page = () => {
-  return <DashboardView />;
+  return <div></div>;
 };
 
 export default page;
