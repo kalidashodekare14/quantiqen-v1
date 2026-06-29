@@ -1,11 +1,7 @@
-import React from "react";
+import ViewMonitoring from "@/features/monitoring/view-monitoring";
 
 const page = () => {
-  return (
-    <div>
-      <h1>monitoring</h1>
-    </div>
-  );
+  return <ViewMonitoring />;
 };
 
 export default page;

@@ -1,0 +1,192 @@
+{
+  "stats": {
+    "apiRequests": 1284,
+    "assetsUpdated": 37,
+    "decisionsCreated": 12,
+    "risksChanged": 8,
+    "securityEvents": 5,
+    "decisionsDelivered": 11
+  },
+  "events": [
+    {
+      "id": "EVT-020",
+      "type": "Incoming API Request",
+      "message": "API request received from 203.0.113.45 on /api/v1/assets",
+      "timestamp": "2026-06-29T10:28:00Z",
+      "severity": "info",
+      "asset": "api.quantiqen.com",
+      "organization": "Acme Corp"
+    },
+    {
+      "id": "EVT-019",
+      "type": "Security Event",
+      "message": "Brute force attempt detected on admin.acmecorp.com from 198.51.100.22",
+      "timestamp": "2026-06-29T10:25:00Z",
+      "severity": "critical",
+      "asset": "admin.acmecorp.com",
+      "organization": "Acme Corp"
+    },
+    {
+      "id": "EVT-018",
+      "type": "Asset Updated",
+      "message": "12 new subdomains discovered for quantiqen.com during automated scan",
+      "timestamp": "2026-06-29T10:22:00Z",
+      "severity": "info",
+      "asset": "quantiqen.com",
+      "organization": "TechVault"
+    },
+    {
+      "id": "EVT-017",
+      "type": "Decision Created",
+      "message": "AI decision generated for unencrypted database connection on db-prod-01",
+      "timestamp": "2026-06-29T10:20:00Z",
+      "severity": "success",
+      "asset": "db-prod-01",
+      "organization": "NovaSec"
+    },
+    {
+      "id": "EVT-016",
+      "type": "Risk Changed",
+      "message": "Risk level escalated on api.techvault.io from Medium to High",
+      "timestamp": "2026-06-29T10:18:00Z",
+      "severity": "warning",
+      "asset": "api.techvault.io",
+      "organization": "TechVault"
+    },
+    {
+      "id": "EVT-015",
+      "type": "Incoming API Request",
+      "message": "API request received from 192.168.1.100 on /api/v1/decisions",
+      "timestamp": "2026-06-29T10:15:00Z",
+      "severity": "info",
+      "asset": "api.quantiqen.com",
+      "organization": "Acme Corp"
+    },
+    {
+      "id": "EVT-014",
+      "type": "Decision Delivered",
+      "message": "Decision DEC-2041 delivered to Cloud Team for Public S3 Bucket Exposure",
+      "timestamp": "2026-06-29T10:12:00Z",
+      "severity": "success",
+      "asset": "s3://acme-public-bucket",
+      "organization": "Acme Corp"
+    },
+    {
+      "id": "EVT-013",
+      "type": "Security Event",
+      "message": "Suspicious outbound traffic detected from db-prod-01 to unknown external IP",
+      "timestamp": "2026-06-29T10:10:00Z",
+      "severity": "warning",
+      "asset": "db-prod-01",
+      "organization": "NovaSec"
+    },
+    {
+      "id": "EVT-012",
+      "type": "Asset Updated",
+      "message": "SSL certificate renewed for cdn.techvault.io",
+      "timestamp": "2026-06-29T10:08:00Z",
+      "severity": "success",
+      "asset": "cdn.techvault.io",
+      "organization": "TechVault"
+    },
+    {
+      "id": "EVT-011",
+      "type": "Risk Changed",
+      "message": "Risk level reduced on s3://acme-backup-bucket from Critical to High after remediation",
+      "timestamp": "2026-06-29T10:05:00Z",
+      "severity": "success",
+      "asset": "s3://acme-backup-bucket",
+      "organization": "Acme Corp"
+    },
+    {
+      "id": "EVT-010",
+      "type": "Incoming API Request",
+      "message": "API request received from 10.0.0.15 on /api/v1/monitoring/status",
+      "timestamp": "2026-06-29T10:02:00Z",
+      "severity": "info",
+      "asset": "monitor.novasec.io",
+      "organization": "NovaSec"
+    },
+    {
+      "id": "EVT-009",
+      "type": "Decision Created",
+      "message": "AI decision generated for cross-site scripting vulnerability on app.techvault.io",
+      "timestamp": "2026-06-29T09:58:00Z",
+      "severity": "success",
+      "asset": "app.techvault.io",
+      "organization": "TechVault"
+    },
+    {
+      "id": "EVT-008",
+      "type": "Risk Changed",
+      "message": "New risk detected: Open RDP port exposed on jumpbox.novasec.io",
+      "timestamp": "2026-06-29T09:55:00Z",
+      "severity": "critical",
+      "asset": "jumpbox.novasec.io",
+      "organization": "NovaSec"
+    },
+    {
+      "id": "EVT-007",
+      "type": "Security Event",
+      "message": "SQL injection attempt blocked on api.quantiqen.com from 45.33.32.156",
+      "timestamp": "2026-06-29T09:52:00Z",
+      "severity": "critical",
+      "asset": "api.quantiqen.com",
+      "organization": "Acme Corp"
+    },
+    {
+      "id": "EVT-006",
+      "type": "Decision Delivered",
+      "message": "Decision DEC-2038 delivered to DevOps Team for unencrypted database connection",
+      "timestamp": "2026-06-29T09:48:00Z",
+      "severity": "success",
+      "asset": "db-prod-01",
+      "organization": "NovaSec"
+    },
+    {
+      "id": "EVT-005",
+      "type": "Incoming API Request",
+      "message": "API request received from 203.0.113.88 on /api/v1/reports/summary",
+      "timestamp": "2026-06-29T09:45:00Z",
+      "severity": "info",
+      "asset": "api.techvault.io",
+      "organization": "TechVault"
+    },
+    {
+      "id": "EVT-004",
+      "type": "Asset Updated",
+      "message": "New asset registered: lb-prod-02 with 4 backend instances",
+      "timestamp": "2026-06-29T09:40:00Z",
+      "severity": "info",
+      "asset": "lb-prod-02",
+      "organization": "NovaSec"
+    },
+    {
+      "id": "EVT-003",
+      "type": "Decision Created",
+      "message": "AI decision generated for missing DMARC record on mail.quantiqen.com",
+      "timestamp": "2026-06-29T09:35:00Z",
+      "severity": "success",
+      "asset": "mail.quantiqen.com",
+      "organization": "Acme Corp"
+    },
+    {
+      "id": "EVT-002",
+      "type": "Decision Delivered",
+      "message": "Decision DEC-2039 delivered to Security Team for brute force attack resolution",
+      "timestamp": "2026-06-29T09:30:00Z",
+      "severity": "success",
+      "asset": "admin.acmecorp.com",
+      "organization": "Acme Corp"
+    },
+    {
+      "id": "EVT-001",
+      "type": "Risk Changed",
+      "message": "Risk score updated for public S3 bucket exposure on s3://acme-public-bucket",
+      "timestamp": "2026-06-29T09:25:00Z",
+      "severity": "warning",
+      "asset": "s3://acme-public-bucket",
+      "organization": "Acme Corp"
+    }
+  ]
+}
