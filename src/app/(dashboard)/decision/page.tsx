@@ -1,10 +1,7 @@
+import ViewDecisions from "@/features/decisions/view-decisions";
 
 const page = () => {
-    return (
-        <div>
-            <h1>Decision Center</h1>
-        </div>
-    );
+  return <ViewDecisions />;
 };
 
 export default page;

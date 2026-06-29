@@ -13,10 +13,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <SidebarProvider>
       <AppSidebar />
 
-      <SidebarInset>
+      <SidebarInset className="min-w-0 overflow-hidden">
         <AppHeader />
 
-        <main className="flex flex-1 flex-col overflow-auto p-6">{children}</main>
+        <main className="flex min-w-0 flex-1 flex-col overflow-hidden p-6">
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
