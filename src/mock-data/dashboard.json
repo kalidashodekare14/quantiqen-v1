@@ -108,14 +108,14 @@
     {
       "id": "system_status",
       "label": "System Status",
-      "value": "Active",
-      "unit": "status",
-      "percentageChange": null,
+      "value": 94,
+      "unit": "percent",
+      "percentageChange": 3.1,
       "trend": "stable",
       "icon": "activity",
       "color": "gray",
       "lastUpdated": "2026-06-29T09:42:00Z",
-      "sparkline": [1, 1, 1, 1, 1, 1, 1],
+      "sparkline": [88, 89, 88, 90, 91, 93, 94],
       "statusDetails": {
         "api": "operational",
         "database": "operational",

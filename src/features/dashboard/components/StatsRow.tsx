@@ -65,7 +65,7 @@ const StatsRow = ({ summary }: StatsRowProps) => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5"
+      className="my-5 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5"
     >
       {stats.map((stat) => (
         <motion.div
