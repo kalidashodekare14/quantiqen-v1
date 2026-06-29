@@ -1,0 +1,69 @@
+{
+  "recommendations": [
+    {
+      "id": "REC-001",
+      "recommendation": "Restrict Public S3 Bucket Access",
+      "businessImpact": "High",
+      "priority": "Critical",
+      "confidence": 97,
+      "estimatedFixTime": "15 minutes",
+      "responsibleTeam": "Cloud Team",
+      "status": "Pending"
+    },
+    {
+      "id": "REC-002",
+      "recommendation": "Enable JWT Authentication on API Endpoints",
+      "businessImpact": "High",
+      "priority": "High",
+      "confidence": 91,
+      "estimatedFixTime": "2 hours",
+      "responsibleTeam": "Backend Team",
+      "status": "In Progress"
+    },
+    {
+      "id": "REC-003",
+      "recommendation": "Renew SSL Certificate on CDN Domain",
+      "businessImpact": "Medium",
+      "priority": "High",
+      "confidence": 99,
+      "estimatedFixTime": "45 minutes",
+      "responsibleTeam": "Infrastructure Team",
+      "status": "Pending"
+    },
+    {
+      "id": "REC-004",
+      "recommendation": "Enable SSL on Database Connections",
+      "businessImpact": "Medium",
+      "priority": "High",
+      "confidence": 79,
+      "estimatedFixTime": "1 hour",
+      "responsibleTeam": "DevOps Team",
+      "status": "Pending"
+    },
+    {
+      "id": "REC-005",
+      "recommendation": "Block RDP Port 3389 from Public Internet",
+      "businessImpact": "Critical",
+      "priority": "Critical",
+      "confidence": 93,
+      "estimatedFixTime": "1 hour",
+      "responsibleTeam": "Security Team",
+      "status": "In Progress"
+    },
+    {
+      "id": "REC-006",
+      "recommendation": "Sanitize User Inputs to Prevent XSS",
+      "businessImpact": "High",
+      "priority": "High",
+      "confidence": 84,
+      "estimatedFixTime": "3 hours",
+      "responsibleTeam": "Frontend Team",
+      "status": "Pending"
+    }
+  ],
+  "meta": {
+    "total": 6,
+    "pending": 4,
+    "inProgress": 2
+  }
+}

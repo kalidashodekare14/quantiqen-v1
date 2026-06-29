@@ -1,11 +1,7 @@
-import React from "react";
+import ViewRecommendations from "@/features/ai-recommendations/view-recommendations";
 
 const page = () => {
-  return (
-    <div>
-      <h1>ai-recommendations</h1>
-    </div>
-  );
+  return <ViewRecommendations />;
 };
 
 export default page;
