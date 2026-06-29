@@ -1,9 +1,10 @@
-import { DashboardHeader } from "./components/dashboard-header";
+import { DashboardHeader, DashboardStats } from "./components";
 
 export function DashboardView() {
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <DashboardHeader />
+      <DashboardStats />
     </div>
   );
 }
