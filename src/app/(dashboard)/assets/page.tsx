@@ -1,10 +1,7 @@
+import ViewAssets from "@/features/assets/view-assets";
 
 const page = () => {
-    return (
-        <div>
-            <h1>Assets</h1>
-        </div>
-    );
+  return <ViewAssets />;
 };
 
 export default page;

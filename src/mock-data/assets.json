@@ -1,0 +1,130 @@
+{
+  "assets": [
+    {
+      "id": "AST-001",
+      "domain": "acmecorp.com",
+      "ipAddress": "104.21.45.12",
+      "assetType": "Domain",
+      "owner": "IT Team",
+      "criticality": "Critical",
+      "status": "Active",
+      "lastScan": "2026-06-29T09:00:00Z"
+    },
+    {
+      "id": "AST-002",
+      "domain": "api.acmecorp.com",
+      "ipAddress": "104.21.45.13",
+      "assetType": "API",
+      "owner": "Backend Team",
+      "criticality": "Critical",
+      "status": "Active",
+      "lastScan": "2026-06-29T08:45:00Z"
+    },
+    {
+      "id": "AST-003",
+      "domain": "admin.acmecorp.com",
+      "ipAddress": "104.21.45.14",
+      "assetType": "Domain",
+      "owner": "Security Team",
+      "criticality": "High",
+      "status": "Active",
+      "lastScan": "2026-06-29T08:30:00Z"
+    },
+    {
+      "id": "AST-004",
+      "domain": "cdn.acmecorp.com",
+      "ipAddress": "104.21.45.15",
+      "assetType": "CDN",
+      "owner": "Infrastructure Team",
+      "criticality": "Medium",
+      "status": "Active",
+      "lastScan": "2026-06-29T08:00:00Z"
+    },
+    {
+      "id": "AST-005",
+      "domain": "mail.acmecorp.com",
+      "ipAddress": "104.21.45.16",
+      "assetType": "Mail Server",
+      "owner": "IT Team",
+      "criticality": "High",
+      "status": "Active",
+      "lastScan": "2026-06-29T07:45:00Z"
+    },
+    {
+      "id": "AST-006",
+      "domain": "db.acmecorp.internal",
+      "ipAddress": "192.168.1.10",
+      "assetType": "Database",
+      "owner": "DevOps Team",
+      "criticality": "Critical",
+      "status": "Active",
+      "lastScan": "2026-06-29T07:30:00Z"
+    },
+    {
+      "id": "AST-007",
+      "domain": "app.acmecorp.com",
+      "ipAddress": "104.21.45.17",
+      "assetType": "Web App",
+      "owner": "Frontend Team",
+      "criticality": "High",
+      "status": "Active",
+      "lastScan": "2026-06-29T07:00:00Z"
+    },
+    {
+      "id": "AST-008",
+      "domain": "s3://acme-public-bucket",
+      "ipAddress": "52.92.16.100",
+      "assetType": "Cloud Storage",
+      "owner": "Cloud Team",
+      "criticality": "Critical",
+      "status": "At Risk",
+      "lastScan": "2026-06-29T06:45:00Z"
+    },
+    {
+      "id": "AST-009",
+      "domain": "vpn.acmecorp.com",
+      "ipAddress": "104.21.45.18",
+      "assetType": "VPN",
+      "owner": "Security Team",
+      "criticality": "High",
+      "status": "Active",
+      "lastScan": "2026-06-29T06:30:00Z"
+    },
+    {
+      "id": "AST-010",
+      "domain": "192.168.1.45",
+      "ipAddress": "192.168.1.45",
+      "assetType": "Server",
+      "owner": "DevOps Team",
+      "criticality": "Critical",
+      "status": "At Risk",
+      "lastScan": "2026-06-29T06:00:00Z"
+    },
+    {
+      "id": "AST-011",
+      "domain": "staging.acmecorp.com",
+      "ipAddress": "104.21.45.19",
+      "assetType": "Web App",
+      "owner": "Backend Team",
+      "criticality": "Medium",
+      "status": "Active",
+      "lastScan": "2026-06-29T05:45:00Z"
+    },
+    {
+      "id": "AST-012",
+      "domain": "dev.acmecorp.com",
+      "ipAddress": "104.21.45.20",
+      "assetType": "Web App",
+      "owner": "Frontend Team",
+      "criticality": "Low",
+      "status": "Inactive",
+      "lastScan": "2026-06-28T22:00:00Z"
+    }
+  ],
+  "meta": {
+    "total": 12,
+    "active": 9,
+    "atRisk": 2,
+    "inactive": 1
+  }
+}
