@@ -1,10 +1,7 @@
+import ViewAnalytics from "@/features/analytics/view-analytics";
 
 const page = () => {
-    return (
-        <div>
-            <h1>Analytics</h1>
-        </div>
-    );
+  return <ViewAnalytics />;
 };
 
 export default page;

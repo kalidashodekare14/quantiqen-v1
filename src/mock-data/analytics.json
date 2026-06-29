@@ -1,0 +1,102 @@
+{
+  "riskTrend": [
+    { "date": "Jun 16", "riskScore": 72, "threats": 28 },
+    { "date": "Jun 17", "riskScore": 68, "threats": 31 },
+    { "date": "Jun 18", "riskScore": 74, "threats": 25 },
+    { "date": "Jun 19", "riskScore": 81, "threats": 36 },
+    { "date": "Jun 20", "riskScore": 78, "threats": 33 },
+    { "date": "Jun 21", "riskScore": 65, "threats": 22 },
+    { "date": "Jun 22", "riskScore": 59, "threats": 18 },
+    { "date": "Jun 23", "riskScore": 63, "threats": 21 },
+    { "date": "Jun 24", "riskScore": 71, "threats": 29 },
+    { "date": "Jun 25", "riskScore": 67, "threats": 24 },
+    { "date": "Jun 26", "riskScore": 55, "threats": 14 },
+    { "date": "Jun 27", "riskScore": 49, "threats": 11 },
+    { "date": "Jun 28", "riskScore": 53, "threats": 16 },
+    { "date": "Jun 29", "riskScore": 47, "threats": 9 }
+  ],
+
+  "decisionTrend": [
+    { "date": "Jun 16", "decisions": 18, "resolved": 12, "pending": 6 },
+    { "date": "Jun 17", "decisions": 22, "resolved": 15, "pending": 7 },
+    { "date": "Jun 18", "decisions": 15, "resolved": 10, "pending": 5 },
+    { "date": "Jun 19", "decisions": 27, "resolved": 19, "pending": 8 },
+    { "date": "Jun 20", "decisions": 24, "resolved": 18, "pending": 6 },
+    { "date": "Jun 21", "decisions": 19, "resolved": 14, "pending": 5 },
+    { "date": "Jun 22", "decisions": 13, "resolved": 9, "pending": 4 },
+    { "date": "Jun 23", "decisions": 21, "resolved": 16, "pending": 5 },
+    { "date": "Jun 24", "decisions": 26, "resolved": 20, "pending": 6 },
+    { "date": "Jun 25", "decisions": 17, "resolved": 12, "pending": 5 },
+    { "date": "Jun 26", "decisions": 14, "resolved": 10, "pending": 4 },
+    { "date": "Jun 27", "decisions": 20, "resolved": 15, "pending": 5 },
+    { "date": "Jun 28", "decisions": 23, "resolved": 18, "pending": 5 },
+    { "date": "Jun 29", "decisions": 16, "resolved": 12, "pending": 4 }
+  ],
+
+  "apiUsage": [
+    { "date": "Jun 16", "requests": 1250, "errors": 62 },
+    { "date": "Jun 17", "requests": 1420, "errors": 48 },
+    { "date": "Jun 18", "requests": 1100, "errors": 71 },
+    { "date": "Jun 19", "requests": 1680, "errors": 55 },
+    { "date": "Jun 20", "requests": 1530, "errors": 38 },
+    { "date": "Jun 21", "requests": 980, "errors": 42 },
+    { "date": "Jun 22", "requests": 870, "errors": 29 },
+    { "date": "Jun 23", "requests": 1350, "errors": 45 },
+    { "date": "Jun 24", "requests": 1590, "errors": 33 },
+    { "date": "Jun 25", "requests": 1180, "errors": 58 },
+    { "date": "Jun 26", "requests": 1040, "errors": 27 },
+    { "date": "Jun 27", "requests": 1460, "errors": 41 },
+    { "date": "Jun 28", "requests": 1720, "errors": 36 },
+    { "date": "Jun 29", "requests": 1284, "errors": 31 }
+  ],
+
+  "riskDistribution": [
+    { "name": "Critical", "value": 12 },
+    { "name": "High", "value": 28 },
+    { "name": "Medium", "value": 45 },
+    { "name": "Low", "value": 15 }
+  ],
+
+  "assetsByCategory": [
+    { "name": "Domain", "value": 24 },
+    { "name": "API", "value": 38 },
+    { "name": "Database", "value": 17 },
+    { "name": "Server", "value": 29 },
+    { "name": "Cloud", "value": 21 }
+  ],
+
+  "securityScoreTimeline": [
+    { "date": "Jun 16", "score": 72 },
+    { "date": "Jun 17", "score": 71 },
+    { "date": "Jun 18", "score": 74 },
+    { "date": "Jun 19", "score": 70 },
+    { "date": "Jun 20", "score": 73 },
+    { "date": "Jun 21", "score": 76 },
+    { "date": "Jun 22", "score": 78 },
+    { "date": "Jun 23", "score": 77 },
+    { "date": "Jun 24", "score": 80 },
+    { "date": "Jun 25", "score": 82 },
+    { "date": "Jun 26", "score": 84 },
+    { "date": "Jun 27", "score": 83 },
+    { "date": "Jun 28", "score": 86 },
+    { "date": "Jun 29", "score": 87 }
+  ],
+
+  "dailyDecisionCount": [
+    { "day": "Mon", "count": 18 },
+    { "day": "Tue", "count": 23 },
+    { "day": "Wed", "count": 15 },
+    { "day": "Thu", "count": 21 },
+    { "day": "Fri", "count": 19 },
+    { "day": "Sat", "count": 8 },
+    { "day": "Sun", "count": 6 }
+  ],
+
+  "threatDistribution": [
+    { "name": "Malware", "value": 30 },
+    { "name": "Phishing", "value": 25 },
+    { "name": "DDoS", "value": 18 },
+    { "name": "Ransomware", "value": 15 },
+    { "name": "Insider Threat", "value": 12 }
+  ]
+}
