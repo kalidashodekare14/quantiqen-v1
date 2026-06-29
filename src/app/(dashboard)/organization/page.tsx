@@ -1,11 +1,7 @@
-import React from "react";
+import { ViewOrganization } from "@/features/organization";
 
-const page = () => {
-  return (
-    <div>
-      <h1>organization</h1>
-    </div>
-  );
+const OrganizationPage = () => {
+  return <ViewOrganization />;
 };
 
-export default page;
+export default OrganizationPage;

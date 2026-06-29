@@ -1,0 +1,21 @@
+{
+  "id": "ORG-001",
+  "name": "Acme Corporation",
+  "industry": "Financial Services",
+  "plan": "Enterprise",
+  "users": 48,
+  "assets": 134,
+  "domains": 12,
+  "apiKeys": 7,
+  "email": "security@acmecorp.com",
+  "website": "https://acmecorp.com",
+  "country": "United States",
+  "createdAt": "2023-03-15T00:00:00.000Z",
+  "subscription": {
+    "plan": "Enterprise",
+    "status": "Active",
+    "startDate": "2024-01-01T00:00:00.000Z",
+    "expiryDate": "2025-01-01T00:00:00.000Z",
+    "daysRemaining": 187
+  }
+}
