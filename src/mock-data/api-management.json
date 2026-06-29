@@ -1,0 +1,48 @@
+{
+  "apiKeys": [
+    {
+      "id": "KEY-001",
+      "name": "Production API Key",
+      "key": "qtn_live_xK9mP2nL4vR8wQ3jY7uH5cA1",
+      "tokenStatus": "Active",
+      "dailyUsage": 8921,
+      "dailyLimit": 10000,
+      "monthlyUsage": 187432,
+      "monthlyLimit": 500000,
+      "remainingRequests": 1079,
+      "createdAt": "2026-01-15T00:00:00Z",
+      "lastUsed": "2026-06-29T09:42:00Z"
+    },
+    {
+      "id": "KEY-002",
+      "name": "Staging API Key",
+      "key": "qtn_test_aB3cD4eF5gH6iJ7kL8mN9oP0",
+      "tokenStatus": "Active",
+      "dailyUsage": 1243,
+      "dailyLimit": 5000,
+      "monthlyUsage": 34821,
+      "monthlyLimit": 100000,
+      "remainingRequests": 3757,
+      "createdAt": "2026-02-10T00:00:00Z",
+      "lastUsed": "2026-06-29T08:15:00Z"
+    },
+    {
+      "id": "KEY-003",
+      "name": "Development API Key",
+      "key": "qtn_dev_zX1yW2vU3tS4rQ5pO6nM7lK8",
+      "tokenStatus": "Expired",
+      "dailyUsage": 0,
+      "dailyLimit": 1000,
+      "monthlyUsage": 0,
+      "monthlyLimit": 10000,
+      "remainingRequests": 0,
+      "createdAt": "2026-03-01T00:00:00Z",
+      "lastUsed": "2026-05-15T14:30:00Z"
+    }
+  ],
+  "meta": {
+    "total": 3,
+    "active": 2,
+    "expired": 1
+  }
+}

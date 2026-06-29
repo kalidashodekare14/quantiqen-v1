@@ -1,10 +1,7 @@
+import ViewApiManagement from "@/features/api-management/view-api-management";
 
 const page = () => {
-    return (
-        <div>
-            <h1>api management</h1>
-        </div>
-    );
+  return <ViewApiManagement />;
 };
 
 export default page;
