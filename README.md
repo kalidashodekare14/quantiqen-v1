@@ -29,21 +29,21 @@ QUANTIQEN is an enterprise-grade Security Decision Infrastructure (SDI) dashboar
 
 ## Tech Stack
 
-| Category | Technology | Purpose |
-|---|---|---|
-| **Framework** | Next.js 16.2.9 | React meta-framework with App Router |
-| **Language** | TypeScript 5 | Type-safe development |
-| **Styling** | Tailwind CSS 4 + shadcn/ui | Utility-first CSS with pre-built components |
-| **State & Data** | TanStack React Query 5 | Server state, caching, and auto-refetch |
-| **HTTP** | Axios 1.18 | API client (configured for future backend) |
-| **Charts** | Recharts 3.9 | Interactive chart components |
-| **Animation** | Framer Motion 12.42 | Page transitions and card entrance animations |
-| **Icons** | Lucide React 1.21 | Consistent icon set across all features |
-| **Theme** | next-themes 0.4 | Dark/light/system theme switching |
-| **Fonts** | Geist + Poppins | Sans-serif and heading font pairing |
-| **Notifications** | Sonner 2.0 | Toast notifications (configured) |
-| **Linting** | ESLint 9 + Prettier 3.9 | Code quality and formatting |
-| **Deployment** | Vercel | Serverless hosting and CI/CD |
+| Category          | Technology                 | Purpose                                       |
+| ----------------- | -------------------------- | --------------------------------------------- |
+| **Framework**     | Next.js 16.2.9             | React meta-framework with App Router          |
+| **Language**      | TypeScript 5               | Type-safe development                         |
+| **Styling**       | Tailwind CSS 4 + shadcn/ui | Utility-first CSS with pre-built components   |
+| **State & Data**  | TanStack React Query 5     | Server state, caching, and auto-refetch       |
+| **HTTP**          | Axios 1.18                 | API client (configured for future backend)    |
+| **Charts**        | Recharts 3.9               | Interactive chart components                  |
+| **Animation**     | Framer Motion 12.42        | Page transitions and card entrance animations |
+| **Icons**         | Lucide React 1.21          | Consistent icon set across all features       |
+| **Theme**         | next-themes 0.4            | Dark/light/system theme switching             |
+| **Fonts**         | Geist + Poppins            | Sans-serif and heading font pairing           |
+| **Notifications** | Sonner 2.0                 | Toast notifications (configured)              |
+| **Linting**       | ESLint 9 + Prettier 3.9    | Code quality and formatting                   |
+| **Deployment**    | Vercel                     | Serverless hosting and CI/CD                  |
 
 ## Getting Started
 
@@ -56,7 +56,7 @@ QUANTIQEN is an enterprise-grade Security Decision Infrastructure (SDI) dashboar
 
 ```bash
 # Clone the repository
-git clone https://github.com/anantnetra/quantiqen-v1.git
+git clone https://github.com/kalidashodekare14/quantiqen-v1.git
 cd quantiqen-v1
 
 # Install dependencies
@@ -161,54 +161,54 @@ The hook and view need zero changes — they receive the same typed data either 
 
 ## Available Routes
 
-| Route | Module | Description |
-|---|---|---|
-| `/login` | Login | Authentication page |
-| `/dashboard` | Dashboard | Overview KPIs and recent activity |
-| `/monitoring` | Live Monitoring | Real-time event feed with stats |
-| `/decision` | Decision Center | AI decision table with detail panel |
-| `/analytics` | Analytics | 8 interactive security charts |
-| `/assets` | Assets | Asset inventory with search and filters |
-| `/api-management` | API Management | API key cards and usage stats |
-| `/ai-recommendations` | AI Recommendations | Actionable security recommendations |
-| `/reports` | Reports | Generated report cards |
-| `/organization` | Organization | Org profile, compliance, and scores |
-| `/notifications` | Notifications | Severity-coded notification list |
-| `/profile` | Profile | User profile with edit modal |
-| `/settings` | Settings | Appearance, notifications, preferences, security |
+| Route                 | Module             | Description                                      |
+| --------------------- | ------------------ | ------------------------------------------------ |
+| `/login`              | Login              | Authentication page                              |
+| `/dashboard`          | Dashboard          | Overview KPIs and recent activity                |
+| `/monitoring`         | Live Monitoring    | Real-time event feed with stats                  |
+| `/decision`           | Decision Center    | AI decision table with detail panel              |
+| `/analytics`          | Analytics          | 8 interactive security charts                    |
+| `/assets`             | Assets             | Asset inventory with search and filters          |
+| `/api-management`     | API Management     | API key cards and usage stats                    |
+| `/ai-recommendations` | AI Recommendations | Actionable security recommendations              |
+| `/reports`            | Reports            | Generated report cards                           |
+| `/organization`       | Organization       | Org profile, compliance, and scores              |
+| `/notifications`      | Notifications      | Severity-coded notification list                 |
+| `/profile`            | Profile            | User profile with edit modal                     |
+| `/settings`           | Settings           | Appearance, notifications, preferences, security |
 
 ## Shared Components
 
 Located in `src/components/shared/`:
 
-| Component | Description |
-|---|---|
-| `AppButton` | Reusable button with primary/outline/ghost/danger variants, loading spinner, icon support, and full-width mode |
-| `ChartCard` | Card wrapper for Recharts components with title, subtitle, and consistent rounded-xl styling |
-| `DataTable` | Generic table component with search, column filtering, and pagination |
-| `KpiCard` | Single KPI display with label, value, trend, and icon |
-| `KpiGrid` | Configurable grid layout for KPI cards (used on Dashboard) |
-| `LoadingSkeleton` | Generic loading placeholder (base for all feature skeletons) |
-| `PageHeader` | Page title + subtitle + action slot (used on every page) |
-| `StatPills` | Horizontal stat pills with label, value, and icon |
+| Component         | Description                                                                                                    |
+| ----------------- | -------------------------------------------------------------------------------------------------------------- |
+| `AppButton`       | Reusable button with primary/outline/ghost/danger variants, loading spinner, icon support, and full-width mode |
+| `ChartCard`       | Card wrapper for Recharts components with title, subtitle, and consistent rounded-xl styling                   |
+| `DataTable`       | Generic table component with search, column filtering, and pagination                                          |
+| `KpiCard`         | Single KPI display with label, value, trend, and icon                                                          |
+| `KpiGrid`         | Configurable grid layout for KPI cards (used on Dashboard)                                                     |
+| `LoadingSkeleton` | Generic loading placeholder (base for all feature skeletons)                                                   |
+| `PageHeader`      | Page title + subtitle + action slot (used on every page)                                                       |
+| `StatPills`       | Horizontal stat pills with label, value, and icon                                                              |
 
 ## Design System
 
 ### Theme Tokens
 
-| Token | Tailwind Class | Description |
-|---|---|---|
-| `--background` | `bg-background` | Page background (light/dark) |
-| `--foreground` | `text-foreground` | Primary text color |
-| `--card` | `bg-card` | Card surface background |
-| `--card-foreground` | `text-card-foreground` | Card text color |
-| `--primary` | `bg-primary text-primary-foreground` | Primary accent (purple) |
-| `--muted` | `bg-muted text-muted-foreground` | Muted/secondary surfaces |
-| `--border` | `border-border` | Border color for cards and inputs |
-| `--chart-1` through `--chart-5` | `text-chart-1` etc. | Chart series colors |
-| `--sidebar` | `bg-sidebar` | Sidebar surface |
-| `--destructive` | `bg-destructive` | Error/danger color |
-| `--radius-*` | `rounded-xl` | Consistent border radius (14px at base) |
+| Token                           | Tailwind Class                       | Description                             |
+| ------------------------------- | ------------------------------------ | --------------------------------------- |
+| `--background`                  | `bg-background`                      | Page background (light/dark)            |
+| `--foreground`                  | `text-foreground`                    | Primary text color                      |
+| `--card`                        | `bg-card`                            | Card surface background                 |
+| `--card-foreground`             | `text-card-foreground`               | Card text color                         |
+| `--primary`                     | `bg-primary text-primary-foreground` | Primary accent (purple)                 |
+| `--muted`                       | `bg-muted text-muted-foreground`     | Muted/secondary surfaces                |
+| `--border`                      | `border-border`                      | Border color for cards and inputs       |
+| `--chart-1` through `--chart-5` | `text-chart-1` etc.                  | Chart series colors                     |
+| `--sidebar`                     | `bg-sidebar`                         | Sidebar surface                         |
+| `--destructive`                 | `bg-destructive`                     | Error/danger color                      |
+| `--radius-*`                    | `rounded-xl`                         | Consistent border radius (14px at base) |
 
 The app uses a **dark-by-default** theme with full light mode support via `next-themes`. All cards use `rounded-xl border bg-card text-card-foreground` for visual consistency. Framer Motion powers entrance animations (`opacity: 0, y: 12` → `opacity: 1, y: 0`) across all feature pages.
 
@@ -224,7 +224,7 @@ The app uses a **dark-by-default** theme with full light mode support via `next-
 
 ### Live Demo
 
-[https://quantiqen-v1.vercel.app](https://quantiqen-v1.vercel.app) *(update with actual URL after deployment)*
+[https://quantiqen-v1.vercel.app](https://quantiqen-v1.vercel.app) _(update with actual URL after deployment)_
 
 ## Next Sprint
 
