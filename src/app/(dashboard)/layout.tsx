@@ -14,10 +14,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <SidebarProvider>
       <AppSidebar />
 
-      <SidebarInset className="min-w-0 overflow-hidden">
+      <SidebarInset className="min-w-0">
         <AppHeader />
 
-        <main className="flex min-w-0 flex-1 flex-col overflow-hidden p-6">
+        <main className="flex min-w-0 flex-1 flex-col overflow-y-auto p-6">
           <AuthGuard>{children}</AuthGuard>
         </main>
       </SidebarInset>
