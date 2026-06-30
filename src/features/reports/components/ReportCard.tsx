@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { FileText, Download } from "lucide-react";
+import AppButton from "@/components/shared/AppButton";
 import { Report } from "@/types/report.types";
 import { formatRelativeTime } from "@/utils/date/date";
 
@@ -48,14 +49,12 @@ export const ReportCard = ({ report }: ReportCardProps) => {
       </div>
 
       <div className="mt-auto flex items-center gap-3">
-        <button className="border-border text-card-foreground hover:bg-accent flex items-center gap-2 rounded-lg border px-4 py-2 text-sm lg:text-base font-medium transition-colors">
-          <FileText className="size-4" />
+        <AppButton variant="outline" size="md" icon={<FileText className="size-4" />}>
           View
-        </button>
-        <button className="bg-chart-5 flex items-center gap-2 rounded-lg px-4 py-2 text-sm lg:text-base font-medium text-white transition-opacity hover:opacity-90">
-          <Download className="size-4" />
+        </AppButton>
+        <AppButton variant="primary" size="md" icon={<Download className="size-4" />}>
           Download
-        </button>
+        </AppButton>
       </div>
     </motion.div>
   );

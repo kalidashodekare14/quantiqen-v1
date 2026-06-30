@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
+import AppButton from "@/components/shared/AppButton";
 import type { ApiKey } from "@/types/api-management.types";
 import { formatRelativeTime } from "@/utils/date/date";
 
@@ -52,9 +52,11 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
       className="bg-card ring-foreground/10 flex flex-col gap-4 rounded-xl p-4 ring-1"
     >
       <div className="flex items-center justify-between">
-        <span className="text-card-foreground text-sm lg:text-base font-semibold">{apiKey.name}</span>
+        <span className="text-card-foreground text-sm font-semibold lg:text-base">
+          {apiKey.name}
+        </span>
         <span
-          className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
+          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
             statusStyles[apiKey.tokenStatus]
           }`}
         >
@@ -74,7 +76,7 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
         </button>
       </div>
 
-        <div className="space-y-3">
+      <div className="space-y-3">
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs lg:text-sm">
             <span className="text-muted-foreground">Daily Usage</span>
@@ -114,9 +116,9 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
         </div>
       </div>
 
-      <Button variant="outline" size="sm" className="w-full">
+      <AppButton variant="chart" size="lg" fullWidth>
         Regenerate Key
-      </Button>
+      </AppButton>
     </motion.div>
   );
 };
