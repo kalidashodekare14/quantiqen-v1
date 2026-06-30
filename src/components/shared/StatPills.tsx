@@ -66,9 +66,9 @@ export const StatPills = ({ stats }: StatPillsProps) => {
           >
             <div className="flex items-center gap-1.5">
               {Icon && <Icon className={`size-5 ${iconColorMap[pillColor]}`} />}
-              <span className="text-muted-foreground text-xs">{stat.label}</span>
+              <span className="text-muted-foreground text-sm">{stat.label}</span>
             </div>
-            <p className={`text-lg font-medium ${colorMap[pillColor]} ${Icon ? "mt-2" : ""}`}>
+            <p className={`text-2xl font-medium ${colorMap[pillColor]} ${Icon ? "mt-2" : ""}`}>
               {stat.value}
             </p>
           </motion.div>
