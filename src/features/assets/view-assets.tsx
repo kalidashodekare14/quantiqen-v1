@@ -1,6 +1,7 @@
 "use client"
 
-import { Skeleton } from "@/components/ui/skeleton"
+import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
+import { PageHeader } from "@/components/shared/PageHeader"
 import { useAssets } from "./hooks/useAssets"
 import AssetTable from "./components/AssetTable"
 
@@ -10,9 +11,7 @@ const ViewAssets = () => {
   if (isLoading) {
     return (
       <div className="flex w-full flex-col gap-6">
-        <Skeleton className="h-7 w-48" />
-        <Skeleton className="h-8 w-80" />
-        <Skeleton className="h-64 w-full" />
+        <LoadingSkeleton variant="table" count={6} />
       </div>
     )
   }
@@ -30,12 +29,10 @@ const ViewAssets = () => {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-bold text-card-foreground">Asset Inventory</h1>
-        <p className="text-sm text-muted-foreground">
-          View and manage your organization&apos;s assets
-        </p>
-      </div>
+      <PageHeader
+        title="Asset Inventory"
+        subtitle="View and manage your organization's assets"
+      />
       <AssetTable assets={data.assets} />
     </div>
   )

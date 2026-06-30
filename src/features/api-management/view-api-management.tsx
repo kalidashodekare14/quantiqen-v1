@@ -1,6 +1,7 @@
 "use client"
 
-import { Skeleton } from "@/components/ui/skeleton"
+import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
+import { PageHeader } from "@/components/shared/PageHeader"
 import { useApiManagement } from "./hooks/useApiManagement"
 import ApiKeyCard from "./components/ApiKeyCard"
 
@@ -10,13 +11,7 @@ const ViewApiManagement = () => {
   if (isLoading) {
     return (
       <div className="flex w-full flex-col gap-6">
-        <Skeleton className="h-7 w-48" />
-        <Skeleton className="h-7 w-72" />
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-64 w-full rounded-xl" />
-          ))}
-        </div>
+        <LoadingSkeleton variant="card" count={3} />
       </div>
     )
   }
@@ -34,12 +29,10 @@ const ViewApiManagement = () => {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-bold text-card-foreground">API Management</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage your API keys and monitor usage
-        </p>
-      </div>
+      <PageHeader
+        title="API Management"
+        subtitle="Manage your API keys and monitor usage"
+      />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {data.apiKeys.map((key) => (
           <ApiKeyCard key={key.id} apiKey={key} />

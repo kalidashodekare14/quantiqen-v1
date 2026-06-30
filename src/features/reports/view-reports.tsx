@@ -1,5 +1,7 @@
 "use client"
 
+import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
+import { PageHeader } from "@/components/shared/PageHeader"
 import { useReports } from "./hooks/useReports"
 import { ReportCard } from "./components/ReportCard"
 
@@ -9,20 +11,7 @@ export const ViewReports = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-6 w-full">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-bold text-card-foreground">Reports</h1>
-          <p className="text-sm text-muted-foreground">
-            Security reports and summaries
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-card border rounded-xl p-5 h-48 animate-pulse"
-            />
-          ))}
-        </div>
+        <LoadingSkeleton variant="card" count={4} />
       </div>
     )
   }
@@ -39,12 +28,10 @@ export const ViewReports = () => {
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-bold text-card-foreground">Reports</h1>
-        <p className="text-sm text-muted-foreground">
-          Security reports and summaries
-        </p>
-      </div>
+      <PageHeader
+        title="Reports"
+        subtitle="Security reports and summaries"
+      />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {data.reports.map((report, index) => (
           <div

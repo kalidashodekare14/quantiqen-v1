@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import { useDecisions } from "./hooks/useDecisions";
 import { Decision } from "@/types/decision.types";
 import DecisionTable from "./components/DecisionTable";
@@ -9,10 +10,11 @@ import DecisionSidePanel from "./components/DecisionSidePanel";
 const ViewDecisions = () => {
   const [selectedDecision, setSelectedDecision] = useState<Decision | null>(null);
   const { data, isLoading } = useDecisions();
-  console.log("checking decissions data", data);
 
-  //   if (isLoading) return <LoadingSkeleton />
-  // if (isError) return <p>Error loading data</p>
+  if (isLoading) {
+    return <LoadingSkeleton variant="table" count={8} />;
+  }
+
   if (!data) return null;
 
   return (
