@@ -34,9 +34,12 @@ export function NavMain() {
             return (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton asChild isActive={isActive(item.href)} tooltip={item.title}>
-                  <Link href={item.href}>
+                  <Link
+                    href={item.href}
+                    className="data-active:bg-chart-5/10! data-active:text-chart-5!"
+                  >
                     <Icon />
-                    <span>{item.title}</span>
+                    <span className="text-sm lg:text-base">{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
