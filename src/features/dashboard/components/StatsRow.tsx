@@ -22,11 +22,13 @@ const StatsRow = ({ summary }: StatsRowProps) => {
           {
             value: summary.activeAPIs,
             label: "Active APIs",
+            color: "default",
             icon: Zap,
           },
           {
             value: summary.apiRequestsToday.toLocaleString(),
             label: "API Requests Today",
+            color: "default",
             icon: Activity,
           },
           {

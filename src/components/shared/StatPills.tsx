@@ -17,7 +17,7 @@ interface StatPillsProps {
 }
 
 const colorMap: Record<PillColor, string> = {
-  default: "text-card-foreground",
+  default: "text-chart-5",
   success: "text-chart-2",
   warning: "text-chart-3",
   danger: "text-destructive",
