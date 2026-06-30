@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Users, Server, Globe, Key } from "lucide-react"
+import { StatPills } from "@/components/shared/StatPills"
 import { OrganizationData } from "@/types/organization.types"
 
 interface OrgDetailsProps {
@@ -27,32 +28,14 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
       title: "Overview",
       delay: 0,
       content: (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { icon: Users, value: data.users, label: "Total Users" },
-            { icon: Server, value: data.assets, label: "Total Assets" },
-            { icon: Globe, value: data.domains, label: "Domains" },
-            { icon: Key, value: data.apiKeys, label: "API Keys" },
-          ].map((item) => {
-            const Icon = item.icon
-            return (
-              <div
-                key={item.label}
-                className="bg-card border rounded-xl p-4"
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <Icon className="size-4 text-chart-5" />
-                  <span className="text-sm lg:text-base text-muted-foreground">
-                    {item.label}
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-card-foreground">
-                  {item.value}
-                </p>
-              </div>
-            )
-          })}
-        </div>
+        <StatPills
+          stats={[
+            { value: data.users, label: "Total Users", icon: Users },
+            { value: data.assets, label: "Total Assets", icon: Server },
+            { value: data.domains, label: "Domains", icon: Globe },
+            { value: data.apiKeys, label: "API Keys", icon: Key },
+          ]}
+        />
       ),
     },
     {
