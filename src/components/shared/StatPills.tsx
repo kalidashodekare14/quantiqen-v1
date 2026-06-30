@@ -62,7 +62,7 @@ export const StatPills = ({ stats }: StatPillsProps) => {
           <motion.div
             key={stat.label}
             variants={pillVariants}
-            className="bg-card ring-foreground/10 rounded-2xl px-4 py-3 ring-1"
+            className="bg-card ring-foreground/10 rounded-xl px-4 py-3 ring-1"
           >
             <div className="flex items-center gap-1.5">
               {Icon && <Icon className={`size-5 ${iconColorMap[pillColor]}`} />}

@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Table, TableHeader, TableBody, TableHead, TableCell } from "@/components/ui/table";
+import { DataTable } from "@/components/shared/DataTable";
 import type { Decision } from "@/types/decision.types";
 
 interface DecisionTableProps {
@@ -43,99 +42,67 @@ function getRelativeTime(dateString: string): string {
 
 const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
   return (
-    <div className="w-full overflow-x-auto">
-      <Table className="min-w-[900px]">
-        <TableHeader>
-          <tr>
-            <TableHead className="text-muted-foreground text-xs font-medium uppercase">
-              Decision ID
-            </TableHead>
-            <TableHead className="text-muted-foreground text-xs font-medium uppercase">
-              Organization
-            </TableHead>
-            <TableHead className="text-muted-foreground text-xs font-medium uppercase">
-              Asset
-            </TableHead>
-            <TableHead className="text-muted-foreground text-xs font-medium uppercase">
-              Risk
-            </TableHead>
-            <TableHead className="text-muted-foreground text-xs font-medium uppercase">
-              Business Impact
-            </TableHead>
-            <TableHead className="text-muted-foreground text-xs font-medium uppercase">
-              Confidence
-            </TableHead>
-            <TableHead className="text-muted-foreground text-xs font-medium uppercase">
-              Owner
-            </TableHead>
-            <TableHead className="text-muted-foreground text-xs font-medium uppercase">
-              Status
-            </TableHead>
-            <TableHead className="text-muted-foreground text-xs font-medium uppercase">
-              Priority
-            </TableHead>
-            <TableHead className="text-muted-foreground text-xs font-medium uppercase">
-              Time
-            </TableHead>
-          </tr>
-        </TableHeader>
-        <TableBody>
-          {decisions.map((decision, index) => (
-            <motion.tr
-              key={decision.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: index * 0.03, duration: 0.3 }}
-              className="hover:bg-muted/50 cursor-pointer border-b transition-colors"
-              onClick={() => onRowClick(decision)}
+    <DataTable<Decision>
+      columns={[
+        { key: "id", label: "Decision ID" },
+        { key: "organization", label: "Organization" },
+        { key: "asset", label: "Asset" },
+        { key: "risk", label: "Risk" },
+        {
+          key: "businessImpact",
+          label: "Business Impact",
+          render: (row) => (
+            <span
+              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                severityStyles[row.businessImpact]
+              }`}
             >
-              <TableCell className="text-card-foreground py-3 pr-2 pl-4 font-medium">
-                {decision.id}
-              </TableCell>
-              <TableCell className="text-card-foreground px-2 py-3">
-                {decision.organization}
-              </TableCell>
-              <TableCell className="text-card-foreground px-2 py-3">{decision.asset}</TableCell>
-              <TableCell className="text-card-foreground px-2 py-3">{decision.risk}</TableCell>
-              <TableCell className="px-2 py-3">
-                <span
-                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                    severityStyles[decision.businessImpact]
-                  }`}
-                >
-                  {decision.businessImpact}
-                </span>
-              </TableCell>
-              <TableCell className="text-card-foreground px-2 py-3">
-                {decision.confidence}%
-              </TableCell>
-              <TableCell className="text-card-foreground px-2 py-3">{decision.owner}</TableCell>
-              <TableCell className="px-2 py-3">
-                <span
-                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                    statusStyles[decision.status]
-                  }`}
-                >
-                  {decision.status}
-                </span>
-              </TableCell>
-              <TableCell className="px-2 py-3">
-                <span
-                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                    severityStyles[decision.priority]
-                  }`}
-                >
-                  {decision.priority}
-                </span>
-              </TableCell>
-              <TableCell className="text-card-foreground py-3 pr-4 pl-2">
-                {getRelativeTime(decision.time)}
-              </TableCell>
-            </motion.tr>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+              {row.businessImpact}
+            </span>
+          ),
+        },
+        {
+          key: "confidence",
+          label: "Confidence",
+          render: (row) => <>{row.confidence}%</>,
+        },
+        { key: "owner", label: "Owner" },
+        {
+          key: "status",
+          label: "Status",
+          render: (row) => (
+            <span
+              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                statusStyles[row.status]
+              }`}
+            >
+              {row.status}
+            </span>
+          ),
+        },
+        {
+          key: "priority",
+          label: "Priority",
+          render: (row) => (
+            <span
+              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                severityStyles[row.priority]
+              }`}
+            >
+              {row.priority}
+            </span>
+          ),
+        },
+        {
+          key: "time",
+          label: "Time",
+          render: (row) => <>{getRelativeTime(row.time)}</>,
+        },
+      ]}
+      data={decisions}
+      onRowClick={onRowClick}
+      pageSize={50}
+    />
   );
 };
 

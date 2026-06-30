@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { useDecisions } from "./hooks/useDecisions";
 import { Decision } from "@/types/decision.types";
 import DecisionTable from "./components/DecisionTable";
@@ -18,7 +19,11 @@ const ViewDecisions = () => {
   if (!data) return null;
 
   return (
-    <>
+    <div className="flex flex-col gap-6 w-full">
+      <PageHeader
+        title="Decisions"
+        subtitle="Review and manage security decisions"
+      />
       <div>
         <DecisionTable
           decisions={data.decisions}
@@ -29,7 +34,7 @@ const ViewDecisions = () => {
         decision={selectedDecision}
         onClose={() => setSelectedDecision(null)}
       />
-    </>
+    </div>
   );
 };
 
