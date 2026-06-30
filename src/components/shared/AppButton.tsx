@@ -10,11 +10,10 @@ const variantMap = {
   outline: "outline",
   ghost: "ghost",
   danger: "destructive",
-  chart: "default",
 } as const;
 
 const variantClasses: Record<string, string> = {
-  chart: "bg-chart-5/10 text-chart-5 hover:bg-chart-5/20",
+  outline: "border-chart-5 text-chart-5 hover:bg-chart-5 hover:text-white",
 };
 
 const sizeMap = {
@@ -30,7 +29,7 @@ const sizeClasses = {
 } as const;
 
 interface AppButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "outline" | "ghost" | "danger" | "chart";
+  variant?: "primary" | "outline" | "ghost" | "danger";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   icon?: ReactNode;

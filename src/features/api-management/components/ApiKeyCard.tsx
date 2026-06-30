@@ -116,7 +116,7 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
         </div>
       </div>
 
-      <AppButton variant="chart" size="lg" fullWidth>
+      <AppButton variant="outline" size="lg" fullWidth>
         Regenerate Key
       </AppButton>
     </motion.div>

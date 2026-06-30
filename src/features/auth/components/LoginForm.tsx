@@ -92,7 +92,7 @@ export const LoginForm = () => {
 
           {error && <p className="text-destructive text-sm">{error}</p>}
 
-          <AppButton type="submit" variant="chart" size="lg" fullWidth>
+          <AppButton type="submit" variant="outline" size="lg" fullWidth>
             Sign In
           </AppButton>
         </form>

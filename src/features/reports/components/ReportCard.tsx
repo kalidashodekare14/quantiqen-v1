@@ -27,18 +27,18 @@ export const ReportCard = ({ report }: ReportCardProps) => {
     >
       <div className="flex items-center justify-between">
         <span
-          className={`rounded-full border px-2.5 py-1 text-xs lg:text-sm font-medium ${typeBadgeStyles[report.type] ?? ""}`}
+          className={`rounded-full border px-2.5 py-1 text-xs font-medium lg:text-sm ${typeBadgeStyles[report.type] ?? ""}`}
         >
           {report.type}
         </span>
-        <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs lg:text-sm font-medium text-blue-500">
+        <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs font-medium text-blue-500 lg:text-sm">
           {report.format}
         </span>
       </div>
 
       <div className="flex flex-col gap-1">
-        <h3 className="text-card-foreground text-sm lg:text-base font-semibold">{report.title}</h3>
-        <p className="text-muted-foreground line-clamp-2 text-sm lg:text-base leading-relaxed">
+        <h3 className="text-card-foreground text-sm font-semibold lg:text-base">{report.title}</h3>
+        <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed lg:text-base">
           {report.description}
         </p>
       </div>
@@ -49,10 +49,10 @@ export const ReportCard = ({ report }: ReportCardProps) => {
       </div>
 
       <div className="mt-auto flex items-center gap-3">
-        <AppButton variant="outline" size="md" icon={<FileText className="size-4" />}>
+        <AppButton variant="outline" size="lg" icon={<FileText className="size-4" />}>
           View
         </AppButton>
-        <AppButton variant="primary" size="md" icon={<Download className="size-4" />}>
+        <AppButton variant="outline" size="lg" icon={<Download className="size-4" />}>
           Download
         </AppButton>
       </div>

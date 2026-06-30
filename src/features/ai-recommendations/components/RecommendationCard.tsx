@@ -75,7 +75,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         </div>
       </div>
 
-      <AppButton variant="chart" size="lg" fullWidth>
+      <AppButton variant="outline" size="lg" fullWidth>
         Take Action
       </AppButton>
     </motion.div>
