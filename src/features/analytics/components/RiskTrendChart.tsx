@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import ChartCard from "@/components/shared/ChartCard";
 import type { RiskTrendPoint } from "@/types/analytics.types";
 
 interface RiskTrendChartProps {
@@ -18,14 +19,7 @@ interface RiskTrendChartProps {
 
 const RiskTrendChart = ({ data }: RiskTrendChartProps) => {
   return (
-    <div className="w-full rounded-xl bg-card p-5 ring-1 ring-foreground/10">
-      <div className="mb-4">
-        <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
-          Risk Trend
-        </h3>
-        <p className="text-xs lg:text-sm text-muted-foreground">Last 14 days</p>
-      </div>
-
+    <ChartCard title="Risk Trend" subtitle="Last 14 days">
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
@@ -61,7 +55,7 @@ const RiskTrendChart = ({ data }: RiskTrendChartProps) => {
           />
         </LineChart>
       </ResponsiveContainer>
-    </div>
+    </ChartCard>
   );
 };
 

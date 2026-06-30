@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import ChartCard from "@/components/shared/ChartCard";
 import type { ApiUsagePoint } from "@/types/analytics.types";
 
 interface ApiUsageChartProps {
@@ -18,12 +19,7 @@ interface ApiUsageChartProps {
 
 const ApiUsageChart = ({ data }: ApiUsageChartProps) => {
   return (
-    <div className="w-full rounded-xl bg-card p-5 ring-1 ring-foreground/10">
-      <div className="mb-4">
-        <h3 className="text-sm lg:text-base font-semibold text-card-foreground">API Usage</h3>
-        <p className="text-xs lg:text-sm text-muted-foreground">Last 14 days</p>
-      </div>
-
+    <ChartCard title="API Usage" subtitle="Last 14 days">
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} barSize={12}>
           <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
@@ -55,7 +51,7 @@ const ApiUsageChart = ({ data }: ApiUsageChartProps) => {
           />
         </BarChart>
       </ResponsiveContainer>
-    </div>
+    </ChartCard>
   );
 };
 

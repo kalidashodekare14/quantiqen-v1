@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import ChartCard from "@/components/shared/ChartCard";
 import type {
   RiskDistributionPoint,
   AssetCategoryPoint,
@@ -38,14 +39,7 @@ const RiskDistributionChart = ({
 }: RiskDistributionChartProps) => {
   return (
     <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-3">
-      <div className="rounded-xl bg-card p-5 ring-1 ring-foreground/10">
-        <div className="mb-4">
-          <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
-            Risk Distribution
-          </h3>
-          <p className="text-xs lg:text-sm text-muted-foreground">By severity level</p>
-        </div>
-
+      <ChartCard title="Risk Distribution" subtitle="By severity level">
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
@@ -67,16 +61,9 @@ const RiskDistributionChart = ({
             <Legend />
           </PieChart>
         </ResponsiveContainer>
-      </div>
+      </ChartCard>
 
-      <div className="rounded-xl bg-card p-5 ring-1 ring-foreground/10">
-        <div className="mb-4">
-          <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
-            Assets by Category
-          </h3>
-          <p className="text-xs lg:text-sm text-muted-foreground">By asset type</p>
-        </div>
-
+      <ChartCard title="Assets by Category" subtitle="By asset type">
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
@@ -98,16 +85,9 @@ const RiskDistributionChart = ({
             <Legend />
           </PieChart>
         </ResponsiveContainer>
-      </div>
+      </ChartCard>
 
-      <div className="rounded-xl bg-card p-5 ring-1 ring-foreground/10">
-        <div className="mb-4">
-          <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
-            Threat Distribution
-          </h3>
-          <p className="text-xs lg:text-sm text-muted-foreground">By threat type</p>
-        </div>
-
+      <ChartCard title="Threat Distribution" subtitle="By threat type">
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
@@ -129,7 +109,7 @@ const RiskDistributionChart = ({
             <Legend />
           </PieChart>
         </ResponsiveContainer>
-      </div>
+      </ChartCard>
     </div>
   );
 };

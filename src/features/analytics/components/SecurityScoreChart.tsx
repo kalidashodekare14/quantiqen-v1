@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import ChartCard from "@/components/shared/ChartCard";
 import type { SecurityScorePoint } from "@/types/analytics.types";
 
 interface SecurityScoreChartProps {
@@ -17,14 +18,7 @@ interface SecurityScoreChartProps {
 
 const SecurityScoreChart = ({ data }: SecurityScoreChartProps) => {
   return (
-    <div className="w-full rounded-xl bg-card p-5 ring-1 ring-foreground/10">
-      <div className="mb-4">
-        <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
-          Security Score Timeline
-        </h3>
-        <p className="text-xs lg:text-sm text-muted-foreground">Last 14 days</p>
-      </div>
-
+    <ChartCard title="Security Score Timeline" subtitle="Last 14 days">
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data}>
           <defs>
@@ -60,7 +54,7 @@ const SecurityScoreChart = ({ data }: SecurityScoreChartProps) => {
           />
         </LineChart>
       </ResponsiveContainer>
-    </div>
+    </ChartCard>
   );
 };
 

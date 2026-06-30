@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import ChartCard from "@/components/shared/ChartCard";
 import type { DailyDecisionPoint } from "@/types/analytics.types";
 
 interface DailyDecisionChartProps {
@@ -17,14 +18,7 @@ interface DailyDecisionChartProps {
 
 const DailyDecisionChart = ({ data }: DailyDecisionChartProps) => {
   return (
-    <div className="w-full rounded-xl bg-card p-5 ring-1 ring-foreground/10">
-      <div className="mb-4">
-        <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
-          Daily Decision Count
-        </h3>
-        <p className="text-xs lg:text-sm text-muted-foreground">This week</p>
-      </div>
-
+    <ChartCard title="Daily Decision Count" subtitle="This week">
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} barSize={20}>
           <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
@@ -49,7 +43,7 @@ const DailyDecisionChart = ({ data }: DailyDecisionChartProps) => {
           />
         </BarChart>
       </ResponsiveContainer>
-    </div>
+    </ChartCard>
   );
 };
 

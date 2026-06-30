@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import ChartCard from "@/components/shared/ChartCard";
 import type { DecisionTrendPoint } from "@/types/analytics.types";
 
 interface DecisionTrendChartProps {
@@ -18,14 +19,7 @@ interface DecisionTrendChartProps {
 
 const DecisionTrendChart = ({ data }: DecisionTrendChartProps) => {
   return (
-    <div className="w-full rounded-xl bg-card p-5 ring-1 ring-foreground/10">
-      <div className="mb-4">
-        <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
-          Decision Trend
-        </h3>
-        <p className="text-xs lg:text-sm text-muted-foreground">Last 14 days</p>
-      </div>
-
+    <ChartCard title="Decision Trend" subtitle="Last 14 days">
       <ResponsiveContainer width="100%" height={220}>
         <AreaChart data={data}>
           <defs>
@@ -83,7 +77,7 @@ const DecisionTrendChart = ({ data }: DecisionTrendChartProps) => {
           />
         </AreaChart>
       </ResponsiveContainer>
-    </div>
+    </ChartCard>
   );
 };
 
