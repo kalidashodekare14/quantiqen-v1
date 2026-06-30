@@ -1,36 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, CheckCircle, AlertTriangle, AlertOctagon } from "lucide-react";
 import type { MonitoringEvent } from "@/types/monitoring.types";
+import { severityConfig } from "@/constants/severity";
+import { formatRelativeTime } from "@/utils/date/date";
 
 interface LiveFeedProps {
   events: MonitoringEvent[];
-}
-
-const severityConfig: Record<string, { icon: typeof Info; color: string }> = {
-  info: { icon: Info, color: "text-chart-5" },
-  success: { icon: CheckCircle, color: "text-chart-2" },
-  warning: { icon: AlertTriangle, color: "text-chart-3" },
-  critical: { icon: AlertOctagon, color: "text-destructive" },
-};
-
-function getRelativeTime(timestamp: string): string {
-  const now = Date.now();
-  const date = new Date(timestamp).getTime();
-  const diffMs = now - date;
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 30) return `${diffDays}d ago`;
-  return new Date(timestamp).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
 }
 
 const LiveFeed = ({ events }: LiveFeedProps) => {
@@ -79,7 +55,7 @@ const LiveFeed = ({ events }: LiveFeedProps) => {
 
                   <div className="flex shrink-0 flex-col items-end gap-0.5">
                     <span className="text-muted-foreground text-xs whitespace-nowrap">
-                      {getRelativeTime(event.timestamp)}
+                      {formatRelativeTime(event.timestamp)}
                     </span>
                     {event.asset && (
                       <span className="text-chart-5 max-w-30 truncate text-xs">{event.asset}</span>

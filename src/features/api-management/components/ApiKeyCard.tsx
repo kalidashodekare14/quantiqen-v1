@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import type { ApiKey } from "@/types/api-management.types";
+import { formatRelativeTime } from "@/utils/date/date";
 
 interface ApiKeyCardProps {
   apiKey: ApiKey;
@@ -20,26 +21,6 @@ function getUsageColor(ratio: number): string {
   if (ratio > 0.9) return "bg-destructive";
   if (ratio > 0.7) return "bg-chart-3";
   return "bg-chart-2";
-}
-
-// It will be shared function
-function getRelativeTime(dateString: string): string {
-  const now = Date.now();
-  const date = new Date(dateString).getTime();
-  const diffMs = now - date;
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 30) return `${diffDays}d ago`;
-  return new Date(dateString).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
 }
 
 function maskKey(key: string): string {
@@ -129,7 +110,7 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
         </div>
         <div>
           <span className="text-muted-foreground">Last used: </span>
-          <span className="text-card-foreground">{getRelativeTime(apiKey.lastUsed)}</span>
+          <span className="text-card-foreground">{formatRelativeTime(apiKey.lastUsed)}</span>
         </div>
       </div>
 
