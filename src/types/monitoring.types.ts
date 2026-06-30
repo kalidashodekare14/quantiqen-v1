@@ -28,6 +28,7 @@ export interface MonitoringStats {
 }
 
 export interface MonitoringData {
+  lastUpdated: string;
   stats: MonitoringStats;
   events: MonitoringEvent[];
 }

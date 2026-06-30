@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/PageHeader";
+import { formatRelativeTime } from "@/utils/date/date";
 import LiveFeed from "./components/LiveFeed";
 import MonitoringStats from "./components/MonitoringStats";
 import MonitoringSkeleton from "./components/MonitoringSkeleton";
@@ -22,7 +23,7 @@ const ViewMonitoring = () => {
         subtitle="Auto-refreshes every 5 seconds"
         action={
           <span className="rounded-full bg-muted px-3 py-1 text-xs lg:text-sm text-muted-foreground">
-            Last updated: just now
+            Last updated: {formatRelativeTime(data.lastUpdated)}
           </span>
         }
       />
