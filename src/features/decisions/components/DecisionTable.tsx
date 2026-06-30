@@ -83,6 +83,7 @@ const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
       ]}
       data={decisions}
       onRowClick={onRowClick}
+      getRowId={(row) => row.id}
       pageSize={50}
     />
   );

@@ -76,6 +76,7 @@ const AssetTable = ({ assets }: AssetTableProps) => {
       ]}
       data={assets}
       searchable
+      getRowId={(row) => row.id}
       searchKeys={["domain", "owner"]}
       filterOptions={{ key: "status", options: ["Active", "At Risk", "Inactive"] }}
       pageSize={8}
