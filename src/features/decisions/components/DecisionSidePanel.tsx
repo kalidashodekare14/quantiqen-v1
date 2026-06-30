@@ -86,21 +86,21 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
             <div className="flex-1 overflow-y-auto px-6 py-5">
               <div className="flex flex-wrap items-center gap-2">
                 <span
-                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs lg:text-sm font-medium ${
                     statusStyles[decision.status]
                   }`}
                 >
                   {decision.status}
                 </span>
                 <span
-                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs lg:text-sm font-medium ${
                     severityStyles[decision.priority]
                   }`}
                 >
                   {decision.priority}
                 </span>
                 <span
-                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs lg:text-sm font-medium ${
                     severityStyles[decision.businessImpact]
                   }`}
                 >
@@ -111,11 +111,11 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
               <hr className="border-border my-5" />
 
               <div>
-                <p className="text-muted-foreground mb-1.5 text-xs font-medium tracking-wider uppercase">
+                <p className="text-muted-foreground mb-1.5 text-sm lg:text-base font-medium tracking-wider uppercase">
                   Risk
                 </p>
-                <p className="text-card-foreground text-sm font-medium">{decision.risk}</p>
-                <p className="text-muted-foreground mt-1.5 text-sm leading-relaxed">
+                <p className="text-card-foreground text-sm lg:text-base font-medium">{decision.risk}</p>
+                <p className="text-muted-foreground mt-1.5 text-sm lg:text-base leading-relaxed">
                   {decision.details.description}
                 </p>
               </div>
@@ -123,15 +123,15 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
               <hr className="border-border my-5" />
 
               <div>
-                <p className="text-muted-foreground mb-1.5 text-xs font-medium tracking-wider uppercase">
+                <p className="text-muted-foreground mb-1.5 text-sm lg:text-base font-medium tracking-wider uppercase">
                   Affected Asset
                 </p>
-                <p className="text-card-foreground text-sm font-medium">{decision.asset}</p>
+                <p className="text-card-foreground text-sm lg:text-base font-medium">{decision.asset}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {decision.details.affectedAssets.map((asset) => (
                     <span
                       key={asset}
-                      className="bg-muted text-muted-foreground inline-block rounded-md px-2 py-1 text-xs"
+                      className="bg-muted text-muted-foreground inline-block rounded-md px-2 py-1 text-xs lg:text-sm"
                     >
                       {asset}
                     </span>
@@ -142,12 +142,12 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
               <hr className="border-border my-5" />
 
               <div>
-                <p className="text-muted-foreground mb-3 text-xs font-medium tracking-wider uppercase">
+                <p className="text-muted-foreground mb-3 text-sm lg:text-base font-medium tracking-wider uppercase">
                   Scores
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-muted rounded-lg p-3">
-                    <p className="text-muted-foreground text-xs">Risk Score</p>
+                    <p className="text-muted-foreground text-xs lg:text-sm">Risk Score</p>
                     <p
                       className={`mt-1 text-xl font-semibold ${getScoreTextColor(decision.details.riskScore)}`}
                     >
@@ -163,7 +163,7 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
                     </div>
                   </div>
                   <div className="bg-muted rounded-lg p-3">
-                    <p className="text-muted-foreground text-xs">CVSS Score</p>
+                    <p className="text-muted-foreground text-xs lg:text-sm">CVSS Score</p>
                     <p
                       className={`mt-1 text-xl font-semibold ${getScoreTextColor(decision.details.cvss * 10)}`}
                     >
@@ -180,7 +180,7 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
                   </div>
                 </div>
                 <div className="bg-muted mt-3 rounded-lg p-3">
-                  <p className="text-muted-foreground text-xs">Confidence</p>
+                  <p className="text-muted-foreground text-xs lg:text-sm">Confidence</p>
                   <p className="text-chart-2 mt-1 text-xl font-semibold">{decision.confidence}%</p>
                   <div className="bg-muted-foreground/20 mt-2 h-1.5 w-full overflow-hidden rounded-full">
                     <div
@@ -194,10 +194,10 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
               <hr className="border-border my-5" />
 
               <div>
-                <p className="text-muted-foreground mb-1.5 text-xs font-medium tracking-wider uppercase">
+                <p className="text-muted-foreground mb-1.5 text-sm lg:text-base font-medium tracking-wider uppercase">
                   Recommended Action
                 </p>
-                <p className="text-card-foreground text-sm leading-relaxed">
+                <p className="text-card-foreground text-sm lg:text-base leading-relaxed">
                   {decision.details.recommendedAction}
                 </p>
               </div>
@@ -206,20 +206,20 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <p className="text-muted-foreground text-xs">Fix Time</p>
-                  <p className="text-card-foreground mt-0.5 text-sm font-medium">
+                  <p className="text-muted-foreground text-xs lg:text-sm">Fix Time</p>
+                  <p className="text-card-foreground mt-0.5 text-sm lg:text-base font-medium">
                     {decision.details.estimatedFixTime}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-xs">Owner</p>
-                  <p className="text-card-foreground mt-0.5 text-sm font-medium">
+                  <p className="text-muted-foreground text-xs lg:text-sm">Owner</p>
+                  <p className="text-card-foreground mt-0.5 text-sm lg:text-base font-medium">
                     {decision.owner}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-xs">Team</p>
-                  <p className="text-card-foreground mt-0.5 text-sm font-medium">
+                  <p className="text-muted-foreground text-xs lg:text-sm">Team</p>
+                  <p className="text-card-foreground mt-0.5 text-sm lg:text-base font-medium">
                     {decision.details.responsibleTeam}
                   </p>
                 </div>
@@ -228,14 +228,14 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
               <hr className="border-border my-5" />
 
               <div>
-                <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
+                <p className="text-muted-foreground mb-2 text-sm lg:text-base font-medium tracking-wider uppercase">
                   Tags
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {decision.details.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="bg-muted text-muted-foreground inline-block rounded-full px-2.5 py-0.5 text-xs"
+                      className="bg-muted text-muted-foreground inline-block rounded-full px-2.5 py-0.5 text-xs lg:text-sm"
                     >
                       {tag}
                     </span>

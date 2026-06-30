@@ -26,33 +26,33 @@ export const ReportCard = ({ report }: ReportCardProps) => {
     >
       <div className="flex items-center justify-between">
         <span
-          className={`rounded-full border px-2.5 py-1 text-xs font-medium ${typeBadgeStyles[report.type] ?? ""}`}
+          className={`rounded-full border px-2.5 py-1 text-xs lg:text-sm font-medium ${typeBadgeStyles[report.type] ?? ""}`}
         >
           {report.type}
         </span>
-        <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs font-medium text-blue-500">
+        <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs lg:text-sm font-medium text-blue-500">
           {report.format}
         </span>
       </div>
 
       <div className="flex flex-col gap-1">
-        <h3 className="text-card-foreground font-semibold">{report.title}</h3>
-        <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
+        <h3 className="text-card-foreground text-sm lg:text-base font-semibold">{report.title}</h3>
+        <p className="text-muted-foreground line-clamp-2 text-sm lg:text-base leading-relaxed">
           {report.description}
         </p>
       </div>
 
-      <div className="text-muted-foreground flex items-center gap-3 text-xs">
+      <div className="text-muted-foreground flex items-center gap-3 text-xs lg:text-sm">
         <span>{formatRelativeTime(report.generatedAt)}</span>
         <span>{report.size}</span>
       </div>
 
       <div className="mt-auto flex items-center gap-3">
-        <button className="border-border text-card-foreground hover:bg-accent flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors">
+        <button className="border-border text-card-foreground hover:bg-accent flex items-center gap-2 rounded-lg border px-4 py-2 text-sm lg:text-base font-medium transition-colors">
           <FileText className="size-4" />
           View
         </button>
-        <button className="bg-chart-5 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90">
+        <button className="bg-chart-5 flex items-center gap-2 rounded-lg px-4 py-2 text-sm lg:text-base font-medium text-white transition-opacity hover:opacity-90">
           <Download className="size-4" />
           Download
         </button>

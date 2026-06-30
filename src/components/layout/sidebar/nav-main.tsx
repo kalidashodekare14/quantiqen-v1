@@ -17,6 +17,11 @@ import {
 export function NavMain() {
   const pathname = usePathname();
 
+  const isActive = (href: string) => {
+    if (href === "/dashboard") return pathname === href;
+    return pathname.startsWith(href);
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Main</SidebarGroupLabel>
@@ -28,7 +33,7 @@ export function NavMain() {
 
             return (
               <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.title}>
+                <SidebarMenuButton asChild isActive={isActive(item.href)} tooltip={item.title}>
                   <Link href={item.href}>
                     <Icon />
                     <span>{item.title}</span>

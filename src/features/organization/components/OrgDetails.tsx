@@ -42,7 +42,7 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
               >
                 <div className="flex items-center gap-2 mb-1">
                   <Icon className="size-4 text-chart-5" />
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-sm lg:text-base text-muted-foreground">
                     {item.label}
                   </span>
                 </div>
@@ -75,8 +75,8 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
                 },
               ].map((item) => (
                 <div key={item.label}>
-                  <p className="text-xs text-muted-foreground">{item.label}</p>
-                  <p className="text-sm font-medium text-card-foreground">
+                  <p className="text-xs lg:text-sm text-muted-foreground">{item.label}</p>
+                  <p className="text-sm lg:text-base font-medium text-card-foreground">
                     {item.value}
                   </p>
                 </div>
@@ -85,10 +85,10 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
 
             <div>
               <div className="flex justify-between">
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs lg:text-sm text-muted-foreground">
                   Days Remaining
                 </span>
-                <span className="text-xs text-chart-2">
+                <span className="text-xs lg:text-sm text-chart-2">
                   {data.subscription.daysRemaining} days
                 </span>
               </div>
@@ -126,10 +126,10 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
                 idx < 4 ? "border-b border-border" : ""
               }`}
             >
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm lg:text-base text-muted-foreground">
                 {item.label}
               </span>
-              <span className="text-sm font-medium text-card-foreground">
+              <span className="text-sm lg:text-base font-medium text-card-foreground">
                 {item.value}
               </span>
             </div>
@@ -148,7 +148,7 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: section.delay }}
         >
-          <h3 className="text-sm font-semibold text-card-foreground mb-3">
+          <h3 className="text-sm lg:text-base font-semibold text-card-foreground mb-3">
             {section.title}
           </h3>
           {section.content}

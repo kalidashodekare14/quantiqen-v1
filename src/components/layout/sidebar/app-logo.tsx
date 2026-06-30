@@ -14,10 +14,10 @@ export function AppLogo() {
               Q
             </div>
 
-            <div className="grid flex-1 text-left text-sm leading-tight">
+            <div className="grid flex-1 text-left text-sm lg:text-base leading-tight">
               <span className="truncate font-semibold">QUANTIQEN</span>
 
-              <span className="text-muted-foreground truncate text-xs">Enterprise Dashboard</span>
+              <span className="text-muted-foreground truncate text-xs lg:text-sm">Enterprise Dashboard</span>
             </div>
           </Link>
         </SidebarMenuButton>

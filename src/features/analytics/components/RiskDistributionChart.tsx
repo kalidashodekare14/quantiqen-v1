@@ -40,10 +40,10 @@ const RiskDistributionChart = ({
     <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-3">
       <div className="rounded-xl bg-card p-5 ring-1 ring-foreground/10">
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-card-foreground">
+          <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
             Risk Distribution
           </h3>
-          <p className="text-xs text-muted-foreground">By severity level</p>
+          <p className="text-xs lg:text-sm text-muted-foreground">By severity level</p>
         </div>
 
         <ResponsiveContainer width="100%" height={200}>
@@ -71,10 +71,10 @@ const RiskDistributionChart = ({
 
       <div className="rounded-xl bg-card p-5 ring-1 ring-foreground/10">
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-card-foreground">
+          <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
             Assets by Category
           </h3>
-          <p className="text-xs text-muted-foreground">By asset type</p>
+          <p className="text-xs lg:text-sm text-muted-foreground">By asset type</p>
         </div>
 
         <ResponsiveContainer width="100%" height={200}>
@@ -102,10 +102,10 @@ const RiskDistributionChart = ({
 
       <div className="rounded-xl bg-card p-5 ring-1 ring-foreground/10">
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-card-foreground">
+          <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
             Threat Distribution
           </h3>
-          <p className="text-xs text-muted-foreground">By threat type</p>
+          <p className="text-xs lg:text-sm text-muted-foreground">By threat type</p>
         </div>
 
         <ResponsiveContainer width="100%" height={200}>

@@ -19,10 +19,10 @@ const DailyDecisionChart = ({ data }: DailyDecisionChartProps) => {
   return (
     <div className="w-full rounded-xl bg-card p-5 ring-1 ring-foreground/10">
       <div className="mb-4">
-        <h3 className="text-sm font-semibold text-card-foreground">
+        <h3 className="text-sm lg:text-base font-semibold text-card-foreground">
           Daily Decision Count
         </h3>
-        <p className="text-xs text-muted-foreground">This week</p>
+        <p className="text-xs lg:text-sm text-muted-foreground">This week</p>
       </div>
 
       <ResponsiveContainer width="100%" height={220}>

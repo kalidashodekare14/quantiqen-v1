@@ -25,7 +25,7 @@ const ViewMonitoring = () => {
         title="Live Monitoring"
         subtitle="Auto-refreshes every 5 seconds"
         action={
-          <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+          <span className="rounded-full bg-muted px-3 py-1 text-xs lg:text-sm text-muted-foreground">
             Last updated: just now
           </span>
         }

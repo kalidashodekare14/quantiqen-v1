@@ -124,7 +124,7 @@ export const DataTable = <T,>({
               {columns.map((col) => (
                 <TableHead
                   key={col.key}
-                  className="text-muted-foreground text-xs font-medium uppercase"
+                  className="text-muted-foreground text-sm lg:text-base font-medium uppercase"
                 >
                   {col.label}
                 </TableHead>

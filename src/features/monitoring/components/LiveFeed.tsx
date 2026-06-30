@@ -13,20 +13,20 @@ const LiveFeed = ({ events }: LiveFeedProps) => {
   return (
     <div className="bg-card ring-foreground/10 rounded-xl ring-1">
       <div className="flex items-center justify-between px-5 py-4">
-        <h2 className="text-card-foreground text-sm font-semibold">Live Event Feed</h2>
+        <h2 className="text-card-foreground text-sm lg:text-base font-semibold">Live Event Feed</h2>
         <div className="flex items-center gap-1.5">
           <span className="relative flex size-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
           </span>
-          <span className="text-xs text-emerald-400">Live</span>
+          <span className="text-xs lg:text-sm text-emerald-400">Live</span>
         </div>
       </div>
 
       <div className="max-h-130 overflow-y-auto">
         {events.length === 0 ? (
           <div className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground text-sm">No events yet</p>
+            <p className="text-muted-foreground text-sm lg:text-base">No events yet</p>
           </div>
         ) : (
           <AnimatePresence initial={false}>
@@ -47,18 +47,18 @@ const LiveFeed = ({ events }: LiveFeedProps) => {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-card-foreground truncate text-xs font-medium">
+                    <p className="text-card-foreground truncate text-sm lg:text-base font-medium">
                       {event.type}
                     </p>
-                    <p className="text-muted-foreground mt-0.5 truncate text-xs">{event.message}</p>
+                    <p className="text-muted-foreground mt-0.5 truncate text-sm lg:text-base">{event.message}</p>
                   </div>
 
                   <div className="flex shrink-0 flex-col items-end gap-0.5">
-                    <span className="text-muted-foreground text-xs whitespace-nowrap">
+                    <span className="text-muted-foreground text-xs lg:text-sm whitespace-nowrap">
                       {formatRelativeTime(event.timestamp)}
                     </span>
                     {event.asset && (
-                      <span className="text-chart-5 max-w-30 truncate text-xs">{event.asset}</span>
+                      <span className="text-chart-5 max-w-30 truncate text-xs lg:text-sm">{event.asset}</span>
                     )}
                   </div>
                 </motion.div>

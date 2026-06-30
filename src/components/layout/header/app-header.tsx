@@ -4,6 +4,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 
 import { PageTitle } from "./page-title";
+import { NotificationBell } from "./notification-bell";
+import { UserNav } from "./user-nav";
 import { ThemeToggle } from "@/components/theme";
 
 export function AppHeader() {
@@ -19,8 +21,8 @@ export function AppHeader() {
 
       <div className="flex items-center gap-3">
         <ThemeToggle />
-        {/* Notification */}
-        {/* User Dropdown */}
+        <NotificationBell />
+        <UserNav />
       </div>
     </header>
   );

@@ -32,14 +32,14 @@ export const OrgHeader = ({ data }: OrgHeaderProps) => {
 
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-bold text-card-foreground">{data.name}</h2>
-          <p className="text-sm text-muted-foreground">{data.industry}</p>
+          <p className="text-sm lg:text-base text-muted-foreground">{data.industry}</p>
 
           <div className="flex items-center gap-3">
-            <span className="bg-chart-5/10 text-chart-5 border border-chart-5/20 text-xs font-medium px-2.5 py-1 rounded-full">
+            <span className="bg-chart-5/10 text-chart-5 border border-chart-5/20 text-xs lg:text-sm font-medium px-2.5 py-1 rounded-full">
               {data.plan}
             </span>
             <span
-              className={`text-xs font-medium px-2.5 py-1 rounded-full border ${statusClass}`}
+              className={`text-xs lg:text-sm font-medium px-2.5 py-1 rounded-full border ${statusClass}`}
             >
               {data.subscription.status}
             </span>
@@ -47,7 +47,7 @@ export const OrgHeader = ({ data }: OrgHeaderProps) => {
               href={data.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-muted-foreground hover:text-chart-5 transition-colors"
+              className="text-xs lg:text-sm text-muted-foreground hover:text-chart-5 transition-colors"
             >
               {data.website.replace(/^https?:\/\//, "")}
             </a>

@@ -40,7 +40,7 @@ export const LoginForm = () => {
             <Shield className="size-6 text-chart-5" />
           </div>
           <h1 className="text-2xl font-bold text-chart-5">QUANTIQEN</h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm lg:text-base text-muted-foreground">
             Security Decision Infrastructure
           </p>
         </div>
@@ -49,7 +49,7 @@ export const LoginForm = () => {
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="email"
-              className="text-sm font-medium text-card-foreground"
+              className="text-sm lg:text-base font-medium text-card-foreground"
             >
               Email
             </label>
@@ -66,7 +66,7 @@ export const LoginForm = () => {
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="password"
-              className="text-sm font-medium text-card-foreground"
+              className="text-sm lg:text-base font-medium text-card-foreground"
             >
               Password
             </label>
@@ -99,7 +99,7 @@ export const LoginForm = () => {
 
           <button
             type="submit"
-            className="flex h-10 w-full items-center justify-center rounded-lg bg-chart-5 text-sm font-medium text-white hover:opacity-90 transition-opacity"
+            className="flex h-10 w-full items-center justify-center rounded-lg bg-chart-5 text-sm lg:text-base font-medium text-white hover:opacity-90 transition-opacity"
           >
             Sign In
           </button>
@@ -109,14 +109,14 @@ export const LoginForm = () => {
           <button
             type="button"
             onClick={() => setForgotMsg("Password reset link sent to your email.")}
-            className="text-xs text-muted-foreground hover:text-chart-5 transition-colors"
+            className="text-xs lg:text-sm text-muted-foreground hover:text-chart-5 transition-colors"
           >
             Forgot Password?
           </button>
         </div>
 
         {forgotMsg && (
-          <p className="text-sm text-chart-2 text-center mt-3">
+          <p className="text-sm lg:text-base text-chart-2 text-center mt-3">
             {forgotMsg}
           </p>
         )}

@@ -52,9 +52,9 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
       className="bg-card ring-foreground/10 flex flex-col gap-4 rounded-xl p-4 ring-1"
     >
       <div className="flex items-center justify-between">
-        <span className="text-card-foreground text-sm font-semibold">{apiKey.name}</span>
+        <span className="text-card-foreground text-sm lg:text-base font-semibold">{apiKey.name}</span>
         <span
-          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+          className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
             statusStyles[apiKey.tokenStatus]
           }`}
         >
@@ -63,7 +63,7 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
       </div>
 
       <div className="flex items-center gap-2">
-        <code className="bg-muted text-muted-foreground flex-1 truncate rounded-md px-2 py-1 font-mono text-xs">
+        <code className="bg-muted text-muted-foreground flex-1 truncate rounded-md px-2 py-1 font-mono text-sm lg:text-base">
           {maskKey(apiKey.key)}
         </code>
         <button
@@ -74,9 +74,9 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
         </button>
       </div>
 
-      <div className="space-y-3">
+        <div className="space-y-3">
         <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-xs lg:text-sm">
             <span className="text-muted-foreground">Daily Usage</span>
             <span className="text-card-foreground">
               {apiKey.dailyUsage} / {apiKey.dailyLimit}
@@ -88,7 +88,7 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
           />
         </div>
         <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-xs lg:text-sm">
             <span className="text-muted-foreground">Monthly Usage</span>
             <span className="text-card-foreground">
               {apiKey.monthlyUsage} / {apiKey.monthlyLimit}
@@ -101,7 +101,7 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-xs">
+      <div className="flex items-center justify-between text-xs lg:text-sm">
         <div>
           <span className="text-muted-foreground">Remaining: </span>
           <span className="text-chart-5 font-medium">

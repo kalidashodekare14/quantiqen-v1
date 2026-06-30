@@ -38,7 +38,7 @@ const AssetTable = ({ assets }: AssetTableProps) => {
         {
           key: "ipAddress",
           label: "IP Address",
-          render: (row) => <span className="font-mono text-xs">{row.ipAddress}</span>,
+          render: (row) => <span className="font-mono text-sm lg:text-base">{row.ipAddress}</span>,
         },
         { key: "assetType", label: "Asset Type" },
         { key: "owner", label: "Owner" },
@@ -47,7 +47,7 @@ const AssetTable = ({ assets }: AssetTableProps) => {
           label: "Criticality",
           render: (row) => (
             <span
-              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+              className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
                 criticalityStyles[row.criticality]
               }`}
             >
@@ -60,7 +60,7 @@ const AssetTable = ({ assets }: AssetTableProps) => {
           label: "Status",
           render: (row) => (
             <span
-              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+              className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
                 statusStyles[row.status]
               }`}
             >
@@ -71,7 +71,7 @@ const AssetTable = ({ assets }: AssetTableProps) => {
         {
           key: "lastScan",
           label: "Last Scan",
-          render: (row) => <span className="text-xs">{formatDate(row.lastScan)}</span>,
+          render: (row) => <span className="text-sm lg:text-base">{formatDate(row.lastScan)}</span>,
         },
       ]}
       data={assets}

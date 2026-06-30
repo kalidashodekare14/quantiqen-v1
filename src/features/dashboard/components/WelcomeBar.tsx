@@ -37,7 +37,7 @@ const WelcomeBar = ({ organization, summary }: WelcomeBarProps) => {
         <h1 className="text-card-foreground text-xl font-semibold">
           Good morning, {organization.name}
         </h1>
-        <p className="text-muted-foreground mt-1 text-sm">
+        <p className="text-muted-foreground mt-1 text-sm lg:text-base">
           Last updated: {formatDateTime(summary.lastUpdated)} &middot; Plan: {organization.plan}{" "}
           &middot; Active APIs: {summary.activeAPIs}
         </p>

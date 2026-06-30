@@ -30,9 +30,9 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
       className="flex flex-col gap-4 rounded-xl bg-card p-4 ring-1 ring-foreground/10"
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{recommendation.id}</span>
+        <span className="text-xs lg:text-sm text-muted-foreground">{recommendation.id}</span>
         <span
-          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+          className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
             statusStyles[recommendation.status]
           }`}
         >
@@ -40,29 +40,29 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         </span>
       </div>
 
-      <p className="text-sm font-semibold leading-snug text-card-foreground">
+      <p className="text-sm lg:text-base font-semibold leading-snug text-card-foreground">
         {recommendation.recommendation}
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
         <span
-          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+          className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
             severityStyles[recommendation.businessImpact]
           }`}
         >
           {recommendation.businessImpact}
         </span>
         <span
-          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+          className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
             severityStyles[recommendation.priority]
           }`}
         >
           {recommendation.priority}
         </span>
-        <span className="text-xs text-card-foreground">{recommendation.confidence}%</span>
+        <span className="text-xs lg:text-sm text-card-foreground">{recommendation.confidence}%</span>
       </div>
 
-      <div className="space-y-1.5 text-xs">
+      <div className="space-y-1.5 text-xs lg:text-sm">
         <div className="flex items-center gap-1.5 text-muted-foreground">
           <Clock className="size-3.5" />
           <span>{recommendation.estimatedFixTime}</span>

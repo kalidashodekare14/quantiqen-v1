@@ -86,7 +86,7 @@ const KpiCard = ({ card }: KpiCardProps) => {
 
         {card.percentageChange !== null && (
           <div
-            className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+            className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
               card.trend === "up"
                 ? "bg-chart-2/10 text-chart-2"
                 : card.trend === "down"
@@ -106,7 +106,7 @@ const KpiCard = ({ card }: KpiCardProps) => {
           {displayValue}
           {card.unit === "percent" && "%"}
         </p>
-        <p className="text-muted-foreground mt-0.5 text-sm">{card.label}</p>
+        <p className="text-muted-foreground mt-0.5 text-sm lg:text-base">{card.label}</p>
       </div>
 
       <div className="flex items-end gap-0.75" style={{ height: 32 }}>
@@ -125,7 +125,7 @@ const KpiCard = ({ card }: KpiCardProps) => {
         })}
       </div>
 
-      <p className="text-muted-foreground text-[11px]">
+      <p className="text-muted-foreground text-xs lg:text-sm">
         Last updated: {formatDateTime(card.lastUpdated)}
       </p>
     </motion.div>

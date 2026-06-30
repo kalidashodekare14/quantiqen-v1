@@ -35,7 +35,7 @@ const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
           label: "Business Impact",
           render: (row) => (
             <span
-              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+              className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
                 severityStyles[row.businessImpact]
               }`}
             >
@@ -54,7 +54,7 @@ const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
           label: "Status",
           render: (row) => (
             <span
-              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+              className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
                 statusStyles[row.status]
               }`}
             >
@@ -67,7 +67,7 @@ const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
           label: "Priority",
           render: (row) => (
             <span
-              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+              className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
                 severityStyles[row.priority]
               }`}
             >

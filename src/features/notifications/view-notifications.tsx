@@ -25,7 +25,7 @@ export const ViewNotifications = () => {
         title="Notifications"
         subtitle="Stay updated with latest alerts"
         action={
-          <span className="text-xs font-medium bg-destructive/10 text-destructive border border-destructive/20 px-3 py-1 rounded-full">
+          <span className="text-xs lg:text-sm font-medium bg-destructive/10 text-destructive border border-destructive/20 px-3 py-1 rounded-full">
             {data.unreadCount} Unread
           </span>
         }

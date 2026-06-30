@@ -18,9 +18,9 @@ export const PageHeader = ({ title, subtitle, action }: PageHeaderProps) => {
       className="flex items-center justify-between"
     >
       <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-bold text-card-foreground">{title}</h1>
+        <h1 className="text-xl lg:text-2xl font-bold text-card-foreground">{title}</h1>
         {subtitle && (
-          <p className="text-sm text-muted-foreground">{subtitle}</p>
+          <p className="text-sm lg:text-base text-muted-foreground">{subtitle}</p>
         )}
       </div>
       {action}

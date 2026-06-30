@@ -51,19 +51,19 @@ export const NotificationList = ({ notifications }: NotificationListProps) => {
 
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-card-foreground text-sm font-semibold">
+                  <span className="text-card-foreground text-sm lg:text-base font-semibold">
                     {notification.title}
                   </span>
-                  <span className="text-muted-foreground shrink-0 text-xs">
+                  <span className="text-muted-foreground shrink-0 text-xs lg:text-sm">
                     {formatRelativeTime(notification.timestamp)}
                   </span>
                 </div>
                 <span
-                  className={`w-fit rounded-full px-2 py-0.5 text-xs font-medium ${typeBadgeStyles[notification.type] ?? ""}`}
+                  className={`w-fit rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${typeBadgeStyles[notification.type] ?? ""}`}
                 >
                   {notification.type}
                 </span>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-muted-foreground text-sm lg:text-base leading-relaxed">
                   {notification.message}
                 </p>
               </div>
