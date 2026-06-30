@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { Organization, SecuritySummary } from "@/types/dashboard.types";
+import { formatDateTime } from "@/utils/date/date";
 
 interface WelcomeBarProps {
   organization: Organization;
@@ -14,24 +15,16 @@ function getScoreColor(score: number): string {
   return "#ef4444";
 }
 
-function formatLastUpdated(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 const RADIUS = 42;
+
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+console.log("circumference", CIRCUMFERENCE);
 
 const WelcomeBar = ({ organization, summary }: WelcomeBarProps) => {
   const score = summary.securityScore;
   const scoreColor = getScoreColor(score);
   const strokeOffset = CIRCUMFERENCE - (score / 100) * CIRCUMFERENCE;
+  console.log("strockoffset", strokeOffset);
 
   return (
     <motion.div
@@ -45,7 +38,7 @@ const WelcomeBar = ({ organization, summary }: WelcomeBarProps) => {
           Good morning, {organization.name}
         </h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          Last updated: {formatLastUpdated(summary.lastUpdated)} &middot; Plan: {organization.plan}{" "}
+          Last updated: {formatDateTime(summary.lastUpdated)} &middot; Plan: {organization.plan}{" "}
           &middot; Active APIs: {summary.activeAPIs}
         </p>
       </div>

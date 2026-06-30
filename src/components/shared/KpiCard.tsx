@@ -15,6 +15,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 import type { KpiCard as KpiCardType } from "@/types/dashboard.types";
+import { formatDateTime } from "@/utils/date/date";
 
 interface KpiCardProps {
   card: KpiCardType;
@@ -44,16 +45,6 @@ const colorMap: Record<string, string> = {
 
 function getColorVar(colorName: string): string {
   return colorMap[colorName] ?? "var(--color-chart-5)";
-}
-
-function formatLastUpdated(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 function formatPercentage(value: number): string {
@@ -135,7 +126,7 @@ const KpiCard = ({ card }: KpiCardProps) => {
       </div>
 
       <p className="text-muted-foreground text-[11px]">
-        Last updated: {formatLastUpdated(card.lastUpdated)}
+        Last updated: {formatDateTime(card.lastUpdated)}
       </p>
     </motion.div>
   );
