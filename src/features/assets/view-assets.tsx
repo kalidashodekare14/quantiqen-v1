@@ -1,19 +1,15 @@
 "use client";
 
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { useAssets } from "./hooks/useAssets";
 import AssetTable from "./components/AssetTable";
+import AssetsSkeleton from "./components/AssetsSkeleton";
 
 const ViewAssets = () => {
   const { data, isLoading, isError } = useAssets();
 
   if (isLoading) {
-    return (
-      <div className="flex w-full flex-col gap-6">
-        <LoadingSkeleton variant="table" count={6} />
-      </div>
-    );
+    return <AssetsSkeleton />;
   }
 
   if (isError) {

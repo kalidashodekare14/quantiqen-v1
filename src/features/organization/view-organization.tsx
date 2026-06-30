@@ -1,20 +1,16 @@
 "use client"
 
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { useOrganization } from "./hooks/useOrganization"
 import { OrgHeader } from "./components/OrgHeader"
 import { OrgDetails } from "./components/OrgDetails"
+import OrganizationSkeleton from "./components/OrganizationSkeleton"
 
 export const ViewOrganization = () => {
   const { data, isLoading, isError } = useOrganization()
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col gap-6 w-full">
-        <LoadingSkeleton variant="page" />
-      </div>
-    )
+    return <OrganizationSkeleton />
   }
 
   if (isError) return null

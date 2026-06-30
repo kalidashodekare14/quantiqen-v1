@@ -1,20 +1,16 @@
 "use client";
 
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import { PageHeader } from "@/components/shared/PageHeader";
 import LiveFeed from "./components/LiveFeed";
 import MonitoringStats from "./components/MonitoringStats";
+import MonitoringSkeleton from "./components/MonitoringSkeleton";
 import { useMonitoring } from "./hooks/useMonitoring";
 
 const ViewMonitoring = () => {
   const { data, isLoading } = useMonitoring();
 
   if (isLoading) {
-    return (
-      <div className="flex w-full flex-col gap-6">
-        <LoadingSkeleton variant="page" />
-      </div>
-    );
+    return <MonitoringSkeleton />;
   }
 
   if (!data) return null;

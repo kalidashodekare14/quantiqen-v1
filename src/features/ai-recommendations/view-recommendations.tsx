@@ -1,19 +1,15 @@
 "use client"
 
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { useRecommendations } from "./hooks/useRecommendations"
 import RecommendationCard from "./components/RecommendationCard"
+import RecommendationsSkeleton from "./components/RecommendationsSkeleton"
 
 const ViewRecommendations = () => {
   const { data, isLoading, isError } = useRecommendations()
 
   if (isLoading) {
-    return (
-      <div className="flex w-full flex-col gap-6">
-        <LoadingSkeleton variant="card" count={3} />
-      </div>
-    )
+    return <RecommendationsSkeleton />
   }
 
   if (isError) {

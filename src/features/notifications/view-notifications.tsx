@@ -1,19 +1,15 @@
 "use client"
 
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { useNotifications } from "./hooks/useNotifications"
 import { NotificationList } from "./components/NotificationList"
+import NotificationsSkeleton from "./components/NotificationsSkeleton"
 
 export const ViewNotifications = () => {
   const { data, isLoading, isError } = useNotifications()
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col gap-6 w-full">
-        <LoadingSkeleton variant="page" />
-      </div>
-    )
+    return <NotificationsSkeleton />
   }
 
   if (isError) return null

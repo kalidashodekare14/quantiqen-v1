@@ -1,19 +1,15 @@
 "use client"
 
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { useReports } from "./hooks/useReports"
 import { ReportCard } from "./components/ReportCard"
+import ReportsSkeleton from "./components/ReportsSkeleton"
 
 export const ViewReports = () => {
   const { data, isLoading, isError } = useReports()
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col gap-6 w-full">
-        <LoadingSkeleton variant="card" count={4} />
-      </div>
-    )
+    return <ReportsSkeleton />
   }
 
   if (isError) {

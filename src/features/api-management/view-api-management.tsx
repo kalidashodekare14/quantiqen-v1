@@ -1,19 +1,15 @@
 "use client"
 
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { useApiManagement } from "./hooks/useApiManagement"
 import ApiKeyCard from "./components/ApiKeyCard"
+import ApiManagementSkeleton from "./components/ApiManagementSkeleton"
 
 const ViewApiManagement = () => {
   const { data, isLoading, isError } = useApiManagement()
 
   if (isLoading) {
-    return (
-      <div className="flex w-full flex-col gap-6">
-        <LoadingSkeleton variant="card" count={3} />
-      </div>
-    )
+    return <ApiManagementSkeleton />
   }
 
   if (isError) {

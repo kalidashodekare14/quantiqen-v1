@@ -1,6 +1,5 @@
 "use client";
 
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { useAnalytics } from "./hooks/useAnalytics";
 import RiskTrendChart from "./components/RiskTrendChart";
@@ -9,16 +8,13 @@ import ApiUsageChart from "./components/ApiUsageChart";
 import RiskDistributionChart from "./components/RiskDistributionChart";
 import SecurityScoreChart from "./components/SecurityScoreChart";
 import DailyDecisionChart from "./components/DailyDecisionChart";
+import AnalyticsSkeleton from "./components/AnalyticsSkeleton";
 
 const ViewAnalytics = () => {
   const { data, isLoading, isError } = useAnalytics();
 
   if (isLoading) {
-    return (
-      <div className="flex w-full flex-col gap-6">
-        <LoadingSkeleton variant="page" />
-      </div>
-    );
+    return <AnalyticsSkeleton />;
   }
 
   if (isError) return null;
