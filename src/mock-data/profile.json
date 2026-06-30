@@ -1,0 +1,15 @@
+{
+  "profile": {
+    "id": "USR-001",
+    "name": "Alex Kumar",
+    "email": "alex.kumar@acmecorp.com",
+    "role": "Security Administrator",
+    "department": "Security Team",
+    "avatarInitials": "AK",
+    "phone": "+1 (555) 123-4567",
+    "timezone": "America/New_York",
+    "joinedAt": "2025-03-12T00:00:00Z",
+    "lastLogin": "2026-06-29T09:42:00Z",
+    "twoFactorEnabled": true
+  }
+}
