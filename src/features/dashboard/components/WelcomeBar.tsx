@@ -38,15 +38,15 @@ const WelcomeBar = ({ organization, summary }: WelcomeBarProps) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="flex items-center justify-between rounded-xl bg-card p-4 ring-1 ring-foreground/10"
+      className="bg-card ring-foreground/10 flex items-center justify-between overflow-hidden rounded-xl p-4 ring-1"
     >
       <div>
-        <h1 className="text-xl font-semibold text-card-foreground">
+        <h1 className="text-card-foreground text-xl font-semibold">
           Good morning, {organization.name}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Last updated: {formatLastUpdated(summary.lastUpdated)} &middot; Plan:{" "}
-          {organization.plan} &middot; Active APIs: {summary.activeAPIs}
+        <p className="text-muted-foreground mt-1 text-sm">
+          Last updated: {formatLastUpdated(summary.lastUpdated)} &middot; Plan: {organization.plan}{" "}
+          &middot; Active APIs: {summary.activeAPIs}
         </p>
       </div>
 
@@ -82,13 +82,7 @@ const WelcomeBar = ({ organization, summary }: WelcomeBarProps) => {
           >
             {score}
           </text>
-          <text
-            x="50"
-            y="64"
-            textAnchor="middle"
-            className="fill-muted-foreground"
-            fontSize="11"
-          >
+          <text x="50" y="64" textAnchor="middle" className="fill-muted-foreground" fontSize="11">
             Score
           </text>
         </svg>
