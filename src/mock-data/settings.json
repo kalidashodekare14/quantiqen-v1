@@ -1,0 +1,21 @@
+{
+  "settings": {
+    "theme": "dark",
+    "notifications": {
+      "emailAlerts": true,
+      "newRiskAlerts": true,
+      "decisionUpdates": true,
+      "weeklyDigest": false,
+      "apiLimitWarnings": true
+    },
+    "preferences": {
+      "language": "English",
+      "timezone": "America/New_York",
+      "dateFormat": "MM/DD/YYYY"
+    },
+    "security": {
+      "twoFactorEnabled": true,
+      "sessionTimeout": "30 minutes"
+    }
+  }
+}
