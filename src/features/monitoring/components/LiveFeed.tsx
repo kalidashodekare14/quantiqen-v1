@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { MonitoringEvent } from "@/types/monitoring.types";
 import { severityConfig } from "@/constants/severity";
 import { formatRelativeTime } from "@/utils/date/date";
+import { fadeInUp } from "@/lib/motion";
 
 interface LiveFeedProps {
   events: MonitoringEvent[];
@@ -13,13 +14,13 @@ const LiveFeed = ({ events }: LiveFeedProps) => {
   return (
     <div className="bg-card ring-foreground/10 rounded-xl ring-1">
       <div className="flex items-center justify-between px-5 py-4">
-        <h2 className="text-card-foreground text-sm lg:text-base font-semibold">Live Event Feed</h2>
+        <h2 className="text-card-foreground text-sm font-semibold lg:text-base">Live Event Feed</h2>
         <div className="flex items-center gap-1.5">
           <span className="relative flex size-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
           </span>
-          <span className="text-xs lg:text-sm text-emerald-400">Live</span>
+          <span className="text-xs text-emerald-400 lg:text-sm">Live</span>
         </div>
       </div>
 
@@ -37,9 +38,7 @@ const LiveFeed = ({ events }: LiveFeedProps) => {
               return (
                 <motion.div
                   key={event.id}
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.04 }}
+                  {...fadeInUp(index * 0.05)}
                   className="border-border flex items-start gap-3 border-b px-5 py-3 last:border-b-0"
                 >
                   <div className="mt-0.5 shrink-0">
@@ -47,18 +46,22 @@ const LiveFeed = ({ events }: LiveFeedProps) => {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-card-foreground truncate text-sm lg:text-base font-medium">
+                    <p className="text-card-foreground truncate text-sm font-medium lg:text-base">
                       {event.type}
                     </p>
-                    <p className="text-muted-foreground mt-0.5 truncate text-sm lg:text-base">{event.message}</p>
+                    <p className="text-muted-foreground mt-0.5 truncate text-sm lg:text-base">
+                      {event.message}
+                    </p>
                   </div>
 
                   <div className="flex shrink-0 flex-col items-end gap-0.5">
-                    <span className="text-muted-foreground text-xs lg:text-sm whitespace-nowrap">
+                    <span className="text-muted-foreground text-xs whitespace-nowrap lg:text-sm">
                       {formatRelativeTime(event.timestamp)}
                     </span>
                     {event.asset && (
-                      <span className="text-chart-5 max-w-30 truncate text-xs lg:text-sm">{event.asset}</span>
+                      <span className="text-chart-5 max-w-30 truncate text-xs lg:text-sm">
+                        {event.asset}
+                      </span>
                     )}
                   </div>
                 </motion.div>
