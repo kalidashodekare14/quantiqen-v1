@@ -30,7 +30,7 @@ export const OrgHeader = ({ data }: OrgHeaderProps) => {
           <h2 className="text-card-foreground text-xl font-bold">{data.name}</h2>
           <p className="text-muted-foreground text-sm lg:text-base">{data.industry}</p>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 lg:flex-row">
             <span className="bg-chart-5/10 text-chart-5 border-chart-5/20 rounded-full border px-2.5 py-1 text-xs font-medium lg:text-sm">
               {data.plan}
             </span>
