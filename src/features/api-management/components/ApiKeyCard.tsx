@@ -3,36 +3,25 @@
 import { motion } from "framer-motion";
 import { Copy, Check } from "lucide-react";
 import { useState } from "react";
-import { Progress } from "@/components/ui/progress";
 import AppButton from "@/components/shared/AppButton";
 import type { ApiKey } from "@/types/api-management.types";
 import { formatRelativeTime } from "@/utils/date/date";
+import { maskKey } from "@/utils/string/maskKey";
+import UsageProgress from "./UsageProgress";
 
 interface ApiKeyCardProps {
   apiKey: ApiKey;
 }
 
-const statusStyles: Record<string, string> = {
+type tokenStatus = "Active" | "Expired";
+
+const statusStyles: Record<tokenStatus, string> = {
   Active: "bg-chart-2/10 text-chart-2",
   Expired: "bg-destructive/10 text-destructive",
 };
 
-function getUsageColor(ratio: number): string {
-  if (ratio > 0.9) return "bg-destructive";
-  if (ratio > 0.7) return "bg-chart-3";
-  return "bg-chart-2";
-}
-
-function maskKey(key: string): string {
-  if (key.length <= 10) return key;
-  return key.slice(0, 9) + "****";
-}
-
 const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
   const [copied, setCopied] = useState(false);
-
-  const dailyRatio = apiKey.dailyUsage / apiKey.dailyLimit;
-  const monthlyRatio = apiKey.monthlyUsage / apiKey.monthlyLimit;
 
   const handleCopy = async () => {
     try {
@@ -70,6 +59,8 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
         </code>
         <button
           onClick={handleCopy}
+          type="button"
+          aria-label="Copy API Key"
           className="text-muted-foreground hover:bg-muted hover:text-card-foreground flex size-7 shrink-0 items-center justify-center rounded-md transition-colors"
         >
           {copied ? <Check className="text-chart-2 size-3.5" /> : <Copy className="size-3.5" />}
@@ -77,30 +68,12 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
       </div>
 
       <div className="space-y-3">
-        <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs lg:text-sm">
-            <span className="text-muted-foreground">Daily Usage</span>
-            <span className="text-card-foreground">
-              {apiKey.dailyUsage} / {apiKey.dailyLimit}
-            </span>
-          </div>
-          <Progress
-            value={(apiKey.dailyUsage / apiKey.dailyLimit) * 100}
-            indicatorClassName={getUsageColor(dailyRatio)}
-          />
-        </div>
-        <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs lg:text-sm">
-            <span className="text-muted-foreground">Monthly Usage</span>
-            <span className="text-card-foreground">
-              {apiKey.monthlyUsage} / {apiKey.monthlyLimit}
-            </span>
-          </div>
-          <Progress
-            value={(apiKey.monthlyUsage / apiKey.monthlyLimit) * 100}
-            indicatorClassName={getUsageColor(monthlyRatio)}
-          />
-        </div>
+        <UsageProgress title="Daily Usage" current={apiKey.dailyUsage} limit={apiKey.dailyLimit} />
+        <UsageProgress
+          title="Monthly Usage"
+          current={apiKey.monthlyUsage}
+          limit={apiKey.monthlyLimit}
+        />
       </div>
 
       <div className="flex items-center justify-between text-xs lg:text-sm">

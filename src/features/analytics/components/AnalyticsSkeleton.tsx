@@ -8,7 +8,7 @@ const ChartSkeleton = () => (
       <Skeleton className="h-4 w-36" />
       <Skeleton className="h-3 w-24" />
     </div>
-    <Skeleton className="h-[220px] w-full rounded-xl" />
+    <Skeleton className="h-55 w-full rounded-xl" />
   </div>
 );
 

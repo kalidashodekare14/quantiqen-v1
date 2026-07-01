@@ -9,14 +9,6 @@ interface WelcomeBarProps {
   summary: SecuritySummary;
 }
 
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return "Good Morning";
-  if (hour >= 12 && hour < 17) return "Good Afternoon";
-  if (hour >= 17 && hour < 21) return "Good Evening";
-  return "Good Night";
-}
-
 function getScoreColor(score: number): string {
   if (score >= 80) return "#22c55e";
   if (score >= 60) return "#f59e0b";
@@ -43,7 +35,7 @@ const WelcomeBar = ({ organization, summary }: WelcomeBarProps) => {
     >
       <div>
         <h1 className="text-card-foreground text-xl font-semibold">
-          {getGreeting()}, {organization.name}
+          Good morning, {organization.name}
         </h1>
         <p className="text-muted-foreground mt-1 text-sm lg:text-base">
           Last updated: {formatDateTime(summary.lastUpdated)} &middot; Plan: {organization.plan}{" "}
