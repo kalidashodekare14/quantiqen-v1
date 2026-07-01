@@ -85,7 +85,7 @@ src/
 ├── app/                          # Next.js App Router pages
 │   ├── (auth)/login/             # Login page route
 │   ├── (dashboard)/              # Authenticated routes layout
-│   │   ├── dashboard/            # Dashboard page
+│   │   ├── dashboard/            # Overview KPIs and activity
 │   │   ├── monitoring/           # Live Monitoring page
 │   │   ├── decision/             # Decision Center page
 │   │   ├── analytics/            # Analytics page
@@ -96,18 +96,25 @@ src/
 │   │   ├── organization/         # Organization page
 │   │   ├── notifications/        # Notifications page
 │   │   ├── profile/              # Profile page
-│   │   └── settings/             # Settings page
+│   │   ├── settings/             # Settings page
+│   │   ├── layout.tsx            # Dashboard layout (sidebar + header)
+│   │   ├── page.tsx              # Dashboard route index (redirect)
+│   │   └── error.tsx             # Route-level error boundary
 │   ├── layout.tsx                # Root layout with providers
+│   ├── page.tsx                  # Splash screen with JWT auth redirect
+│   ├── not-found.tsx             # 404 page
+│   ├── global-error.tsx          # Root-level critical error boundary
 │   └── globals.css               # Tailwind v4 + theme variables
 ├── assets/                       # Static assets (icons, images, logos)
 ├── components/
-│   ├── auth/                     # Authentication UI (AuthGuard)
+│   ├── auth/                     # AuthGuard wrapper component
 │   ├── layout/                   # App shell (sidebar, header, nav)
-│   ├── shared/                   # Reusable shared components
+│   ├── shared/                   # 8 reusable shared components
 │   ├── theme/                    # Theme provider and toggle
-│   └── ui/                       # shadcn/ui primitives (17 components)
+│   └── ui/                       # 17 shadcn/ui primitives
 ├── constants/                    # App config, routes, navigation, severity
-├── features/                     # Feature-based modules
+├── features/                     # Feature-based modules (13 features)
+│   ├── auth/                     # Login form component
 │   ├── dashboard/                # Dashboard (view, hooks, services, components)
 │   ├── decisions/                # Decision Center
 │   ├── analytics/                # Analytics + charts
@@ -121,11 +128,11 @@ src/
 │   ├── profile/                  # User Profile
 │   └── settings/                 # Settings
 ├── hooks/                        # Shared hooks (useMobile)
-├── lib/                          # Utilities (axios client, cn helper)
-├── mock-data/                    # 12 JSON files, one per feature
+├── lib/                          # Utilities (axios, motion presets, cn helper)
+├── mock-data/                    # 12 JSON mock files, one per feature
 ├── providers/                    # App, Query, Theme providers
-├── types/                        # TypeScript interfaces per feature
-└── utils/                        # Pure utility functions (date formatting)
+├── types/                        # TypeScript interfaces per feature (15 files)
+└── utils/                        # Pure utility functions (color, date, string)
 ```
 
 ## Mock Data Strategy
@@ -177,6 +184,22 @@ The hook and view need zero changes — they receive the same typed data either 
 | `/profile`            | Profile            | User profile with edit modal                     |
 | `/settings`           | Settings           | Appearance, notifications, preferences, security |
 
+## Error Handling
+
+QUANTIQEN implements Next.js error handling at three levels:
+
+| File               | Scope   | Description                                                                    |
+| ------------------ | ------- | ------------------------------------------------------------------------------ |
+| `not-found.tsx`    | Global  | 404 page with animated "404" heading, description, and "Back to Dashboard" link |
+| `error.tsx`        | Route   | Route-level error boundary (`(dashboard)/`) with retry and navigation buttons   |
+| `global-error.tsx` | Root    | Root-level critical error boundary with standalone `<html>`/`<body>` tags       |
+
+### Root splash page
+
+`app/page.tsx` serves as the application entry point — it reads a JWT token from `localStorage` and redirects to `/dashboard` (authenticated) or `/login` (unauthenticated). While checking, it displays a branded splash screen with an animated loading bar.
+
+---
+
 ## Shared Components
 
 Located in `src/components/shared/`:
@@ -211,6 +234,8 @@ Located in `src/components/shared/`:
 | `--radius-*`                    | `rounded-xl`                         | Consistent border radius (14px at base) |
 
 The app uses a **dark-by-default** theme with full light mode support via `next-themes`. All cards use `rounded-xl border bg-card text-card-foreground` for visual consistency. Framer Motion powers entrance animations (`opacity: 0, y: 12` → `opacity: 1, y: 0`) across all feature pages.
+
+> **Note:** The `--radius` variable (defined in `:root` of `globals.css`) controls all shadcn/ui border radii. It defaults to `0.625rem` (10px), with `rounded-xl` resolving to `calc(var(--radius) * 1.4)` = 14px. All `rounded-*` utilities depend on `--radius` being set in `:root`.
 
 ## Deployment
 
