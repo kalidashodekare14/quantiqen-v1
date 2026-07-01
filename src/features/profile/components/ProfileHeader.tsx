@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import AppButton from "@/components/shared/AppButton";
 import EditProfileModal from "./EditProfileModal";
 import type { Profile } from "@/types/profile.types";
+import { fadeInUp } from "@/lib/motion";
 
 interface ProfileHeaderProps {
   profile: Profile;
@@ -16,16 +17,12 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="bg-card flex items-center justify-between rounded-xl border p-6"
+        {...fadeInUp()}
+        className="bg-card flex flex-col items-center justify-between gap-5 rounded-xl border p-6 lg:flex-row lg:gap-0"
       >
         <div className="flex items-center gap-5">
           <div className="bg-chart-5/10 border-chart-5/20 flex size-16 items-center justify-center rounded-xl border">
-            <span className="text-chart-5 text-2xl font-bold">
-              {profile.avatarInitials}
-            </span>
+            <span className="text-chart-5 text-2xl font-bold">{profile.avatarInitials}</span>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -42,11 +39,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
         </AppButton>
       </motion.div>
 
-      <EditProfileModal
-        profile={profile}
-        open={editOpen}
-        onOpenChange={setEditOpen}
-      />
+      <EditProfileModal profile={profile} open={editOpen} onOpenChange={setEditOpen} />
     </>
   );
 };
