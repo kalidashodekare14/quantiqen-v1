@@ -10,14 +10,16 @@ export function AppLogo() {
       <SidebarMenuItem>
         <SidebarMenuButton asChild size="lg" tooltip="QUANTIQEN">
           <Link href="/dashboard">
-            <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+            <div className="bg-chart-5 text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
               Q
             </div>
 
-            <div className="grid flex-1 text-left text-sm lg:text-base leading-tight">
+            <div className="grid flex-1 text-left text-sm leading-tight lg:text-base">
               <span className="truncate font-semibold">QUANTIQEN</span>
 
-              <span className="text-muted-foreground truncate text-xs lg:text-sm">Enterprise Dashboard</span>
+              <span className="text-muted-foreground truncate text-xs lg:text-sm">
+                Enterprise Dashboard
+              </span>
             </div>
           </Link>
         </SidebarMenuButton>
