@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import AppButton from "@/components/shared/AppButton";
 import type { SecuritySettingsData } from "@/types/settings.types";
+import { fadeInUp } from "@/lib/motion";
 
 interface SecurityCardProps {
   security: SecuritySettingsData;
@@ -10,15 +11,8 @@ interface SecurityCardProps {
 
 const SecurityCard = ({ security }: SecurityCardProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.3 }}
-      className="bg-card w-full rounded-xl border p-5"
-    >
-      <h3 className="text-card-foreground mb-4 text-sm font-semibold lg:text-base">
-        Security
-      </h3>
+    <motion.div {...fadeInUp(0.3)} className="bg-card w-full rounded-xl border p-5">
+      <h3 className="text-card-foreground mb-4 text-sm font-semibold lg:text-base">Security</h3>
 
       <div className="flex flex-col">
         <div className="border-border flex items-center justify-between border-b py-3">

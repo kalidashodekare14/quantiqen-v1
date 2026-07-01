@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Preferences } from "@/types/settings.types";
+import { fadeInUp } from "@/lib/motion";
 
 interface PreferencesCardProps {
   preferences: Preferences;
@@ -61,15 +62,8 @@ const PreferencesCard = ({ preferences }: PreferencesCardProps) => {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.2 }}
-      className="bg-card w-full rounded-xl border p-5"
-    >
-      <h3 className="text-card-foreground mb-4 text-sm font-semibold lg:text-base">
-        Preferences
-      </h3>
+    <motion.div {...fadeInUp(0.2)} className="bg-card w-full rounded-xl border p-5">
+      <h3 className="text-card-foreground mb-4 text-sm font-semibold lg:text-base">Preferences</h3>
 
       <div className="flex flex-col">
         {rows.map((row, idx) => (
@@ -79,9 +73,7 @@ const PreferencesCard = ({ preferences }: PreferencesCardProps) => {
               idx < rows.length - 1 ? "border-border border-b" : ""
             }`}
           >
-            <span className="text-card-foreground shrink-0 text-sm lg:text-base">
-              {row.label}
-            </span>
+            <span className="text-card-foreground shrink-0 text-sm lg:text-base">{row.label}</span>
             <Select value={row.value} onValueChange={row.onValueChange}>
               <SelectTrigger className="w-48">
                 <SelectValue />

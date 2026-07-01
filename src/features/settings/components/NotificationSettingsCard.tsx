@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Switch } from "@/components/ui/switch";
 import type { NotificationSettings } from "@/types/settings.types";
+import { fadeInUp } from "@/lib/motion";
 
 interface NotificationSettingsCardProps {
   notifications: NotificationSettings;
@@ -29,12 +30,7 @@ const NotificationSettingsCard = ({ notifications }: NotificationSettingsCardPro
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.1 }}
-      className="bg-card w-full rounded-xl border p-5"
-    >
+    <motion.div {...fadeInUp(0.1)} className="bg-card w-full rounded-xl border p-5">
       <h3 className="text-card-foreground mb-4 text-sm font-semibold lg:text-base">
         Notifications
       </h3>
@@ -47,13 +43,8 @@ const NotificationSettingsCard = ({ notifications }: NotificationSettingsCardPro
               idx < TOGGLES.length - 1 ? "border-border border-b" : ""
             }`}
           >
-            <span className="text-card-foreground text-sm lg:text-base">
-              {item.label}
-            </span>
-            <Switch
-              checked={toggles[item.key]}
-              onCheckedChange={() => handleToggle(item.key)}
-            />
+            <span className="text-card-foreground text-sm lg:text-base">{item.label}</span>
+            <Switch checked={toggles[item.key]} onCheckedChange={() => handleToggle(item.key)} />
           </div>
         ))}
       </div>
