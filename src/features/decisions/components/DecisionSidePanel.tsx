@@ -11,7 +11,7 @@ interface DecisionSidePanelProps {
   decision: Decision | null;
   onClose: () => void;
 }
-// TODO: Letter
+
 const statusStyles: Record<string, string> = {
   Pending: "bg-chart-3/10 text-chart-3",
   "In Review": "bg-chart-5/10 text-chart-5",

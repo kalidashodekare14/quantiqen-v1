@@ -1,27 +1,18 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Users, Server, Globe, Key } from "lucide-react"
-import { StatPills } from "@/components/shared/StatPills"
-import { OrganizationData } from "@/types/organization.types"
+import { motion } from "framer-motion";
+import { Users, Server, Globe, Key } from "lucide-react";
+import { StatPills } from "@/components/shared/StatPills";
+import { OrganizationData } from "@/types/organization.types";
+import { formatDate, formatMonthYear } from "@/utils/date/date";
+import { fadeInUp } from "@/lib/motion";
 
 interface OrgDetailsProps {
-  data: OrganizationData
+  data: OrganizationData;
 }
 
 export const OrgDetails = ({ data }: OrgDetailsProps) => {
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-    })
-
-  const formatMemberSince = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("en-US", {
-      month: "long",
-      year: "numeric",
-    })
+  const subscriptionProgress = Math.min((data.subscription.daysRemaining / 365) * 100, 100);
 
   const sections = [
     {
@@ -43,8 +34,8 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
       delay: 0.1,
       content: (
         <>
-          <div className="bg-card border rounded-xl p-5">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+          <div className="bg-card rounded-xl border p-5">
+            <div className="mb-5 grid grid-cols-2 gap-4 md:grid-cols-4">
               {[
                 { label: "Plan", value: data.subscription.plan },
                 { label: "Status", value: data.subscription.status },
@@ -58,8 +49,8 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
                 },
               ].map((item) => (
                 <div key={item.label}>
-                  <p className="text-xs lg:text-sm text-muted-foreground">{item.label}</p>
-                  <p className="text-sm lg:text-base font-medium text-card-foreground">
+                  <p className="text-muted-foreground text-xs lg:text-sm">{item.label}</p>
+                  <p className="text-card-foreground text-sm font-medium lg:text-base">
                     {item.value}
                   </p>
                 </div>
@@ -68,18 +59,16 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
 
             <div>
               <div className="flex justify-between">
-                <span className="text-xs lg:text-sm text-muted-foreground">
-                  Days Remaining
-                </span>
-                <span className="text-xs lg:text-sm text-chart-2">
+                <span className="text-muted-foreground text-xs lg:text-sm">Days Remaining</span>
+                <span className="text-chart-2 text-xs lg:text-sm">
                   {data.subscription.daysRemaining} days
                 </span>
               </div>
-              <div className="w-full h-2 bg-muted rounded-full mt-2">
+              <div className="bg-muted mt-2 h-2 w-full rounded-full">
                 <div
-                  className="h-full rounded-full bg-chart-2"
+                  className="bg-chart-2 h-full rounded-full"
                   style={{
-                    width: `${Math.min((data.subscription.daysRemaining / 365) * 100, 100)}%`,
+                    width: `${subscriptionProgress}%`,
                   }}
                 />
               </div>
@@ -92,27 +81,25 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
       title: "Details",
       delay: 0.2,
       content: (
-        <div className="bg-card border rounded-xl p-5">
+        <div className="bg-card rounded-xl border p-5">
           {[
             { label: "Organization ID", value: data.id },
             { label: "Email", value: data.email },
             { label: "Country", value: data.country },
             {
               label: "Member Since",
-              value: formatMemberSince(data.createdAt),
+              value: formatMonthYear(data.createdAt),
             },
             { label: "Website", value: data.website },
           ].map((item, idx) => (
             <div
               key={item.label}
               className={`flex items-center justify-between py-3 ${
-                idx < 4 ? "border-b border-border" : ""
+                idx < 4 ? "border-border border-b" : ""
               }`}
             >
-              <span className="text-sm lg:text-base text-muted-foreground">
-                {item.label}
-              </span>
-              <span className="text-sm lg:text-base font-medium text-card-foreground">
+              <span className="text-muted-foreground text-sm lg:text-base">{item.label}</span>
+              <span className="text-card-foreground text-sm font-medium lg:text-base">
                 {item.value}
               </span>
             </div>
@@ -120,23 +107,18 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
         </div>
       ),
     },
-  ]
+  ];
 
   return (
-    <div className="flex flex-col gap-5 w-full">
+    <div className="flex w-full flex-col gap-5">
       {sections.map((section) => (
-        <motion.div
-          key={section.title}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: section.delay }}
-        >
-          <h3 className="text-sm lg:text-base font-semibold text-card-foreground mb-3">
+        <motion.div key={section.title} {...fadeInUp}>
+          <h3 className="text-card-foreground mb-3 text-sm font-semibold lg:text-base">
             {section.title}
           </h3>
           {section.content}
         </motion.div>
       ))}
     </div>
-  )
-}
+  );
+};

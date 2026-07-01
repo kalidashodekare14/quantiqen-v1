@@ -27,3 +27,18 @@ export function formatRelativeTime(timestamp: string): string {
     year: "numeric",
   });
 }
+
+export function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
+}
+
+export function formatMonthYear(dateString: string): string {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+}

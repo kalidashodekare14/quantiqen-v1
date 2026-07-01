@@ -1,6 +1,7 @@
+export type SubscriptionStatus = "Active" | "Trial" | "Expired";
 export interface Subscription {
   plan: string;
-  status: string;
+  status: SubscriptionStatus;
   startDate: string;
   expiryDate: string;
   daysRemaining: number;
