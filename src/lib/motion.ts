@@ -13,17 +13,11 @@ export const fadeInScale = {
   },
 };
 
-export const fadeInUp = {
-  initial: {
-    opacity: 0,
-    y: 10,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-  },
+export const fadeInUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
   transition: {
-    duration: 0.3,
-    ease: "easeOut" as const,
+    duration: 0.4,
+    delay,
   },
-};
+});

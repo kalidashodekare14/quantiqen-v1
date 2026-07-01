@@ -1,15 +1,16 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Notification } from "@/types/notification.types";
+import { Notification, NotificationType } from "@/types/notification.types";
 import { severityConfig } from "@/constants/severity";
 import { formatRelativeTime } from "@/utils/date/date";
+import { fadeInUp } from "@/lib/motion";
 
 interface NotificationListProps {
   notifications: Notification[];
 }
 
-const typeBadgeStyles: Record<string, string> = {
+const typeBadgeStyles: Record<NotificationType, string> = {
   "New Risk": "bg-destructive/10 text-destructive",
   "Decision Generated": "bg-chart-2/10 text-chart-2",
   "API Limit Warning": "bg-chart-3/10 text-chart-3",
@@ -34,9 +35,7 @@ export const NotificationList = ({ notifications }: NotificationListProps) => {
           return (
             <motion.div
               key={notification.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
+              {...fadeInUp(index * 0.05)}
               className={`bg-card flex items-start gap-4 rounded-xl border px-5 py-4 ${
                 notification.read
                   ? "border-l-2 border-l-transparent"
@@ -51,7 +50,7 @@ export const NotificationList = ({ notifications }: NotificationListProps) => {
 
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-card-foreground text-sm lg:text-base font-semibold">
+                  <span className="text-card-foreground text-sm font-semibold lg:text-base">
                     {notification.title}
                   </span>
                   <span className="text-muted-foreground shrink-0 text-xs lg:text-sm">
@@ -59,11 +58,11 @@ export const NotificationList = ({ notifications }: NotificationListProps) => {
                   </span>
                 </div>
                 <span
-                  className={`w-fit rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${typeBadgeStyles[notification.type] ?? ""}`}
+                  className={`w-fit rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${typeBadgeStyles[notification.type]}`}
                 >
                   {notification.type}
                 </span>
-                <p className="text-muted-foreground text-sm lg:text-base leading-relaxed">
+                <p className="text-muted-foreground text-sm leading-relaxed lg:text-base">
                   {notification.message}
                 </p>
               </div>

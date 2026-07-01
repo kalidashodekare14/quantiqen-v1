@@ -112,7 +112,7 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
   return (
     <div className="flex w-full flex-col gap-5">
       {sections.map((section) => (
-        <motion.div key={section.title} {...fadeInUp}>
+        <motion.div key={section.title} {...fadeInUp()}>
           <h3 className="text-card-foreground mb-3 text-sm font-semibold lg:text-base">
             {section.title}
           </h3>
