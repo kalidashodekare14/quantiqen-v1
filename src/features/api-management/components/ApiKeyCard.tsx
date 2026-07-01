@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Copy, Check } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AppButton from "@/components/shared/AppButton";
 import type { ApiKey } from "@/types/api-management.types";
 import { formatRelativeTime } from "@/utils/date/date";
@@ -22,16 +22,33 @@ const statusStyles: Record<tokenStatus, string> = {
 
 const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
   const [copied, setCopied] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(apiKey.key);
+
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
     } catch {
-      // Clipboard not available
+      // Handle error
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <motion.div
