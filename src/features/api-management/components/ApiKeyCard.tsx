@@ -39,6 +39,7 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
       }, 2000);
     } catch {
       // Handle error
+      console.error("Failed to copy API key.");
     }
   };
 
