@@ -3,35 +3,41 @@
 import { motion } from "framer-motion";
 import { FileText, Download } from "lucide-react";
 import AppButton from "@/components/shared/AppButton";
-import { Report } from "@/types/report.types";
+import { Report, ReportFormat, ReportType } from "@/types/report.types";
 import { formatRelativeTime } from "@/utils/date/date";
+import { fadeInScale } from "@/lib/motion";
 
 interface ReportCardProps {
   report: Report;
 }
 
-const typeBadgeStyles: Record<string, string> = {
+const typeBadgeStyles: Record<ReportType, string> = {
   Executive: "bg-chart-5/10 text-chart-5 border-chart-5/20",
   Technical: "bg-chart-3/10 text-chart-3 border-chart-3/20",
   Compliance: "bg-chart-2/10 text-chart-2 border-chart-2/20",
   Weekly: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
+const reportFormatBadgeStyles: Record<ReportFormat, string> = {
+  PDF: "bg-chart-5/10 text-chart-5 border-chart-5/20",
+  CSV: "bg-chart-2/10 text-chart-2 border-chart-2/20",
+  DOCX: "bg-chart-3/10 text-chart-3 border-chart-3/20",
+};
+
 export const ReportCard = ({ report }: ReportCardProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-      className="bg-card flex flex-col gap-4 rounded-xl border p-5"
-    >
+    <motion.div {...fadeInScale} className="bg-card flex flex-col gap-4 rounded-xl border p-5">
       <div className="flex items-center justify-between">
         <span
-          className={`rounded-full border px-2.5 py-1 text-xs font-medium lg:text-sm ${typeBadgeStyles[report.type] ?? ""}`}
+          className={`rounded-full border px-2.5 py-1 text-xs font-medium lg:text-sm ${typeBadgeStyles[report.type]}`}
         >
           {report.type}
         </span>
-        <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs font-medium text-blue-500 lg:text-sm">
+        <span
+          className={`rounded-full border px-2.5 py-1 text-xs font-medium lg:text-sm ${
+            reportFormatBadgeStyles[report.format]
+          }`}
+        >
           {report.format}
         </span>
       </div>
