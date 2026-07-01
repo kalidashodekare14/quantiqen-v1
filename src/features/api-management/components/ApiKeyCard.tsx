@@ -8,6 +8,7 @@ import type { ApiKey } from "@/types/api-management.types";
 import { formatRelativeTime } from "@/utils/date/date";
 import { maskKey } from "@/utils/string/maskKey";
 import UsageProgress from "./UsageProgress";
+import { fadeInScale } from "@/lib/motion";
 
 interface ApiKeyCardProps {
   apiKey: ApiKey;
@@ -53,9 +54,7 @@ const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      {...fadeInScale}
       className="bg-card ring-foreground/10 flex flex-col gap-4 rounded-xl p-4 ring-1"
     >
       <div className="flex items-center justify-between">
