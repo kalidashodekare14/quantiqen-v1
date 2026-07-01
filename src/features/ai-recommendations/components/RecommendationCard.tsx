@@ -4,19 +4,16 @@ import { motion } from "framer-motion";
 import { Clock, Users } from "lucide-react";
 import AppButton from "@/components/shared/AppButton";
 import type { Recommendation } from "@/types/recommendation.types";
+import { severityStyles } from "@/constants/severity";
+import { fadeInScale } from "@/lib/motion";
 
 interface RecommendationCardProps {
   recommendation: Recommendation;
 }
 
-const severityStyles: Record<string, string> = {
-  Critical: "bg-destructive/10 text-destructive",
-  High: "bg-chart-3/10 text-chart-3",
-  Medium: "bg-chart-5/10 text-chart-5",
-  Low: "bg-muted text-muted-foreground",
-};
+type RecommendationStatus = "Pending" | "In Progress";
 
-const statusStyles: Record<string, string> = {
+const statusStyles: Record<RecommendationStatus, string> = {
   Pending: "bg-chart-3/10 text-chart-3",
   "In Progress": "bg-chart-5/10 text-chart-5",
 };
@@ -24,9 +21,7 @@ const statusStyles: Record<string, string> = {
 const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      {...fadeInScale}
       className="bg-card ring-foreground/10 flex flex-col gap-4 rounded-xl p-4 ring-1"
     >
       <div className="flex items-center justify-between">

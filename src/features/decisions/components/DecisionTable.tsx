@@ -1,6 +1,7 @@
 "use client";
 
 import { DataTable } from "@/components/shared/DataTable";
+import { severityStyles } from "@/constants/severity";
 import type { Decision } from "@/types/decision.types";
 import { formatRelativeTime } from "@/utils/date/date";
 
@@ -13,13 +14,6 @@ const statusStyles: Record<string, string> = {
   Pending: "bg-chart-3/10 text-chart-3",
   "In Review": "bg-chart-5/10 text-chart-5",
   Resolved: "bg-chart-2/10 text-chart-2",
-};
-
-const severityStyles: Record<string, string> = {
-  Critical: "bg-destructive/10 text-destructive",
-  High: "bg-chart-3/10 text-chart-3",
-  Medium: "bg-chart-5/10 text-chart-5",
-  Low: "bg-muted text-muted-foreground",
 };
 
 const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
@@ -35,7 +29,7 @@ const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
           label: "Business Impact",
           render: (row) => (
             <span
-              className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
+              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
                 severityStyles[row.businessImpact]
               }`}
             >
@@ -54,7 +48,7 @@ const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
           label: "Status",
           render: (row) => (
             <span
-              className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
+              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
                 statusStyles[row.status]
               }`}
             >
@@ -67,7 +61,7 @@ const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
           label: "Priority",
           render: (row) => (
             <span
-              className={`inline-block rounded-full px-2 py-0.5 text-xs lg:text-sm font-medium ${
+              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
                 severityStyles[row.priority]
               }`}
             >
