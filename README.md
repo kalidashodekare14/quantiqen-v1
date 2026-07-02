@@ -63,13 +63,15 @@ cd quantiqen-v1
 npm install
 
 # Create environment file
-echo "NEXT_PUBLIC_API_URL=https://api.quantiqen.com/v1" > .env.local
+echo "NEXT_PUBLIC_API_URL=https://api.quantiqen.com" > .env.local
 
 # Start development server
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser. The login page redirects to `/dashboard` after authentication.
+
+> **Note:** `NEXT_PUBLIC_API_URL` is not required for V1 — mock data uses direct JSON imports, not Axios. Add this variable when connecting the real backend in the next sprint.
 
 ### Build
 
@@ -109,7 +111,7 @@ src/
 ├── components/
 │   ├── auth/                     # AuthGuard wrapper component
 │   ├── layout/                   # App shell (sidebar, header, nav)
-│   ├── shared/                   # 8 reusable shared components
+│   ├── shared/                   # 9 reusable shared components
 │   ├── theme/                    # Theme provider and toggle
 │   └── ui/                       # 17 shadcn/ui primitives
 ├── constants/                    # App config, routes, navigation, severity
@@ -137,7 +139,7 @@ src/
 
 ## Mock Data Strategy
 
-Every feature follows a three-layer architecture: **View → Hook → Service → Mock JSON**. Services currently import static JSON files and cast them to typed interfaces. When the real API becomes available, only the service file changes — views and hooks remain untouched.
+Every feature follows a three-layer architecture: **View → Hook → Service → Mock JSON**. Services currently import static JSON files directly and cast them to typed interfaces — no Axios calls are made. This means `NEXT_PUBLIC_API_URL` has no effect on V1; it exists solely for the next sprint when real endpoints replace the JSON imports. When the real API becomes available, only the service file changes — views and hooks remain untouched.
 
 ### Before (mock)
 
@@ -207,6 +209,7 @@ Located in `src/components/shared/`:
 | Component         | Description                                                                                                    |
 | ----------------- | -------------------------------------------------------------------------------------------------------------- |
 | `AppButton`       | Reusable button with primary/outline/ghost/danger variants, loading spinner, icon support, and full-width mode |
+| `AppLoading`      | Full-page loading overlay shown during initial auth check                                                      |
 | `ChartCard`       | Card wrapper for Recharts components with title, subtitle, and consistent rounded-xl styling                   |
 | `DataTable`       | Generic table component with search, column filtering, and pagination                                          |
 | `KpiCard`         | Single KPI display with label, value, trend, and icon                                                          |
@@ -244,12 +247,12 @@ The app uses a **dark-by-default** theme with full light mode support via `next-
 1. Push the repository to GitHub
 2. Import the project in [Vercel](https://vercel.com/new)
 3. Configure environment variable:
-   - `NEXT_PUBLIC_API_URL` — your API base URL (defaults to empty, safe to leave blank for mock data)
+   - `NEXT_PUBLIC_API_URL` — your API base URL (not required for V1 — mock data uses direct JSON imports, not Axios. Add it when connecting the real backend in the next sprint.)
 4. Deploy — zero configuration required
 
 ### Live Demo
 
-[https://quantiqen-v1.vercel.app](https://quantiqen-v1.vercel.app) _(update with actual URL after deployment)_
+[https://quantiqen.vercel.app](https://quantiqen.vercel.app)
 
 ## Next Sprint
 
