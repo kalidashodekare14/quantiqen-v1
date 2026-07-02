@@ -1,20 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { LogOut, Settings, User } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CURRENT_USER } from "@/constants/user";
 import { routes } from "@/constants/routes";
 
 export function UserNav() {
@@ -29,31 +26,34 @@ export function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
-          <Avatar size="sm">
-            <AvatarFallback>{CURRENT_USER.initials}</AvatarFallback>
-          </Avatar>
+          <div className="bg-primary/10 text-primary border-primary flex size-8 cursor-pointer items-center justify-center rounded-full border text-sm font-medium">
+            AK
+          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col gap-1">
-            <p className="text-sm font-medium">{CURRENT_USER.name}</p>
-            <p className="text-muted-foreground text-xs">{CURRENT_USER.email}</p>
-          </div>
-        </DropdownMenuLabel>
+        <div className="px-2 py-1.5">
+          <p className="text-sm font-medium">Alex Kumar</p>
+          <p className="text-muted-foreground text-xs">alex.kumar@acmecorp.com</p>
+        </div>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => router.push(routes.profile)}>
+        <DropdownMenuItem asChild>
+          <Link href={routes.profile} className="cursor-pointer">
             <User />
             Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push(routes.settings)}>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={routes.settings} className="cursor-pointer">
             <Settings />
             Settings
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => handleLogout()}>
+        <DropdownMenuItem
+          onClick={handleLogout}
+          className="text-destructive focus:text-destructive cursor-pointer"
+        >
           <LogOut />
           Log out
         </DropdownMenuItem>
