@@ -31,7 +31,7 @@ export function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
-          <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-full text-sm font-medium">
+          <div className="bg-primary/10 text-primary border-primary flex size-8 cursor-pointer items-center justify-center rounded-full border text-sm font-medium">
             AK
           </div>
         </Button>
@@ -53,7 +53,7 @@ export function UserNav() {
           <p className="text-sm font-medium">Alex Kumar</p>
           <p className="text-muted-foreground text-xs">alex.kumar@acmecorp.com</p>
           {!isLg && (
-            <span className="bg-primary/10 text-primary mt-2 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium leading-normal">
+            <span className="bg-primary/10 text-primary mt-2 inline-block rounded-full px-2 py-0.5 text-[10px] leading-normal font-medium">
               {dashboardData.organization.plan} Plan
             </span>
           )}
