@@ -1,11 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {
-  LogOut,
-  Settings,
-  User,
-} from "lucide-react";
+import { LogOut, Settings, User } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -24,6 +20,11 @@ import { routes } from "@/constants/routes";
 export function UserNav() {
   const router = useRouter();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push(routes.login);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,7 +38,7 @@ export function UserNav() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col gap-1">
             <p className="text-sm font-medium">{CURRENT_USER.name}</p>
-            <p className="text-xs text-muted-foreground">{CURRENT_USER.email}</p>
+            <p className="text-muted-foreground text-xs">{CURRENT_USER.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -52,7 +53,7 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push(routes.login)}>
+        <DropdownMenuItem onClick={() => handleLogout()}>
           <LogOut />
           Log out
         </DropdownMenuItem>
