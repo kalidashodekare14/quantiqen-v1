@@ -16,6 +16,14 @@ function getScoreColor(score: number): string {
   return "#ef4444";
 }
 
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return "Good Morning";
+  if (hour >= 12 && hour < 17) return "Good Afternoon";
+  if (hour >= 17 && hour < 21) return "Good Evening";
+  return "Good Night";
+}
+
 const RADIUS = 42;
 
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
@@ -30,11 +38,11 @@ const WelcomeBar = ({ organization, summary }: WelcomeBarProps) => {
   return (
     <motion.div
       {...fadeInUp()}
-      className="bg-card/80 backdrop-blur-md border border-foreground/10 flex items-center justify-between overflow-hidden rounded-xl p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5"
+      className="bg-card/80 border-foreground/10 hover:border-primary/40 hover:shadow-primary/5 flex items-center justify-between overflow-hidden rounded-xl border p-4 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
     >
       <div>
         <h1 className="text-card-foreground text-xl font-semibold">
-          Good morning, {organization.name}
+          {getGreeting()}, {organization.name}
         </h1>
         <p className="text-muted-foreground mt-1 text-sm lg:text-base">
           Last updated: {formatDateTime(summary.lastUpdated)} &middot; Plan: {organization.plan}{" "}
