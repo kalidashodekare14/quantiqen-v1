@@ -76,8 +76,8 @@ const KpiCard = ({ card }: KpiCardProps) => {
         <TooltipTrigger asChild>
           <motion.div
             {...fadeInScale}
-            whileHover={{ scale: 1.02 }}
-            className="bg-card ring-foreground/10 hover:ring-foreground/20 flex flex-col gap-3 rounded-xl p-4 ring-1 transition-shadow"
+            whileHover={{ y: -2, scale: 1.02 }}
+            className="bg-card/80 backdrop-blur-md border border-foreground/10 flex flex-col gap-3 rounded-xl p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
           >
             <div className="flex items-center justify-between">
               <div

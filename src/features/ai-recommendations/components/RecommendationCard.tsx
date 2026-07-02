@@ -22,7 +22,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
   return (
     <motion.div
       {...fadeInScale}
-      className="bg-card ring-foreground/10 flex flex-col gap-4 rounded-xl p-4 ring-1"
+      className="bg-card/80 backdrop-blur-md border border-foreground/10 flex flex-col gap-4 rounded-xl p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5"
     >
       <div className="flex items-center justify-between">
         <span className="text-muted-foreground text-xs lg:text-sm">{recommendation.id}</span>

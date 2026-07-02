@@ -26,7 +26,7 @@ const reportFormatBadgeStyles: Record<ReportFormat, string> = {
 
 export const ReportCard = ({ report }: ReportCardProps) => {
   return (
-    <motion.div {...fadeInScale} className="bg-card flex flex-col gap-4 rounded-xl border p-5">
+    <motion.div {...fadeInScale} className="bg-card/80 backdrop-blur-md border border-foreground/10 flex flex-col gap-4 rounded-xl p-5 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
       <div className="flex items-center justify-between">
         <span
           className={`rounded-full border px-2.5 py-1 text-xs font-medium lg:text-sm ${typeBadgeStyles[report.type]}`}

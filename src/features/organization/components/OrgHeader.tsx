@@ -18,7 +18,7 @@ export const OrgHeader = ({ data }: OrgHeaderProps) => {
   const statusClass = statusStyles[data.subscription.status];
 
   return (
-    <motion.div {...fadeInUp()} className="bg-card w-full rounded-xl border p-6">
+    <motion.div {...fadeInUp()} className="bg-card/80 backdrop-blur-md border border-foreground/10 w-full rounded-xl p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
       <div className="flex items-center gap-5">
         <div className="bg-chart-5/10 border-chart-5/20 flex size-16 items-center justify-center rounded-xl border">
           <span className="text-chart-5 text-2xl font-bold">

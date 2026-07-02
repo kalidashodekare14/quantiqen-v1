@@ -36,7 +36,7 @@ export const NotificationList = ({ notifications }: NotificationListProps) => {
             <motion.div
               key={notification.id}
               {...fadeInUp(index * 0.05)}
-              className={`bg-card flex items-start gap-4 rounded-xl border px-5 py-4 ${
+              className={`bg-card/80 backdrop-blur-md border border-foreground/10 flex items-start gap-4 rounded-xl px-5 py-4 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 ${
                 notification.read
                   ? "border-l-2 border-l-transparent"
                   : "border-l-chart-5 border-l-2"

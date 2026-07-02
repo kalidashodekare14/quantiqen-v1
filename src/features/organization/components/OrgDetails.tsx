@@ -34,7 +34,7 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
       delay: 0.1,
       content: (
         <>
-          <div className="bg-card rounded-xl border p-5">
+          <div className="bg-card/80 backdrop-blur-md border border-foreground/10 rounded-xl p-5 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
             <div className="mb-5 grid grid-cols-2 gap-4 md:grid-cols-4">
               {[
                 { label: "Plan", value: data.subscription.plan },
@@ -81,7 +81,7 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
       title: "Details",
       delay: 0.2,
       content: (
-        <div className="bg-card rounded-xl border p-5">
+        <div className="bg-card/80 backdrop-blur-md border border-foreground/10 rounded-xl p-5 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
           {[
             { label: "Organization ID", value: data.id },
             { label: "Email", value: data.email },

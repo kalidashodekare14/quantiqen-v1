@@ -11,7 +11,7 @@ interface SecurityCardProps {
 
 const SecurityCard = ({ security }: SecurityCardProps) => {
   return (
-    <motion.div {...fadeInUp(0.3)} className="bg-card w-full rounded-xl border p-5">
+    <motion.div {...fadeInUp(0.3)} className="bg-card/80 backdrop-blur-md border border-foreground/10 w-full rounded-xl p-5 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
       <h3 className="text-card-foreground mb-4 text-sm font-semibold lg:text-base">Security</h3>
 
       <div className="flex flex-col">
