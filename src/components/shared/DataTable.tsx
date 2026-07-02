@@ -124,7 +124,7 @@ export const DataTable = <T,>({
               {columns.map((col) => (
                 <TableHead
                   key={col.key}
-                  className="text-muted-foreground text-sm lg:text-base font-medium uppercase"
+                  className="text-muted-foreground text-sm font-medium uppercase lg:text-base"
                 >
                   {col.label}
                 </TableHead>
@@ -174,6 +174,7 @@ export const DataTable = <T,>({
             size="sm"
             disabled={safePage <= 1}
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            className="border-chart-5 border"
           >
             Previous
           </Button>
@@ -182,6 +183,7 @@ export const DataTable = <T,>({
             size="sm"
             disabled={safePage >= totalPages}
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            className="border-chart-5 border"
           >
             Next
           </Button>

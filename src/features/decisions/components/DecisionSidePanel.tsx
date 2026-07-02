@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Decision } from "@/types/decision.types";
 import { severityStyles } from "@/constants/severity";
+import AppButton from "@/components/shared/AppButton";
 
 interface DecisionSidePanelProps {
   decision: Decision | null;
@@ -243,9 +244,9 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
             </div>
 
             <div className="border-border border-t px-6 py-4">
-              <Button className="w-full" size="lg">
+              <AppButton variant="outline" size="lg" className="w-full">
                 Take Action
-              </Button>
+              </AppButton>
             </div>
           </motion.div>
         </>
