@@ -117,7 +117,7 @@ export const DataTable = <T,>({
         </div>
       )}
 
-      <div className="bg-card/80 backdrop-blur-md border border-foreground/10 w-full overflow-x-auto rounded-xl p-3 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
+      <div className="bg-card/80 border-foreground/10 hover:border-primary/40 hover:shadow-primary/5 w-full overflow-x-auto rounded-xl border p-3 backdrop-blur-md transition-all duration-200 hover:shadow-lg">
         <Table style={{ minWidth }}>
           <TableHeader>
             <TableRow>
