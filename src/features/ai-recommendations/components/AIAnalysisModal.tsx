@@ -104,14 +104,14 @@ const AIAnalysisModal = ({
                 <p className="text-card-foreground mb-2 text-base font-semibold">
                   AI Decision Summary
                 </p>
-                <p className="text-card-foreground text-sm leading-relaxed">{result.summary}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{result.summary}</p>
               </div>
 
               <div>
                 <p className="text-card-foreground mb-2 text-base font-semibold">
                   Recommended Action
                 </p>
-                <p className="text-card-foreground text-sm leading-relaxed">
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   {decision?.recommendation}
                 </p>
               </div>
@@ -120,7 +120,7 @@ const AIAnalysisModal = ({
                 <p className="text-card-foreground mb-2 text-base font-semibold">
                   Remediation Timeline
                 </p>
-                <p className="text-card-foreground flex items-center gap-2 text-sm">
+                <p className="text-muted-foreground flex items-center gap-2 text-sm">
                   <Clock className="text-muted-foreground size-4" />
                   {decision?.timeline}
                 </p>

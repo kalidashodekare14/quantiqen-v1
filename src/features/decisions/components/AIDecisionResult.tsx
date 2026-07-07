@@ -52,17 +52,17 @@ const AIDecisionResult = ({ result, onClear }: AIDecisionResultProps) => {
 
       <div>
         <p className="text-card-foreground mb-2 text-base font-semibold">AI Decision Summary</p>
-        <p className="text-card-foreground text-sm leading-relaxed">{result.summary}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed">{result.summary}</p>
       </div>
 
       <div>
         <p className="text-card-foreground mb-2 text-base font-semibold">Recommended Action</p>
-        <p className="text-card-foreground text-sm leading-relaxed">{decision?.recommendation}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed">{decision?.recommendation}</p>
       </div>
 
       <div>
         <p className="text-card-foreground mb-2 text-base font-semibold">Remediation Timeline</p>
-        <p className="text-card-foreground flex items-center gap-2 text-sm">
+        <p className="text-muted-foreground flex items-center gap-2 text-sm">
           <Clock className="text-muted-foreground size-4" />
           {decision?.timeline}
         </p>
@@ -77,7 +77,7 @@ const AIDecisionResult = ({ result, onClear }: AIDecisionResultProps) => {
       <div className="flex justify-end pt-2">
         <button
           onClick={onClear}
-          className="text-muted-foreground hover:text-primary text-sm transition-colors"
+          className="text-muted-foreground hover:text-primary cursor-pointer text-sm transition-colors"
         >
           Clear Result
         </button>
