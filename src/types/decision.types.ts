@@ -1,10 +1,7 @@
 export interface DecisionDetails {
   description: string;
   affectedAssets: string[];
-  recommendedAction: string;
-  estimatedFixTime: string;
   responsibleTeam: string;
-  riskScore: number;
   cvss: number;
   tags: string[];
 }

@@ -1,0 +1,19 @@
+{
+  "request_id": "ai-req-001",
+  "organization": "Acme Corp",
+  "overall_risk_score": 87,
+  "summary": "This finding presents a high-risk vulnerability that requires immediate attention. The exposed S3 bucket contains sensitive customer data that could be accessed by unauthorized users. Immediate remediation is recommended to prevent data breach.",
+  "decisions": [
+    {
+      "finding_id": "DEC-2041",
+      "priority": "Critical",
+      "risk_score": 87,
+      "recommendation": "Restrict public access to the S3 bucket immediately by applying a bucket policy that blocks all public access. Enable AWS CloudTrail logging to monitor future access attempts. Consider enabling S3 Block Public Access at the account level to prevent similar misconfigurations.",
+      "timeline": "Within 24 hours",
+      "justification": "The S3 bucket contains PII data classified under GDPR and CCPA regulations. Public exposure creates legal liability and reputational risk.",
+      "business_impact": "High",
+      "confidence_score": 94
+    }
+  ],
+  "processing_time": 2.3
+}

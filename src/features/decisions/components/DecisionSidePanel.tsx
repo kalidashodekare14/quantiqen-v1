@@ -3,10 +3,13 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import type { Decision } from "@/types/decision.types";
+import type { AIDecisionRequest } from "@/types/ai-engine.types";
 import { severityStyles } from "@/constants/severity";
 import AppButton from "@/components/shared/AppButton";
+import { useAIDecision } from "@/features/decisions/hooks/useAIDecision";
+import AIDecisionResult from "@/features/decisions/components/AIDecisionResult";
+import AIDecisionError from "@/features/decisions/components/AIDecisionError";
 
 interface DecisionSidePanelProps {
   decision: Decision | null;
@@ -32,16 +35,36 @@ function getScoreBgColor(score: number): string {
 }
 
 const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
+  const { mutate, isPending, isError, data: aiResult, reset } = useAIDecision();
+
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
+
+  const buildAIPayload = (decision: Decision): AIDecisionRequest => ({
+    organization: decision.organization,
+    findings: [{
+      finding_id: decision.id,
+      title: decision.risk,
+      description: decision.details.description,
+      severity: decision.priority.toLowerCase() as 'low' | 'medium' | 'high' | 'critical',
+      category: "vulnerability",
+      affected_asset: decision.asset,
+      asset_type: "unknown",
+    }]
+  });
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
     };
 
     if (decision) {
       document.addEventListener("keydown", handleKeyDown);
       return () => document.removeEventListener("keydown", handleKeyDown);
     }
-  }, [decision, onClose]);
+  }, [decision, handleClose]);
 
   return (
     <AnimatePresence>
@@ -53,7 +76,7 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="fixed inset-0 z-40 bg-black"
-            onClick={onClose}
+            onClick={handleClose}
           />
 
           <motion.div
@@ -71,7 +94,7 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
                 </p>
               </div>
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="text-muted-foreground hover:bg-muted hover:text-foreground flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors"
               >
                 <X className="size-5" />
@@ -146,22 +169,6 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-muted rounded-lg p-3">
-                    <p className="text-muted-foreground text-xs lg:text-sm">Risk Score</p>
-                    <p
-                      className={`mt-1 text-xl font-semibold ${getScoreTextColor(decision.details.riskScore)}`}
-                    >
-                      {decision.details.riskScore}
-                    </p>
-                    <div className="bg-muted-foreground/20 mt-2 h-1.5 w-full overflow-hidden rounded-full">
-                      <div
-                        className={`h-full rounded-full ${getScoreBgColor(decision.details.riskScore)}`}
-                        style={{
-                          width: `${decision.details.riskScore}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="bg-muted rounded-lg p-3">
                     <p className="text-muted-foreground text-xs lg:text-sm">CVSS Score</p>
                     <p
                       className={`mt-1 text-xl font-semibold ${getScoreTextColor(decision.details.cvss * 10)}`}
@@ -177,39 +184,22 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
                       />
                     </div>
                   </div>
-                </div>
-                <div className="bg-muted mt-3 rounded-lg p-3">
-                  <p className="text-muted-foreground text-xs lg:text-sm">Confidence</p>
-                  <p className="text-chart-2 mt-1 text-xl font-semibold">{decision.confidence}%</p>
-                  <div className="bg-muted-foreground/20 mt-2 h-1.5 w-full overflow-hidden rounded-full">
-                    <div
-                      className="bg-chart-2 h-full rounded-full"
-                      style={{ width: `${decision.confidence}%` }}
-                    />
+                  <div className="bg-muted rounded-lg p-3">
+                    <p className="text-muted-foreground text-xs lg:text-sm">Confidence</p>
+                    <p className="text-chart-2 mt-1 text-xl font-semibold">{decision.confidence}%</p>
+                    <div className="bg-muted-foreground/20 mt-2 h-1.5 w-full overflow-hidden rounded-full">
+                      <div
+                        className="bg-chart-2 h-full rounded-full"
+                        style={{ width: `${decision.confidence}%` }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
               <hr className="border-border my-5" />
 
-              <div>
-                <p className="text-muted-foreground mb-1.5 text-sm font-medium tracking-wider uppercase lg:text-base">
-                  Recommended Action
-                </p>
-                <p className="text-card-foreground text-sm leading-relaxed lg:text-base">
-                  {decision.details.recommendedAction}
-                </p>
-              </div>
-
-              <hr className="border-border my-5" />
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <p className="text-muted-foreground text-xs lg:text-sm">Fix Time</p>
-                  <p className="text-card-foreground mt-0.5 text-sm font-medium lg:text-base">
-                    {decision.details.estimatedFixTime}
-                  </p>
-                </div>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-muted-foreground text-xs lg:text-sm">Owner</p>
                   <p className="text-card-foreground mt-0.5 text-sm font-medium lg:text-base">
@@ -241,11 +231,38 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
                   ))}
                 </div>
               </div>
+
+              <hr className="border-border my-5" />
+
+              <div className="space-y-4">
+                {isPending && (
+                  <div className="space-y-3 animate-pulse">
+                    <div className="bg-foreground/5 h-4 w-32 rounded" />
+                    <div className="bg-foreground/5 h-3 w-full rounded" />
+                    <div className="bg-foreground/5 h-3 w-3/4 rounded" />
+                  </div>
+                )}
+
+                {isError && (
+                  <AIDecisionError onRetry={() => reset()} />
+                )}
+
+                {aiResult && (
+                  <AIDecisionResult result={aiResult} onClear={reset} />
+                )}
+              </div>
             </div>
 
             <div className="border-border border-t px-6 py-4">
-              <AppButton variant="outline" size="lg" className="w-full">
-                Take Action
+              <AppButton
+                variant="primary"
+                size="lg"
+                className="w-full"
+                loading={isPending}
+                disabled={isPending}
+                onClick={() => mutate(buildAIPayload(decision))}
+              >
+                {isPending ? "Analyzing..." : "Run AI Analysis"}
               </AppButton>
             </div>
           </motion.div>
