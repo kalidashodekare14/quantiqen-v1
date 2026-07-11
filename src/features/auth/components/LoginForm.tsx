@@ -24,8 +24,7 @@ export const LoginForm = () => {
       return;
     }
 
-    localStorage.setItem("token", "fake-jwt-token");
-    router.push("/dashboard");
+    router.push("/otp");
   };
 
   return (
