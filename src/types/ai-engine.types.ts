@@ -15,17 +15,15 @@ interface AIDecisionRequest {
 
 interface AIDecisionItem {
   finding_id: string;
-  priority: "Low" | "Medium" | "High" | "Critical";
+  priority: 'Critical' | 'High' | 'Medium' | 'Low';
   risk_score: number;
   recommendation: string;
   timeline: string;
   justification?: string;
   business_impact?: string;
+  technical_impact?: string;
+  risk_factors?: string[];
   confidence_score?: number;
-  // new
-  decision_id?: string;
-  organization_id?: string;
-  generated_at?: string;
 }
 
 interface AIDecisionResponse {
@@ -34,12 +32,8 @@ interface AIDecisionResponse {
   overall_risk_score: number;
   summary: string;
   decisions: AIDecisionItem[];
-  processing_time?: number;
-  // new
+  generated_at: string;
   model_used?: string;
-  engine_version?: string;
-  schema_version?: string;
-  generated_at?: string;
   cache_hit?: boolean;
 }
 
@@ -47,7 +41,7 @@ interface AIEngineError {
   error_code: string;
   message: string;
   request_id?: string;
-  component?: string;
+  failed_component?: string;
 }
 
 interface AIHealthResponse {

@@ -3,8 +3,9 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import type { Decision } from "@/types/decision.types";
+import type { AIDecisionItem } from "@/types/ai-engine.types";
 import type { AIDecisionRequest } from "@/types/ai-engine.types";
+import type { Finding } from "@/types/finding.types";
 import { severityStyles } from "@/constants/severity";
 import AppButton from "@/components/shared/AppButton";
 import { useAIDecision } from "@/features/decisions/hooks/useAIDecision";
@@ -12,15 +13,10 @@ import AIDecisionResult from "@/features/decisions/components/AIDecisionResult";
 import AIDecisionError from "@/features/decisions/components/AIDecisionError";
 
 interface DecisionSidePanelProps {
-  decision: Decision | null;
+  decision: AIDecisionItem | null;
   onClose: () => void;
+  findings?: Finding[];
 }
-
-const statusStyles: Record<string, string> = {
-  Pending: "bg-chart-3/10 text-chart-3",
-  "In Review": "bg-chart-5/10 text-chart-5",
-  Resolved: "bg-chart-2/10 text-chart-2",
-};
 
 function getScoreTextColor(score: number): string {
   if (score > 80) return "text-destructive";
@@ -34,7 +30,7 @@ function getScoreBgColor(score: number): string {
   return "bg-chart-2";
 }
 
-const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
+const DecisionSidePanel = ({ decision, onClose, findings }: DecisionSidePanelProps) => {
   const { mutate, isPending, isError, data: aiResult, reset } = useAIDecision();
 
   const handleClose = () => {
@@ -42,18 +38,25 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
     onClose();
   };
 
-  const buildAIPayload = (decision: Decision): AIDecisionRequest => ({
-    organization: decision.organization,
-    findings: [{
-      finding_id: decision.id,
-      title: decision.risk,
-      description: decision.details.description,
-      severity: decision.priority.toLowerCase() as 'low' | 'medium' | 'high' | 'critical',
-      category: "vulnerability",
-      affected_asset: decision.asset,
-      asset_type: "unknown",
-    }]
-  });
+  const relatedFinding = findings?.find((f) => f.id === decision?.finding_id);
+
+  const buildAIPayload = (dec: AIDecisionItem): AIDecisionRequest => {
+    const finding = findings?.find((f) => f.id === dec.finding_id);
+    return {
+      organization: finding?.organization ?? "Acme Corp",
+      findings: [
+        {
+          finding_id: dec.finding_id,
+          title: finding?.title ?? dec.finding_id,
+          description: finding?.description ?? "",
+          severity: (finding?.severity ?? "medium") as "low" | "medium" | "high" | "critical",
+          category: finding?.category ?? "vulnerability",
+          affected_asset: finding?.affected_asset ?? "",
+          asset_type: finding?.asset_type ?? "unknown",
+        },
+      ],
+    };
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -88,9 +91,11 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
           >
             <div className="border-border flex items-start justify-between gap-4 border-b px-6 py-5">
               <div className="min-w-0">
-                <p className="text-chart-5 truncate text-lg font-semibold">{decision.id}</p>
+                <p className="text-card-foreground truncate text-lg font-semibold">
+                  {relatedFinding?.title ?? decision.finding_id}
+                </p>
                 <p className="text-muted-foreground mt-0.5 truncate text-sm">
-                  {decision.organization}
+                  {decision.finding_id}
                 </p>
               </div>
               <button
@@ -105,38 +110,31 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
               <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium lg:text-sm ${
-                    statusStyles[decision.status]
-                  }`}
-                >
-                  {decision.status}
-                </span>
-                <span
-                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium lg:text-sm ${
                     severityStyles[decision.priority]
                   }`}
                 >
                   {decision.priority}
                 </span>
-                <span
-                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium lg:text-sm ${
-                    severityStyles[decision.businessImpact]
-                  }`}
-                >
-                  {decision.businessImpact}
-                </span>
+                {decision.business_impact && (
+                  <span
+                    className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium lg:text-sm ${
+                      severityStyles[decision.business_impact as keyof typeof severityStyles] ??
+                      "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {decision.business_impact}
+                  </span>
+                )}
               </div>
 
               <hr className="border-border my-5" />
 
               <div>
                 <p className="text-muted-foreground mb-1.5 text-sm font-medium tracking-wider uppercase lg:text-base">
-                  Risk
+                  Recommendation
                 </p>
-                <p className="text-card-foreground text-sm font-medium lg:text-base">
-                  {decision.risk}
-                </p>
-                <p className="text-muted-foreground mt-1.5 text-sm leading-relaxed lg:text-base">
-                  {decision.details.description}
+                <p className="text-card-foreground text-sm leading-relaxed lg:text-base">
+                  {decision.recommendation}
                 </p>
               </div>
 
@@ -144,24 +142,49 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
 
               <div>
                 <p className="text-muted-foreground mb-1.5 text-sm font-medium tracking-wider uppercase lg:text-base">
-                  Affected Asset
+                  Justification
                 </p>
-                <p className="text-card-foreground text-sm font-medium lg:text-base">
-                  {decision.asset}
+                <p className="text-muted-foreground text-sm leading-relaxed lg:text-base">
+                  {decision.justification ?? "No justification provided."}
                 </p>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {decision.details.affectedAssets.map((asset) => (
-                    <span
-                      key={asset}
-                      className="bg-muted text-muted-foreground inline-block rounded-md px-2 py-1 text-xs lg:text-sm"
-                    >
-                      {asset}
-                    </span>
-                  ))}
-                </div>
               </div>
 
               <hr className="border-border my-5" />
+
+              {decision.technical_impact && (
+                <>
+                  <div>
+                    <p className="text-muted-foreground mb-1.5 text-sm font-medium tracking-wider uppercase lg:text-base">
+                      Technical Impact
+                    </p>
+                    <p className="text-card-foreground text-sm leading-relaxed lg:text-base">
+                      {decision.technical_impact}
+                    </p>
+                  </div>
+                  <hr className="border-border my-5" />
+                </>
+              )}
+
+              {decision.risk_factors && decision.risk_factors.length > 0 && (
+                <>
+                  <div>
+                    <p className="text-muted-foreground mb-2 text-sm font-medium tracking-wider uppercase lg:text-base">
+                      Risk Factors
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {decision.risk_factors.map((factor) => (
+                        <span
+                          key={factor}
+                          className="bg-muted text-muted-foreground inline-block rounded-full px-2.5 py-0.5 text-xs lg:text-sm"
+                        >
+                          {factor}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <hr className="border-border my-5" />
+                </>
+              )}
 
               <div>
                 <p className="text-muted-foreground mb-3 text-sm font-medium tracking-wider uppercase lg:text-base">
@@ -169,87 +192,67 @@ const DecisionSidePanel = ({ decision, onClose }: DecisionSidePanelProps) => {
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-muted rounded-lg p-3">
-                    <p className="text-muted-foreground text-xs lg:text-sm">CVSS Score</p>
+                    <p className="text-muted-foreground text-xs lg:text-sm">Risk Score</p>
                     <p
-                      className={`mt-1 text-xl font-semibold ${getScoreTextColor(decision.details.cvss * 10)}`}
+                      className={`mt-1 text-xl font-semibold ${getScoreTextColor(decision.risk_score)}`}
                     >
-                      {decision.details.cvss}
+                      {decision.risk_score}
                     </p>
                     <div className="bg-muted-foreground/20 mt-2 h-1.5 w-full overflow-hidden rounded-full">
                       <div
-                        className={`h-full rounded-full ${getScoreBgColor(decision.details.cvss * 10)}`}
-                        style={{
-                          width: `${(decision.details.cvss / 10) * 100}%`,
-                        }}
+                        className={`h-full rounded-full ${getScoreBgColor(decision.risk_score)}`}
+                        style={{ width: `${decision.risk_score}%` }}
                       />
                     </div>
                   </div>
                   <div className="bg-muted rounded-lg p-3">
                     <p className="text-muted-foreground text-xs lg:text-sm">Confidence</p>
-                    <p className="text-chart-2 mt-1 text-xl font-semibold">{decision.confidence}%</p>
+                    <p className="text-chart-2 mt-1 text-xl font-semibold">
+                      {decision.confidence_score !== undefined
+                        ? `${Math.round(decision.confidence_score * 100)}%`
+                        : "—"}
+                    </p>
                     <div className="bg-muted-foreground/20 mt-2 h-1.5 w-full overflow-hidden rounded-full">
                       <div
                         className="bg-chart-2 h-full rounded-full"
-                        style={{ width: `${decision.confidence}%` }}
+                        style={{
+                          width: `${
+                            decision.confidence_score !== undefined
+                              ? decision.confidence_score * 100
+                              : 0
+                          }%`,
+                        }}
                       />
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <hr className="border-border my-5" />
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-muted-foreground text-xs lg:text-sm">Owner</p>
-                  <p className="text-card-foreground mt-0.5 text-sm font-medium lg:text-base">
-                    {decision.owner}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground text-xs lg:text-sm">Team</p>
-                  <p className="text-card-foreground mt-0.5 text-sm font-medium lg:text-base">
-                    {decision.details.responsibleTeam}
-                  </p>
                 </div>
               </div>
 
               <hr className="border-border my-5" />
 
               <div>
-                <p className="text-muted-foreground mb-2 text-sm font-medium tracking-wider uppercase lg:text-base">
-                  Tags
+                <p className="text-muted-foreground mb-1.5 text-sm font-medium tracking-wider uppercase lg:text-base">
+                  Remediation Timeline
                 </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {decision.details.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="bg-muted text-muted-foreground inline-block rounded-full px-2.5 py-0.5 text-xs lg:text-sm"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <p className="text-card-foreground text-sm font-medium lg:text-base">
+                  {decision.timeline}
+                </p>
               </div>
 
               <hr className="border-border my-5" />
 
               <div className="space-y-4">
                 {isPending && (
-                  <div className="space-y-3 animate-pulse">
+                  <div className="animate-pulse space-y-3">
                     <div className="bg-foreground/5 h-4 w-32 rounded" />
                     <div className="bg-foreground/5 h-3 w-full rounded" />
                     <div className="bg-foreground/5 h-3 w-3/4 rounded" />
                   </div>
                 )}
 
-                {isError && (
-                  <AIDecisionError onRetry={() => reset()} />
-                )}
+                {isError && <AIDecisionError onRetry={() => reset()} />}
 
-                {aiResult && (
-                  <AIDecisionResult result={aiResult} onClear={reset} />
-                )}
+                {aiResult && <AIDecisionResult result={aiResult} onClear={reset} />}
               </div>
             </div>
 

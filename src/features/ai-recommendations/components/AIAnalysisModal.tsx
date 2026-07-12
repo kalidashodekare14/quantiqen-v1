@@ -126,11 +126,6 @@ const AIAnalysisModal = ({
                 </p>
               </div>
 
-              {result.processing_time !== undefined && (
-                <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-                  <span>Processed in {result.processing_time}s</span>
-                </div>
-              )}
             </motion.div>
           )}
         </div>

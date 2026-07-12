@@ -2,18 +2,106 @@
   "request_id": "ai-req-001",
   "organization": "Acme Corp",
   "overall_risk_score": 87,
-  "summary": "This finding presents a high-risk vulnerability that requires immediate attention. The exposed S3 bucket contains sensitive customer data that could be accessed by unauthorized users. Immediate remediation is recommended to prevent data breach.",
+  "summary": "Analysis complete. Found 8 security findings across cloud, network, and application layers requiring prioritised remediation.",
   "decisions": [
     {
-      "finding_id": "DEC-2041",
+      "finding_id": "FIND-001",
       "priority": "Critical",
       "risk_score": 87,
       "recommendation": "Restrict public access to the S3 bucket immediately by applying a bucket policy that blocks all public access. Enable AWS CloudTrail logging to monitor future access attempts. Consider enabling S3 Block Public Access at the account level to prevent similar misconfigurations.",
       "timeline": "Within 24 hours",
       "justification": "The S3 bucket contains PII data classified under GDPR and CCPA regulations. Public exposure creates legal liability and reputational risk.",
       "business_impact": "High",
+      "technical_impact": "Data breach risk for all customer PII stored in the bucket; potential regulatory fines up to 4% of annual revenue.",
+      "risk_factors": ["Public Internet Exposure", "PII Data Storage", "No Access Logging"],
       "confidence_score": 94
+    },
+    {
+      "finding_id": "FIND-002",
+      "priority": "High",
+      "risk_score": 82,
+      "recommendation": "Implement OAuth 2.0 authentication on all API endpoints. Apply rate limiting and IP whitelisting for sensitive operations. Conduct a full API security audit.",
+      "timeline": "Within 48 hours",
+      "justification": "Unauthenticated access to user profiles and transaction records violates multiple compliance frameworks.",
+      "business_impact": "High",
+      "technical_impact": "Potential data exfiltration of user records and financial transactions via unauthenticated API calls.",
+      "risk_factors": ["Missing Authentication", "Data Exfiltration Risk", "Compliance Violation"],
+      "confidence_score": 91
+    },
+    {
+      "finding_id": "FIND-003",
+      "priority": "Critical",
+      "risk_score": 91,
+      "recommendation": "Block the attacking IP ranges immediately. Enforce account lockout policies after 5 failed attempts. Implement CAPTCHA on the login page and enable MFA for all admin accounts.",
+      "timeline": "Within 4 hours",
+      "justification": "Active brute force attack with 5000+ attempts indicates a coordinated threat actor targeting admin credentials.",
+      "business_impact": "Critical",
+      "technical_impact": "Active account takeover attempt against admin panel; could lead to full system compromise if successful.",
+      "risk_factors": ["Active Attack", "Targeted Credential Theft", "No MFA"],
+      "confidence_score": 88
+    },
+    {
+      "finding_id": "FIND-004",
+      "priority": "High",
+      "risk_score": 76,
+      "recommendation": "Enable SSL/TLS enforcement on all database connections. Update connection strings in application configuration. Rotate existing database credentials as a precaution.",
+      "timeline": "Within 1 week",
+      "justification": "Unencrypted database traffic can be intercepted by anyone with network access to the database subnet.",
+      "business_impact": "Medium",
+      "technical_impact": "Data in transit interception risk; potential for credential harvesting and data manipulation via MITM attacks.",
+      "risk_factors": ["Missing Encryption", "Data Interception Risk", "Internal Network Exposure"],
+      "confidence_score": 79
+    },
+    {
+      "finding_id": "FIND-005",
+      "priority": "Medium",
+      "risk_score": 61,
+      "recommendation": "Renew the SSL certificate immediately. Set up automated renewal reminders 30 days before expiration. Monitor certificate expiry across all CDN endpoints.",
+      "timeline": "Within 7 days",
+      "justification": "Certificate expiration would cause service disruption and browser security warnings for end users.",
+      "business_impact": "Medium",
+      "technical_impact": "Service disruption risk for CDN-delivered content; browser security warnings will erode user trust.",
+      "risk_factors": ["Certificate Expiry", "Service Disruption Risk"],
+      "confidence_score": 99
+    },
+    {
+      "finding_id": "FIND-006",
+      "priority": "High",
+      "risk_score": 78,
+      "recommendation": "Implement input validation and output encoding for all user-supplied data. Deploy a WAF to block XSS payloads. Conduct a code review of the affected components.",
+      "timeline": "Within 72 hours",
+      "justification": "XSS vulnerabilities can be chained with other attacks to compromise user sessions and steal sensitive data.",
+      "business_impact": "High",
+      "technical_impact": "Session hijacking and data theft risk; XSS can be used to bypass CSRF protections and perform actions on behalf of users.",
+      "risk_factors": ["Unvalidated Input", "Session Hijacking Risk", "Missing WAF"],
+      "confidence_score": 84
+    },
+    {
+      "finding_id": "FIND-007",
+      "priority": "Low",
+      "risk_score": 43,
+      "recommendation": "Publish a DMARC DNS record starting with monitoring mode (p=none), then gradually enforce stricter policies as email authentication matures.",
+      "timeline": "Within 30 days",
+      "justification": "Missing DMARC record enables attackers to spoof the domain for phishing campaigns targeting customers and partners.",
+      "business_impact": "Low",
+      "technical_impact": "Email spoofing vulnerability; domain could be used in phishing campaigns damaging brand reputation.",
+      "risk_factors": ["Missing DNS Record", "Email Spoofing Risk"],
+      "confidence_score": 99
+    },
+    {
+      "finding_id": "FIND-008",
+      "priority": "Critical",
+      "risk_score": 93,
+      "recommendation": "Immediately restrict RDP access to internal IPs only. Apply VPN requirement for all remote RDP connections. Disable RDP if not business-critical.",
+      "timeline": "Within 24 hours",
+      "justification": "Open RDP port is a leading attack vector for ransomware deployments and network intrusions.",
+      "business_impact": "Critical",
+      "technical_impact": "Direct pathway for ransomware deployment; open RDP is exploited by 90% of targeted ransomware attacks.",
+      "risk_factors": ["Open Remote Access", "Ransomware Risk", "Public Internet Exposure"],
+      "confidence_score": 93
     }
   ],
-  "processing_time": 2.3
+  "generated_at": "2026-07-12T10:00:00Z",
+  "model_used": "QUANTIQEN-AI-v1",
+  "cache_hit": false
 }
