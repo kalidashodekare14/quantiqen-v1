@@ -3,15 +3,11 @@
 import { motion } from "framer-motion";
 import { Brain } from "lucide-react";
 import type { AIDecisionItem } from "@/types/ai-engine.types";
-import type { Finding } from "@/types/finding.types";
 import { severityStyles } from "@/constants/severity";
-import { formatDateTime } from "@/utils/date/date";
 
 interface AIDecisionsTableProps {
   decisions: AIDecisionItem[];
   onRowClick: (decision: AIDecisionItem) => void;
-  findings?: Finding[];
-  generatedAt?: string;
 }
 
 function getRiskScoreColor(score: number): string {
@@ -20,18 +16,7 @@ function getRiskScoreColor(score: number): string {
   return "text-chart-2";
 }
 
-const AIDecisionsTable = ({
-  decisions,
-  onRowClick,
-  findings,
-  generatedAt,
-}: AIDecisionsTableProps) => {
-  const getFindingTitle = (findingId: string): string => {
-    if (!findings) return findingId;
-    const finding = findings.find((f) => f.id === findingId);
-    return finding?.title ?? findingId;
-  };
-
+const AIDecisionsTable = ({ decisions, onRowClick }: AIDecisionsTableProps) => {
   if (decisions.length === 0) {
     return (
       <div className="bg-card/80 border-foreground/10 flex flex-col items-center justify-center gap-3 rounded-xl border p-12 backdrop-blur-md">
@@ -52,11 +37,11 @@ const AIDecisionsTable = ({
         </span>
       </div>
 
-      <table className="w-full min-w-175">
+      <table className="w-full min-w-150">
         <thead>
           <tr className="border-border border-b text-left">
             <th className="text-muted-foreground px-3 py-3 text-xs font-medium tracking-wider uppercase lg:text-sm">
-              Title
+              Finding ID
             </th>
             <th className="text-muted-foreground px-3 py-3 text-xs font-medium tracking-wider uppercase lg:text-sm">
               Priority
@@ -70,9 +55,6 @@ const AIDecisionsTable = ({
             <th className="text-muted-foreground px-3 py-3 text-xs font-medium tracking-wider uppercase lg:text-sm">
               Timeline
             </th>
-            <th className="text-muted-foreground px-3 py-3 text-xs font-medium tracking-wider uppercase lg:text-sm">
-              Generated At
-            </th>
           </tr>
         </thead>
         <tbody>
@@ -85,8 +67,8 @@ const AIDecisionsTable = ({
               className="hover:bg-muted/50 border-border cursor-pointer border-b transition-colors last:border-b-0"
               onClick={() => onRowClick(decision)}
             >
-              <td className="text-card-foreground px-3 py-3 text-sm font-medium lg:text-base">
-                {getFindingTitle(decision.finding_id)}
+              <td className="text-card-foreground px-3 py-3 text-sm font-medium lg:text-base font-mono">
+                {decision.finding_id}
               </td>
               <td className="px-3 py-3">
                 <span
@@ -111,9 +93,6 @@ const AIDecisionsTable = ({
               </td>
               <td className="text-muted-foreground px-3 py-3 text-sm lg:text-base">
                 {decision.timeline}
-              </td>
-              <td className="text-muted-foreground px-3 py-3 text-sm lg:text-base">
-                {generatedAt ? formatDateTime(generatedAt) : "—"}
               </td>
             </motion.tr>
           ))}
