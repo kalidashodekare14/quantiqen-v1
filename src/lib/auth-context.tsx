@@ -1,9 +1,10 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/services/auth.service";
 import { tokenManager } from "./token-manager";
+import { seedCsrfToken } from "./axios";
 import type { LoginStepUp } from "@/types/auth.types";
 
 export type AuthScreen = "login" | "change-password" | "step-up";
@@ -51,21 +52,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStepUpData(null);
   }, []);
 
+  const silentRefreshRef = useRef<Promise<boolean> | null>(null);
+
   const attemptSilentRefresh = useCallback(async (): Promise<boolean> => {
-    try {
-      const data = await authApi.refresh();
-      tokenManager.set(data.accessToken);
-      setIsAuthenticated(true);
-      return true;
-    } catch {
-      clearAuth();
-      return false;
-    }
+    if (silentRefreshRef.current) return silentRefreshRef.current;
+
+    silentRefreshRef.current = (async () => {
+      try {
+        await seedCsrfToken();
+        const data = await authApi.refresh();
+        tokenManager.set(data.accessToken);
+        setIsAuthenticated(true);
+        return true;
+      } catch {
+        clearAuth();
+        return false;
+      } finally {
+        silentRefreshRef.current = null;
+      }
+    })();
+
+    return silentRefreshRef.current;
   }, [clearAuth]);
 
   useEffect(() => {
-    if (tokenManager.get()) return;
-    attemptSilentRefresh();
+    seedCsrfToken().then(() => {
+      if (tokenManager.get()) return;
+      attemptSilentRefresh();
+    });
   }, [attemptSilentRefresh]);
 
   const login = useCallback(

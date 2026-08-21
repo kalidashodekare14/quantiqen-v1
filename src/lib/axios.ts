@@ -1,10 +1,30 @@
 import axios from "axios";
 import { tokenManager } from "./token-manager";
 
+let csrfToken: string | null = null;
+
 function getCsrfToken(): string | null {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie.match(/(?:^|;\s*)qip_csrf=([^;]*)/);
-  return match ? decodeURIComponent(match[1]) : null;
+  return csrfToken;
+}
+
+let csrfSeeded = false;
+let csrfSeedPromise: Promise<void> | null = null;
+
+export function seedCsrfToken(): Promise<void> {
+  if (csrfSeeded || typeof document === "undefined") return Promise.resolve();
+  if (csrfSeedPromise) return csrfSeedPromise;
+
+  csrfSeedPromise = (async () => {
+    try {
+      const res = await api.get("/health");
+      csrfToken = res.data?.csrfToken ?? null;
+    } catch {
+      /* ignore — will fail closed on first POST anyway */
+    }
+    csrfSeeded = true;
+  })();
+
+  return csrfSeedPromise;
 }
 
 export const api = axios.create({
@@ -59,6 +79,10 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    if (originalRequest.url?.includes("/auth/refresh")) {
+      return Promise.reject(error);
+    }
+
     if (isRefreshing) {
       return new Promise<string>((resolve, reject) => {
         failedQueue.push({ resolve, reject });
@@ -85,9 +109,6 @@ api.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError, null);
       tokenManager.clear();
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      }
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
