@@ -18,7 +18,7 @@ const HealthBanner = () => {
   return (
     <motion.div
       {...slideInRight}
-      className="border-destructive/20 bg-destructive/10 flex w-full items-center justify-between rounded-xl border p-3"
+      className="border-destructive/20 bg-destructive/10 flex w-full flex-col items-center justify-between gap-3 rounded-xl border p-3 lg:flex-row lg:gap-0"
     >
       <div className="flex items-center gap-3">
         <AlertTriangle className="text-destructive size-5 shrink-0" />

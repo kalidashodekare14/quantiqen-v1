@@ -1,7 +1,14 @@
-import Otp from "@/features/auth/components/Otp";
+"use client";
 
-const page = () => {
-  return <Otp />;
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default page;
+export default function OtpPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/login");
+  }, [router]);
+
+  return null;
+}

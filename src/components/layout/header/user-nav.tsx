@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Building2, Check, LogOut, Settings, User } from "lucide-react";
 
@@ -14,17 +13,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { routes } from "@/constants/routes";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useAuth } from "@/lib/auth-context";
 import dashboardData from "@/mock-data/dashboard.json";
 
 const LG_BREAKPOINT = "(min-width: 1024px)";
 
 export function UserNav() {
-  const router = useRouter();
   const isLg = useMediaQuery(LG_BREAKPOINT);
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push(routes.login);
+    logout();
   };
 
   return (
