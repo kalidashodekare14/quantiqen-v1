@@ -1,31 +1,50 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Shield } from "lucide-react";
+import { Turnstile } from "@marsidev/react-turnstile";
 import AppButton from "@/components/shared/AppButton";
+import { useAuth } from "@/lib/auth-context";
 
 export const LoginForm = () => {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
+  const { login } = useAuth();
+  const [orgId, setOrgId] = useState("");
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [forgotMsg, setForgotMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  // console.log("turnstile token: ", turnstileToken)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setForgotMsg("");
 
-    if (!email.trim() || !password.trim()) {
-      setError("Email and password are required");
+    if (!orgId.trim() || !userId.trim() || !password.trim()) {
+      setError("All fields are required");
       return;
     }
 
-    localStorage.setItem("token", "fake-jwt-token");
-    router.push("/dashboard");
+    setLoading(true);
+    try {
+      await login(orgId.trim(), userId.trim(), password, turnstileToken ?? undefined);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Login failed. Please try again.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,17 +68,34 @@ export const LoginForm = () => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <label
-              htmlFor="email"
+              htmlFor="orgId"
               className="text-card-foreground text-sm font-medium lg:text-base"
             >
-              Email
+              Organization ID
             </label>
             <input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="orgId"
+              type="text"
+              placeholder="Enter your organization ID"
+              value={orgId}
+              onChange={(e) => setOrgId(e.target.value)}
+              className="border-border bg-background text-card-foreground placeholder:text-muted-foreground focus:ring-chart-5/50 flex h-10 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="userId"
+              className="text-card-foreground text-sm font-medium lg:text-base"
+            >
+              User ID
+            </label>
+            <input
+              id="userId"
+              type="text"
+              placeholder="Enter your user ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
               className="border-border bg-background text-card-foreground placeholder:text-muted-foreground focus:ring-chart-5/50 flex h-10 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
             />
           </div>
@@ -90,26 +126,21 @@ export const LoginForm = () => {
             </div>
           </div>
 
+          <div className="flex justify-center">
+            <Turnstile
+              siteKey="0x4AAAAAAEMuoLZ7yd1HMd5K"
+              onSuccess={handleTurnstileVerify}
+              onError={handleTurnstileError}
+              options={{ theme: "auto" }}
+            />
+          </div>
+
           {error && <p className="text-destructive text-sm">{error}</p>}
 
-          <AppButton type="submit" variant="outline" size="lg" fullWidth>
+          <AppButton type="submit" variant="outline" size="lg" fullWidth loading={loading}>
             Sign In
           </AppButton>
         </form>
-
-        <div className="mt-4 flex items-center justify-center">
-          <button
-            type="button"
-            onClick={() => setForgotMsg("Password reset link sent to your email.")}
-            className="text-muted-foreground hover:text-chart-5 text-xs transition-colors lg:text-sm"
-          >
-            Forgot Password?
-          </button>
-        </div>
-
-        {forgotMsg && (
-          <p className="text-chart-2 mt-3 text-center text-sm lg:text-base">{forgotMsg}</p>
-        )}
       </div>
     </motion.div>
   );

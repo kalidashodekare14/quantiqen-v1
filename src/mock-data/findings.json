@@ -1,0 +1,100 @@
+{
+  "findings": [
+    {
+      "id": "FIND-001",
+      "title": "Public S3 Bucket Exposure",
+      "description": "An S3 bucket has been found publicly accessible, exposing sensitive customer data including PII and financial records. The bucket contains backups dating back 6 months with no access logging enabled.",
+      "severity": "critical",
+      "category": "misconfiguration",
+      "affected_asset": "s3://acme-public-bucket",
+      "asset_type": "cloud_storage",
+      "organization": "Acme Corp",
+      "status": "pending",
+      "owner": "Cloud Team"
+    },
+    {
+      "id": "FIND-002",
+      "title": "Unauthenticated API Endpoint",
+      "description": "A critical API endpoint is accessible without authentication, allowing unauthorized data access to user profiles and transaction records. No rate limiting or IP whitelisting is configured.",
+      "severity": "high",
+      "category": "vulnerability",
+      "affected_asset": "api.acmecorp.com",
+      "asset_type": "web_service",
+      "organization": "Acme Corp",
+      "status": "pending",
+      "owner": "Backend Team"
+    },
+    {
+      "id": "FIND-003",
+      "title": "Brute Force Attack Detected",
+      "description": "Multiple failed login attempts detected on admin panel from suspicious IP addresses across 3 geographic regions. Over 5000 attempts recorded in the past hour.",
+      "severity": "critical",
+      "category": "anomaly",
+      "affected_asset": "admin.acmecorp.com",
+      "asset_type": "web_application",
+      "organization": "Acme Corp",
+      "status": "pending",
+      "owner": "Security Team"
+    },
+    {
+      "id": "FIND-004",
+      "title": "Unencrypted Database Connection",
+      "description": "Database connections are being made without SSL/TLS encryption, risking data interception during transit. All application servers are affected by this misconfiguration.",
+      "severity": "high",
+      "category": "misconfiguration",
+      "affected_asset": "db.acmecorp.internal",
+      "asset_type": "database",
+      "organization": "Acme Corp",
+      "status": "pending",
+      "owner": "DevOps Team"
+    },
+    {
+      "id": "FIND-005",
+      "title": "Outdated SSL Certificate",
+      "description": "SSL certificate on CDN domain expires in 7 days. Renewal is required immediately to prevent service disruption and security warnings for end users.",
+      "severity": "medium",
+      "category": "misconfiguration",
+      "affected_asset": "cdn.acmecorp.com",
+      "asset_type": "cdn",
+      "organization": "Acme Corp",
+      "status": "pending",
+      "owner": "Infrastructure Team"
+    },
+    {
+      "id": "FIND-006",
+      "title": "Cross-Site Scripting (XSS) Vulnerability",
+      "description": "XSS vulnerability found in user input fields on profile and comments pages allowing script injection. Unvalidated user input is rendered without proper sanitization.",
+      "severity": "high",
+      "category": "vulnerability",
+      "affected_asset": "app.acmecorp.com",
+      "asset_type": "web_application",
+      "organization": "Acme Corp",
+      "status": "pending",
+      "owner": "Frontend Team"
+    },
+    {
+      "id": "FIND-007",
+      "title": "Missing DMARC Record",
+      "description": "No DMARC DNS record found for the domain, making it vulnerable to email spoofing and phishing attacks against the organization.",
+      "severity": "low",
+      "category": "misconfiguration",
+      "affected_asset": "mail.acmecorp.com",
+      "asset_type": "dns_record",
+      "organization": "Acme Corp",
+      "status": "pending",
+      "owner": "IT Team"
+    },
+    {
+      "id": "FIND-008",
+      "title": "Open RDP Port Detected",
+      "description": "RDP port 3389 is open to the public internet on a critical server, creating risk of remote exploitation and unauthorized access to the internal network.",
+      "severity": "critical",
+      "category": "exposure",
+      "affected_asset": "192.168.1.45",
+      "asset_type": "network_device",
+      "organization": "Acme Corp",
+      "status": "pending",
+      "owner": "Security Team"
+    }
+  ]
+}

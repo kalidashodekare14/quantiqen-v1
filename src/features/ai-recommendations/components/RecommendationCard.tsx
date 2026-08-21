@@ -1,11 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, Users } from "lucide-react";
 import AppButton from "@/components/shared/AppButton";
 import type { Recommendation } from "@/types/recommendation.types";
+import type { AIDecisionRequest } from "@/types/ai-engine.types";
 import { severityStyles } from "@/constants/severity";
 import { fadeInScale } from "@/lib/motion";
+import { useAIDecision } from "@/features/decisions/hooks/useAIDecision";
+import AIAnalysisModal from "@/features/ai-recommendations/components/AIAnalysisModal";
 
 interface RecommendationCardProps {
   recommendation: Recommendation;
@@ -19,61 +23,109 @@ const statusStyles: Record<RecommendationStatus, string> = {
 };
 
 const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
+  const { mutate, isPending, isError, data: aiResult, reset } = useAIDecision();
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const buildAIPayload = (rec: Recommendation): AIDecisionRequest => ({
+    organization: "Acme Corp",
+    findings: [{
+      finding_id: rec.id,
+      title: rec.recommendation,
+      description: rec.recommendation,
+      severity: rec.priority.toLowerCase() as "low" | "medium" | "high" | "critical",
+      category: "recommendation",
+      affected_asset: "unknown",
+      asset_type: "unknown",
+    }]
+  });
+
+  useEffect(() => {
+    if (aiResult || isError) {
+      setModalOpen(true);
+    }
+  }, [aiResult, isError]);
+
+  const handleRetry = () => {
+    reset();
+    mutate(buildAIPayload(recommendation));
+  };
+
   return (
-    <motion.div
-      {...fadeInScale}
-      className="bg-card/80 backdrop-blur-md border border-foreground/10 flex flex-col gap-4 rounded-xl p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5"
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-muted-foreground text-xs lg:text-sm">{recommendation.id}</span>
-        <span
-          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
-            statusStyles[recommendation.status]
-          }`}
-        >
-          {recommendation.status}
-        </span>
-      </div>
-
-      <p className="text-card-foreground text-sm leading-snug font-semibold lg:text-base">
-        {recommendation.recommendation}
-      </p>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <span
-          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
-            severityStyles[recommendation.businessImpact]
-          }`}
-        >
-          {recommendation.businessImpact}
-        </span>
-        <span
-          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
-            severityStyles[recommendation.priority]
-          }`}
-        >
-          {recommendation.priority}
-        </span>
-        <span className="text-card-foreground text-xs lg:text-sm">
-          {recommendation.confidence}%
-        </span>
-      </div>
-
-      <div className="space-y-1.5 text-xs lg:text-sm">
-        <div className="text-muted-foreground flex items-center gap-1.5">
-          <Clock className="size-3.5" />
-          <span>{recommendation.estimatedFixTime}</span>
+    <>
+      <motion.div
+        {...fadeInScale}
+        className="bg-card/80 backdrop-blur-md border border-foreground/10 flex flex-col gap-4 rounded-xl p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground text-xs lg:text-sm">{recommendation.id}</span>
+          <span
+            className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
+              statusStyles[recommendation.status]
+            }`}
+          >
+            {recommendation.status}
+          </span>
         </div>
-        <div className="text-muted-foreground flex items-center gap-1.5">
-          <Users className="size-3.5" />
-          <span>{recommendation.responsibleTeam}</span>
-        </div>
-      </div>
 
-      <AppButton variant="outline" size="lg" fullWidth>
-        Take Action
-      </AppButton>
-    </motion.div>
+        <p className="text-card-foreground text-sm leading-snug font-semibold lg:text-base">
+          {recommendation.recommendation}
+        </p>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
+              severityStyles[recommendation.businessImpact]
+            }`}
+          >
+            {recommendation.businessImpact}
+          </span>
+          <span
+            className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
+              severityStyles[recommendation.priority]
+            }`}
+          >
+            {recommendation.priority}
+          </span>
+          <span className="text-card-foreground text-xs lg:text-sm">
+            {recommendation.confidence}%
+          </span>
+        </div>
+
+        <div className="space-y-1.5 text-xs lg:text-sm">
+          <div className="text-muted-foreground flex items-center gap-1.5">
+            <Clock className="size-3.5" />
+            <span>{recommendation.estimatedFixTime}</span>
+          </div>
+          <div className="text-muted-foreground flex items-center gap-1.5">
+            <Users className="size-3.5" />
+            <span>{recommendation.responsibleTeam}</span>
+          </div>
+        </div>
+
+        <AppButton
+          variant="primary"
+          size="lg"
+          fullWidth
+          loading={isPending}
+          disabled={isPending}
+          onClick={() => mutate(buildAIPayload(recommendation))}
+        >
+          {isPending ? "Analyzing..." : "Run AI Analysis"}
+        </AppButton>
+      </motion.div>
+
+      <AIAnalysisModal
+        open={modalOpen}
+        onOpenChange={(open) => {
+          setModalOpen(open);
+          if (!open) reset();
+        }}
+        result={aiResult}
+        isError={isError}
+        isPending={isPending}
+        onRetry={handleRetry}
+      />
+    </>
   );
 };
 

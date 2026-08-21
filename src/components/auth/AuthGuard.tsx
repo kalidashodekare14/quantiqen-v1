@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 import AppLoading from "../shared/AppLoading";
-
-type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -12,24 +11,26 @@ interface AuthGuardProps {
 
 export const AuthGuard = ({ children }: AuthGuardProps) => {
   const router = useRouter();
-  const [status, setStatus] = useState<AuthStatus>("checking");
+  const { isAuthenticated, attemptSilentRefresh } = useAuth();
+  const [refreshAttempted, setRefreshAttempted] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      setStatus("authenticated");
-    } else {
-      setStatus("unauthenticated");
-      router.replace("/login");
+    if (isAuthenticated) {
+      setRefreshAttempted(true);
+      return;
     }
-  }, [router]);
 
-  if (status === "checking") {
+    if (refreshAttempted) return;
+
+    attemptSilentRefresh().finally(() => setRefreshAttempted(true));
+  }, [isAuthenticated, attemptSilentRefresh, refreshAttempted]);
+
+  if (!refreshAttempted) {
     return <AppLoading />;
   }
 
-  if (status === "unauthenticated") {
+  if (!isAuthenticated) {
+    router.replace("/login");
     return null;
   }
 
