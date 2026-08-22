@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback, type KeyboardEvent } from "re
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Shield, ArrowLeft, Copy, Check } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import AppButton from "@/components/shared/AppButton";
 import { useAuth } from "@/lib/auth-context";
 import { authApi } from "@/services/auth.service";
@@ -194,9 +195,15 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
           </div>
 
           {step === "confirm" && enrollData && (
-            <div className="mb-6">
-              <p className="text-muted-foreground mb-2 text-center text-xs">
-                Add this secret to your authenticator app:
+            <div className="mb-6 flex flex-col items-center gap-3">
+              <p className="text-muted-foreground text-center text-xs">
+                Scan this QR code with your authenticator app:
+              </p>
+              <div className="rounded-lg bg-white p-3 shadow-sm">
+                <QRCodeSVG value={enrollData.otpauthUri} size={160} level="M" />
+              </div>
+              <p className="text-muted-foreground text-center text-xs">
+                or enter this secret manually:
               </p>
               <div className="bg-muted/50 flex items-center justify-center gap-2 rounded-lg px-4 py-3">
                 <code className="text-card-foreground select-all font-mono text-sm font-semibold">
