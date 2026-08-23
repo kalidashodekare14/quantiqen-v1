@@ -139,6 +139,7 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
         return;
       }
       setError(result.message);
+      setCodeError(true);
     } finally {
       setLoading(false);
     }
@@ -167,6 +168,7 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
         return;
       }
       setError(result.message);
+      setCodeError(true);
     } finally {
       setLoading(false);
     }
@@ -193,7 +195,7 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
   };
 
   const otpInputBase =
-    "border-border bg-background/50 text-card-foreground focus:ring-chart-5/50 size-10 rounded-lg border text-center text-lg font-semibold transition-all duration-200 focus:ring-2 focus:outline-none lg:size-12 lg:text-xl";
+    "border-border bg-background/50 text-chart-5 focus:ring-chart-5/50 size-10 rounded-lg border text-center text-lg font-semibold transition-all duration-200 focus:ring-2 focus:outline-none lg:size-12 lg:text-xl";
 
   if (sessionExpired) {
     return (
