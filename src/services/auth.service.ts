@@ -1,4 +1,5 @@
 import { api } from "@/lib/axios";
+import type { AxiosResponse } from "axios";
 import type {
   LoginRequest,
   LoginResponse,
@@ -12,13 +13,12 @@ import type {
 } from "@/types/auth.types";
 
 export const authApi = {
-  login(data: LoginRequest, turnstileToken?: string): Promise<LoginResponse> {
+  login(data: LoginRequest, turnstileToken?: string): Promise<AxiosResponse<LoginResponse>> {
     return api
       .post("/api/v1/auth/login", data, {
         headers: turnstileToken ? { "x-turnstile-token": turnstileToken } : undefined,
         validateStatus: () => true,
-      })
-      .then((res) => res.data);
+      });
   },
 
   changePassword(data: ChangePasswordRequest): Promise<{ ok: true }> {

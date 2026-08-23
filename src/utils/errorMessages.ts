@@ -25,8 +25,8 @@ function isNetworkError(err: unknown): boolean {
 
 function getServerMessage(err: unknown): string | undefined {
   if (err && typeof err === "object" && "response" in err) {
-    const response = (err as { response?: { data?: { message?: string } } }).response;
-    return response?.data?.message;
+    const response = (err as { response?: { data?: { message?: string; error?: string } } }).response;
+    return response?.data?.message ?? response?.data?.error;
   }
   return undefined;
 }
@@ -35,8 +35,9 @@ export function getFriendlyError(err: unknown): ErrorResult {
   const status = getStatusFromError(err);
 
   if (status === 401 || status === 403) {
+    const serverMsg = getServerMessage(err);
     return {
-      message: "Your session has expired. Redirecting to login...",
+      message: serverMsg ?? "Your session has expired. Redirecting to login...",
       shouldRedirectToLogin: true,
     };
   }

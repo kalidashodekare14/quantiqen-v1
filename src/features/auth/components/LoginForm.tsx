@@ -5,7 +5,19 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, Shield } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import AppButton from "@/components/shared/AppButton";
+import { FormError } from "@/components/shared/FormError";
 import { useAuth } from "@/lib/auth-context";
+import { getFriendlyError } from "@/utils/errorMessages";
+import { cn } from "@/lib/utils";
+
+interface FieldErrors {
+  orgId?: string;
+  userId?: string;
+  password?: string;
+}
+
+const inputBase =
+  "border-border bg-background text-card-foreground placeholder:text-muted-foreground focus:ring-chart-5/50 flex h-10 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none";
 
 export const LoginForm = () => {
   const { login } = useAuth();
@@ -16,7 +28,7 @@ export const LoginForm = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  console.log("turnstile token: ", turnstileToken)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token);
@@ -30,18 +42,22 @@ export const LoginForm = () => {
     e.preventDefault();
     setError("");
 
-    if (!orgId.trim() || !userId.trim() || !password.trim()) {
-      setError("All fields are required");
+    const errors: FieldErrors = {};
+    if (!orgId.trim()) errors.orgId = "Organization ID is required";
+    if (!userId.trim()) errors.userId = "User ID is required";
+    if (!password.trim()) errors.password = "Password is required";
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
+    setFieldErrors({});
 
     setLoading(true);
     try {
       await login(orgId.trim(), userId.trim(), password, turnstileToken ?? undefined);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Login failed. Please try again.";
-      setError(message);
+      const result = getFriendlyError(err);
+      setError(result.message);
     } finally {
       setLoading(false);
     }
@@ -78,9 +94,16 @@ export const LoginForm = () => {
               type="text"
               placeholder="Enter your organization ID"
               value={orgId}
-              onChange={(e) => setOrgId(e.target.value)}
-              className="border-border bg-background text-card-foreground placeholder:text-muted-foreground focus:ring-chart-5/50 flex h-10 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+              onChange={(e) => {
+                setOrgId(e.target.value);
+                if (fieldErrors.orgId) setFieldErrors((prev) => ({ ...prev, orgId: undefined }));
+              }}
+              aria-invalid={!!fieldErrors.orgId}
+              className={cn(inputBase, fieldErrors.orgId && "border-destructive")}
             />
+            {fieldErrors.orgId && (
+              <p className="text-destructive text-xs">{fieldErrors.orgId}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -95,9 +118,16 @@ export const LoginForm = () => {
               type="text"
               placeholder="Enter your user ID"
               value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              className="border-border bg-background text-card-foreground placeholder:text-muted-foreground focus:ring-chart-5/50 flex h-10 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+              onChange={(e) => {
+                setUserId(e.target.value);
+                if (fieldErrors.userId) setFieldErrors((prev) => ({ ...prev, userId: undefined }));
+              }}
+              aria-invalid={!!fieldErrors.userId}
+              className={cn(inputBase, fieldErrors.userId && "border-destructive")}
             />
+            {fieldErrors.userId && (
+              <p className="text-destructive text-xs">{fieldErrors.userId}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -113,8 +143,12 @@ export const LoginForm = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="border-border bg-background text-card-foreground placeholder:text-muted-foreground focus:ring-chart-5/50 flex h-10 w-full rounded-lg border px-3 py-2 pr-10 text-sm focus:ring-2 focus:outline-none"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                }}
+                aria-invalid={!!fieldErrors.password}
+                className={cn(inputBase, "pr-10", fieldErrors.password && "border-destructive")}
               />
               <button
                 type="button"
@@ -124,6 +158,9 @@ export const LoginForm = () => {
                 {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
+            {fieldErrors.password && (
+              <p className="text-destructive text-xs">{fieldErrors.password}</p>
+            )}
           </div>
 
           <div className="flex justify-center">
@@ -135,7 +172,7 @@ export const LoginForm = () => {
             />
           </div>
 
-          {error && <p className="text-destructive text-sm">{error}</p>}
+          {error && <FormError message={error} />}
 
           <AppButton type="submit" variant="outline" size="lg" fullWidth loading={loading}>
             Sign In
