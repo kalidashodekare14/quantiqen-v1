@@ -16,7 +16,7 @@ export const LoginForm = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  // console.log("turnstile token: ", turnstileToken)
+  console.log("turnstile token: ", turnstileToken)
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token);
