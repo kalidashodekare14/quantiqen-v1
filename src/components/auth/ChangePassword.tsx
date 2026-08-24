@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Shield, ArrowLeft } from "lucide-react";
 import AppButton from "@/components/shared/AppButton";
+import { FormError } from "@/components/shared/FormError";
 import { useAuth } from "@/lib/auth-context";
 import { authApi } from "@/services/auth.service";
 import { tokenManager } from "@/lib/token-manager";
+import { getFriendlyError } from "@/utils/errorMessages";
 
 export const ChangePassword = () => {
   const router = useRouter();
@@ -19,6 +21,7 @@ export const ChangePassword = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,9 +51,16 @@ export const ChangePassword = () => {
         router.push("/login");
       }, 3000);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to change password. Please try again.";
-      setError(message);
+      const result = getFriendlyError(err);
+      if (result.shouldRedirectToLogin) {
+        setSessionExpired(true);
+        clearAuth();
+        setTimeout(() => {
+          router.push("/login");
+        }, 3000);
+        return;
+      }
+      setError(result.message);
     } finally {
       setLoading(false);
     }
@@ -79,7 +89,20 @@ export const ChangePassword = () => {
           </p>
         </div>
 
-        {success ? (
+        {sessionExpired ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center"
+          >
+            <p className="text-destructive mb-2 text-sm lg:text-base">
+              Your session has expired.
+            </p>
+            <p className="text-muted-foreground text-xs lg:text-sm">
+              Redirecting to login...
+            </p>
+          </motion.div>
+        ) : success ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -146,7 +169,7 @@ export const ChangePassword = () => {
               </div>
             </div>
 
-            {error && <p className="text-destructive text-sm">{error}</p>}
+            {error && <FormError message={error} />}
 
             <AppButton type="submit" variant="outline" size="lg" fullWidth loading={loading}>
               Change Password

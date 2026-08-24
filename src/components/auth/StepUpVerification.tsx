@@ -6,9 +6,12 @@ import { motion } from "framer-motion";
 import { Shield, ArrowLeft, Copy, Check } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import AppButton from "@/components/shared/AppButton";
+import { FormError } from "@/components/shared/FormError";
 import { useAuth } from "@/lib/auth-context";
 import { authApi } from "@/services/auth.service";
 import { tokenManager } from "@/lib/token-manager";
+import { getFriendlyError } from "@/utils/errorMessages";
+import { cn } from "@/lib/utils";
 import type { LoginStepUp } from "@/types/auth.types";
 
 const OTP_LENGTH = 6;
@@ -37,6 +40,8 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const [codeError, setCodeError] = useState(false);
   const [enrollData, setEnrollData] = useState<{
     secret: string;
     otpauthUri: string;
@@ -54,13 +59,18 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
       setEnrollData({ secret: data.secret, otpauthUri: data.otpauthUri });
       setStep("confirm");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to start MFA enrollment.";
-      setError(message);
+      const result = getFriendlyError(err);
+      if (result.shouldRedirectToLogin) {
+        setSessionExpired(true);
+        clearAuth();
+        setTimeout(() => { router.push("/login"); }, 3000);
+        return;
+      }
+      setError(result.message);
     } finally {
       setLoading(false);
     }
-  }, [stepUpData.stepUpToken]);
+  }, [stepUpData.stepUpToken, clearAuth, router]);
 
   useEffect(() => {
     if (step === "enroll" && !enrollData && !enrollTriggeredRef.current) {
@@ -72,6 +82,7 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
     setError("");
+    setCodeError(false);
 
     const newOtp = [...otp];
     newOtp[index] = value.slice(-1);
@@ -99,6 +110,7 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
     }
     setOtp(newOtp);
     setError("");
+    setCodeError(false);
 
     const nextIndex = Math.min(data.length, OTP_LENGTH - 1);
     inputRefs.current[nextIndex]?.focus();
@@ -107,20 +119,27 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
   const handleConfirmEnrollment = async () => {
     const code = otp.join("");
     if (code.length !== OTP_LENGTH) {
-      setError("Please enter the complete 6-digit code");
+      setCodeError(true);
       return;
     }
 
     setLoading(true);
     setError("");
+    setCodeError(false);
     try {
       await authApi.stepUpConfirm({ stepUpToken: stepUpData.stepUpToken, code });
       setOtp(Array(OTP_LENGTH).fill(""));
       setStep("verify");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Invalid code. Please try again.";
-      setError(message);
+      const result = getFriendlyError(err);
+      if (result.shouldRedirectToLogin) {
+        setSessionExpired(true);
+        clearAuth();
+        setTimeout(() => { router.push("/login"); }, 3000);
+        return;
+      }
+      setError(result.message);
+      setCodeError(true);
     } finally {
       setLoading(false);
     }
@@ -129,20 +148,27 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
   const handleVerify = async () => {
     const code = otp.join("");
     if (code.length !== OTP_LENGTH) {
-      setError("Please enter the complete 6-digit code");
+      setCodeError(true);
       return;
     }
 
     setLoading(true);
     setError("");
+    setCodeError(false);
     try {
       const res = await authApi.stepUpVerify({ stepUpToken: stepUpData.stepUpToken, code });
       tokenManager.set(res.accessToken);
       router.push("/dashboard");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Invalid code. Please try again.";
-      setError(message);
+      const result = getFriendlyError(err);
+      if (result.shouldRedirectToLogin) {
+        setSessionExpired(true);
+        clearAuth();
+        setTimeout(() => { router.push("/login"); }, 3000);
+        return;
+      }
+      setError(result.message);
+      setCodeError(true);
     } finally {
       setLoading(false);
     }
@@ -167,6 +193,44 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
       handleVerify();
     }
   };
+
+  const otpInputBase =
+    "border-border bg-background/50 text-chart-5 focus:ring-chart-5/50 size-10 rounded-lg border text-center text-lg font-semibold transition-all duration-200 focus:ring-2 focus:outline-none lg:size-12 lg:text-xl";
+
+  if (sessionExpired) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="mx-auto w-full max-w-md"
+        >
+          <div className="bg-card/70 border-border/50 rounded-xl border p-8 shadow-lg backdrop-blur-xl">
+            <div className="mb-8 flex flex-col items-center gap-2">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
+                className="bg-chart-5/10 border-chart-5/20 mb-2 flex size-12 items-center justify-center rounded-xl border"
+              >
+                <Shield className="text-chart-5 size-6" />
+              </motion.div>
+              <h1 className="text-chart-5 text-2xl font-bold">QUANTIQEN</h1>
+            </div>
+            <div className="text-center">
+              <p className="text-destructive mb-2 text-sm lg:text-base">
+                Your session has expired.
+              </p>
+              <p className="text-muted-foreground text-xs lg:text-sm">
+                Redirecting to login...
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
@@ -239,20 +303,22 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="border-border bg-background/50 text-card-foreground focus:ring-chart-5/50 size-10 rounded-lg border text-center text-lg font-semibold transition-all duration-200 focus:ring-2 focus:outline-none lg:size-12 lg:text-xl"
+                  className={cn(otpInputBase, codeError && "border-destructive")}
                 />
               </motion.div>
             ))}
           </div>
 
+          {codeError && (
+            <p className="text-destructive mt-2 text-center text-xs">
+              Please enter the complete 6-digit code
+            </p>
+          )}
+
           {error && (
-            <motion.p
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-destructive mt-4 text-center text-sm"
-            >
-              {error}
-            </motion.p>
+            <div className="mt-4">
+              <FormError message={error} className="text-center" />
+            </div>
           )}
 
           <div className="mt-6 flex flex-col gap-3">

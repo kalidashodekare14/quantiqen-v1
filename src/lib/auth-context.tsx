@@ -84,7 +84,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (orgId: string, userId: string, password: string, turnstileToken?: string) => {
-      const res = await authApi.login({ orgId, userId, password }, turnstileToken);
+      const response = await authApi.login({ orgId, userId, password }, turnstileToken);
+      const res = response.data;
 
       if ("authenticated" in res && res.authenticated) {
         tokenManager.set(res.accessToken);
@@ -104,6 +105,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setPendingScreen("step-up");
         return;
       }
+
+      const responseData = response.data as unknown as Record<string, unknown>;
+      const serverMessage = (responseData.message ?? responseData.error ?? "Login failed") as string;
+      const err = new Error(serverMessage);
+      (err as unknown as { response: { status: number; data: unknown } }).response = {
+        status: response.status,
+        data: response.data,
+      };
+      throw err;
     },
     [router],
   );
