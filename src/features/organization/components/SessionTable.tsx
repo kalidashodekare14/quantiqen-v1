@@ -9,17 +9,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/shared/DataTable";
-import { MoreHorizontal, ShieldOff } from "lucide-react";
+import { Loader2, MoreHorizontal, ShieldOff } from "lucide-react";
 import { useRole } from "@/hooks/use-role";
 import type { PortalSession } from "../types/session-management.types";
 
 interface SessionTableProps {
   sessions: PortalSession[];
-  onRevoke: (sessionId: string) => void;
-  isRevoking: boolean;
+  onRequestRevoke: (sessionId: string) => void;
+  revokingSessionId?: string;
 }
 
-export function SessionTable({ sessions, onRevoke, isRevoking }: SessionTableProps) {
+export function SessionTable({ sessions, onRequestRevoke, revokingSessionId }: SessionTableProps) {
   const { isAdmin } = useRole();
 
   const columns = [
@@ -66,11 +66,15 @@ export function SessionTable({ sessions, onRevoke, isRevoking }: SessionTablePro
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
-                    onClick={() => onRevoke(row.id)}
-                    disabled={isRevoking || !row.active}
+                    onClick={() => onRequestRevoke(row.id)}
+                    disabled={revokingSessionId === row.id}
                     className="text-destructive"
                   >
-                    <ShieldOff className="mr-2 size-4" />
+                    {revokingSessionId === row.id ? (
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                    ) : (
+                      <ShieldOff className="mr-2 size-4" />
+                    )}
                     Revoke Session
                   </DropdownMenuItem>
                 </DropdownMenuContent>
