@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "sonner";
 import { tokenManager } from "./token-manager";
 
 let csrfToken: string | null = null;
@@ -76,6 +77,9 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status !== 401 || originalRequest._retry) {
+      if (error.response?.status === 403) {
+        toast.error("You don't have permission to perform this action");
+      }
       return Promise.reject(error);
     }
 

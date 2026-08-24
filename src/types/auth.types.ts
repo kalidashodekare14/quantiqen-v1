@@ -54,3 +54,18 @@ export interface StepUpVerifyResponse {
 export interface MfaStatusResponse {
   enabled: boolean;
 }
+
+export type CustomerRole = "CUSTOMER_ADMIN" | "ANALYST" | "AUDITOR" | "READ_ONLY";
+
+// TODO: Re-verify this shape against the backend's token-signing code if the
+// backend JWT structure ever changes. This was confirmed from a single decoded
+// sample during backend QA — not generated from a shared backend type.
+export interface CustomerJWTPayload {
+  org_id: string;
+  user_id: string;
+  role: CustomerRole;
+  session_id: string;
+  device_fingerprint_hash: string;
+  iat: number;
+  exp: number;
+}
