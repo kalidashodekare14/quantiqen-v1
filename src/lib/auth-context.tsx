@@ -15,6 +15,7 @@ interface AuthContextValue {
   user: CustomerJWTPayload | null;
   pendingScreen: AuthScreen;
   stepUpData: LoginStepUp | null;
+  isLoggingOut: boolean;
   login: (orgId: string, userId: string, password: string, turnstileToken?: string) => Promise<void>;
   logout: () => Promise<void>;
   setAccessToken: (token: string) => void;
@@ -42,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<CustomerJWTPayload | null>(null);
   const [pendingScreen, setPendingScreen] = useState<AuthScreen>("login");
   const [stepUpData, setStepUpData] = useState<LoginStepUp | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const setAccessToken = useCallback((token: string) => {
     tokenManager.set(token);
@@ -129,10 +131,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
+    setIsLoggingOut(true);
     try {
       await authApi.logout();
     } finally {
       clearAuth();
+      setIsLoggingOut(false);
       router.push("/login");
     }
   }, [clearAuth, router]);
@@ -144,6 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         pendingScreen,
         stepUpData,
+        isLoggingOut,
         login,
         logout,
         setAccessToken,

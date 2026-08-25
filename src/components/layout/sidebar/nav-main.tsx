@@ -18,8 +18,10 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const AUDIT_LOG_ROLES = ["CUSTOMER_ADMIN", "ANALYST", "AUDITOR"] as const;
 
@@ -33,6 +35,8 @@ function isChildVisible(href: string, hasAnyRole: (roles: string[]) => boolean):
 export function NavMain() {
   const pathname = usePathname();
   const { hasAnyRole } = useRole();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === href;
@@ -65,6 +69,55 @@ export function NavMain() {
               const visibleChildren = item.children!.filter((c) =>
                 isChildVisible(c.href, hasAnyRole),
               );
+
+              if (isCollapsed) {
+                return (
+                  <Popover key={item.href}>
+                    <PopoverTrigger asChild>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          isActive={isOrganizationActive}
+                          tooltip={item.title}
+                        >
+                          <Icon />
+                          <span>{item.title}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      side="right"
+                      align="start"
+                      sideOffset={8}
+                      className="w-56 p-1"
+                    >
+                      <div className="text-muted-foreground mb-1 px-2 py-1.5 text-xs font-medium">
+                        {item.title}
+                      </div>
+                      <SidebarMenu>
+                        {visibleChildren.map((child) => {
+                          const ChildIcon = child.icon;
+                          return (
+                            <SidebarMenuItem key={child.href}>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={isActive(child.href)}
+                              >
+                                <Link
+                                  href={child.href}
+                                  className="data-active:bg-primary/10! data-active:text-primary!"
+                                >
+                                  <ChildIcon />
+                                  <span>{child.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuItem>
+                          );
+                        })}
+                      </SidebarMenu>
+                    </PopoverContent>
+                  </Popover>
+                );
+              }
 
               return (
                 <Collapsible

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Building2, Check, LogOut, Settings, User } from "lucide-react";
+import { Building2, Check, Loader2, LogOut, Settings, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +31,7 @@ function getInitials(name: string | null | undefined): string {
 
 export function UserNav() {
   const isLg = useMediaQuery(LG_BREAKPOINT);
-  const { user, logout } = useAuth();
+  const { user, logout, isLoggingOut } = useAuth();
   const { data: profile } = useProfile();
 
   const displayName = profile?.displayName ?? user?.user_id ?? "User";
@@ -39,8 +39,8 @@ export function UserNav() {
   const orgName = profile?.organizationName ?? "";
   const initials = getInitials(profile?.displayName ?? user?.user_id);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
@@ -91,10 +91,11 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleLogout}
+          disabled={isLoggingOut}
           className="text-destructive focus:text-destructive cursor-pointer"
         >
-          <LogOut />
-          Log out
+          {isLoggingOut ? <Loader2 className="animate-spin" /> : <LogOut />}
+          {isLoggingOut ? "Logging out..." : "Log out"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
