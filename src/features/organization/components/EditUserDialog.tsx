@@ -46,6 +46,7 @@ function EditUserForm({
   user: PortalUser;
   onDone: () => void;
 }) {
+  const [displayName, setDisplayName] = useState(user.displayName ?? "");
   const [role, setRole] = useState<Exclude<CustomerRole, "CUSTOMER_ADMIN">>(
     deriveRole(user.role),
   );
@@ -55,7 +56,7 @@ function EditUserForm({
   const updateUser = useUpdatePortalUser();
 
   const handleSubmit = async () => {
-    const data: UpdateUserData = { role, status, email, phone };
+    const data: UpdateUserData = { displayName: displayName || null, role, status, email, phone };
     try {
       await updateUser.mutateAsync({ userId: user.id, data });
       toast.success("User updated successfully");
@@ -69,6 +70,17 @@ function EditUserForm({
   return (
     <>
       <div className="grid gap-4 py-2">
+        <div className="grid gap-2">
+          <label className="text-sm font-medium" htmlFor="edit-displayName">
+            Display Name
+          </label>
+          <Input
+            id="edit-displayName"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="e.g. Bob Analyst"
+          />
+        </div>
         <div className="grid gap-2">
           <label className="text-sm font-medium">Role</label>
           <Select value={role} onValueChange={(v) => setRole(v as Exclude<CustomerRole, "CUSTOMER_ADMIN">)}>

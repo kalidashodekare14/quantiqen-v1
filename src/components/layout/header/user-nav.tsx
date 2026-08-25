@@ -14,13 +14,30 @@ import {
 import { routes } from "@/constants/routes";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useAuth } from "@/lib/auth-context";
+import { useProfile } from "@/features/profile/hooks/useProfile";
 import dashboardData from "@/mock-data/dashboard.json";
 
 const LG_BREAKPOINT = "(min-width: 1024px)";
 
+function getInitials(name: string | null | undefined): string {
+  if (!name) return "??";
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 export function UserNav() {
   const isLg = useMediaQuery(LG_BREAKPOINT);
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  const { data: profile } = useProfile();
+
+  const displayName = profile?.displayName ?? user?.user_id ?? "User";
+  const email = profile?.email ?? "";
+  const orgName = profile?.organizationName ?? "";
+  const initials = getInitials(profile?.displayName ?? user?.user_id);
 
   const handleLogout = () => {
     logout();
@@ -31,17 +48,16 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
           <div className="bg-primary/10 text-primary border-primary flex size-8 cursor-pointer items-center justify-center rounded-full border text-sm font-medium">
-            AK
+            {initials}
           </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        {/* TODO: Add org switching when multiple orgs available from API */}
-        {!isLg && (
+        {!isLg && orgName && (
           <>
             <div className="flex items-center gap-2 px-2 py-1.5">
               <Building2 className="text-primary size-4" />
-              <span className="flex-1 text-sm font-medium">{dashboardData.organization.name}</span>
+              <span className="flex-1 text-sm font-medium">{orgName}</span>
               <Check className="text-primary size-4" />
             </div>
             <DropdownMenuSeparator />
@@ -49,8 +65,10 @@ export function UserNav() {
         )}
 
         <div className="px-2 py-1.5">
-          <p className="text-sm font-medium">Alex Kumar</p>
-          <p className="text-muted-foreground text-xs">alex.kumar@acmecorp.com</p>
+          <p className="text-sm font-medium">{displayName}</p>
+          {email && (
+            <p className="text-muted-foreground text-xs">{email}</p>
+          )}
           {!isLg && (
             <span className="bg-primary/10 text-primary mt-2 inline-block rounded-full px-2 py-0.5 text-[10px] leading-normal font-medium">
               {dashboardData.organization.plan} Plan

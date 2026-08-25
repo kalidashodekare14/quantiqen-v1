@@ -2,11 +2,11 @@
 
 import { motion } from "framer-motion";
 import { formatRelativeTime } from "@/utils/date/date";
-import type { Profile } from "@/types/profile.types";
+import type { PortalProfile } from "@/types/profile.types";
 import { fadeInUp } from "@/lib/motion";
 
 interface ProfileDetailsProps {
-  profile: Profile;
+  profile: PortalProfile;
 }
 
 const formatDate = (dateStr: string) =>
@@ -20,9 +20,12 @@ const ProfileDetails = ({ profile }: ProfileDetailsProps) => {
   const items = [
     { label: "Email", value: profile.email },
     { label: "Phone", value: profile.phone },
-    { label: "Timezone", value: profile.timezone },
-    { label: "Joined", value: formatDate(profile.joinedAt) },
-    { label: "Last Login", value: formatRelativeTime(profile.lastLogin) },
+    { label: "Role", value: profile.role },
+    { label: "Status", value: profile.status },
+    { label: "Organization", value: profile.organizationName },
+    { label: "MFA Enabled", value: profile.mfaEnabled ? "Yes" : "No" },
+    { label: "Joined", value: formatDate(profile.createdAt) },
+    { label: "Last Login", value: profile.lastLoginAt ? formatRelativeTime(profile.lastLoginAt) : "Never" },
   ];
 
   return (

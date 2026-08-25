@@ -11,13 +11,15 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
+import { useProfile } from "@/features/profile/hooks/useProfile";
 
 import { AppLogo } from "./app-logo";
 import { NavMain } from "./nav-main";
 
-function getInitials(userId: string): string {
-  return userId
-    .split(/[\s._-]+/)
+function getInitials(name: string | null | undefined): string {
+  if (!name) return "??";
+  return name
+    .split(" ")
     .filter(Boolean)
     .slice(0, 2)
     .map((w) => w[0]?.toUpperCase() ?? "")
@@ -26,9 +28,11 @@ function getInitials(userId: string): string {
 
 export function AppSidebar() {
   const { user } = useAuth();
-  const displayName = user?.user_id ?? "User";
+  const { data: profile } = useProfile();
+
+  const displayName = profile?.displayName ?? user?.user_id ?? "User";
   const role = user?.role ?? "";
-  const initials = getInitials(displayName);
+  const initials = getInitials(profile?.displayName ?? user?.user_id);
 
   return (
     <Sidebar variant="inset" collapsible="icon">

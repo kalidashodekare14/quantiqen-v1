@@ -3,6 +3,7 @@ import type { CustomerRole } from "@/types/auth.types";
 export interface PortalUser {
   id: string;
   userId: string;
+  displayName: string | null;
   role: CustomerRole;
   status: "ACTIVE" | "SUSPENDED";
   email: string;
@@ -22,6 +23,7 @@ export interface CreateUserData {
 }
 
 export interface UpdateUserData {
+  displayName?: string | null;
   role?: Exclude<CustomerRole, "CUSTOMER_ADMIN">;
   status?: "ACTIVE" | "SUSPENDED";
   email?: string;

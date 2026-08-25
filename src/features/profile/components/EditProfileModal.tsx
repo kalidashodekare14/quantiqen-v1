@@ -1,56 +1,53 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import AppButton from "@/components/shared/AppButton";
-import type { Profile } from "@/types/profile.types";
+import { useUpdateProfile } from "../hooks/useProfile";
+import type { PortalProfile } from "@/types/profile.types";
+import { toast } from "sonner";
 
 interface EditProfileModalProps {
-  profile: Profile;
+  profile: PortalProfile;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const inputClass =
-  "flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-card-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-chart-5/50";
-
-const labelClass = "text-sm font-medium text-card-foreground lg:text-base";
-
 const EditProfileModal = ({ profile, open, onOpenChange }: EditProfileModalProps) => {
-  const [name, setName] = useState(profile.name);
+  const [displayName, setDisplayName] = useState(profile.displayName ?? "");
   const [email, setEmail] = useState(profile.email);
   const [phone, setPhone] = useState(profile.phone);
-  const [department, setDepartment] = useState(profile.department);
-  const [timezone, setTimezone] = useState(profile.timezone);
-  const [saved, setSaved] = useState(false);
+  const updateProfile = useUpdateProfile();
 
   useEffect(() => {
     if (open) {
-      setName(profile.name);
+      setDisplayName(profile.displayName ?? "");
       setEmail(profile.email);
       setPhone(profile.phone);
-      setDepartment(profile.department);
-      setTimezone(profile.timezone);
-      setSaved(false);
     }
   }, [open, profile]);
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => {
-      setSaved(false);
+  const handleSubmit = async () => {
+    try {
+      await updateProfile.mutateAsync({
+        displayName: displayName || null,
+        email,
+        phone,
+      });
+      toast.success("Profile updated successfully");
       onOpenChange(false);
-    }, 1500);
-  };
-
-  const handleCancel = () => {
-    onOpenChange(false);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to update profile";
+      toast.error(message);
+    }
   };
 
   return (
@@ -58,92 +55,65 @@ const EditProfileModal = ({ profile, open, onOpenChange }: EditProfileModalProps
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
+          <DialogDescription>
+            Update your display name, email, or phone number.
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 py-2">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="name" className={labelClass}>
-              Name
+        <div className="grid gap-4 py-2">
+          <div className="grid gap-2">
+            <label className="text-sm font-medium" htmlFor="edit-displayName">
+              Display Name
             </label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={inputClass}
+            <Input
+              id="edit-displayName"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="e.g. Alice Admin"
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className={labelClass}>
+          <div className="grid gap-2">
+            <label className="text-sm font-medium" htmlFor="edit-email">
               Email
             </label>
-            <input
-              id="email"
+            <Input
+              id="edit-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={inputClass}
+              placeholder="e.g. alice@acme.example"
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="phone" className={labelClass}>
+          <div className="grid gap-2">
+            <label className="text-sm font-medium" htmlFor="edit-phone">
               Phone
             </label>
-            <input
-              id="phone"
-              type="text"
+            <Input
+              id="edit-phone"
+              type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="department" className={labelClass}>
-              Department
-            </label>
-            <input
-              id="department"
-              type="text"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="timezone" className={labelClass}>
-              Timezone
-            </label>
-            <input
-              id="timezone"
-              type="text"
-              value={timezone}
-              onChange={(e) => setTimezone(e.target.value)}
-              className={inputClass}
+              placeholder="e.g. +15550001000"
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          {saved && (
-            <div className="flex items-center gap-1.5 text-sm text-chart-2">
-              <CheckCircle2 className="size-4" />
-              Profile updated
-            </div>
-          )}
-
-          <div className="ml-auto flex items-center gap-2">
-            <AppButton variant="ghost" size="sm" onClick={handleCancel}>
-              Cancel
-            </AppButton>
-            <AppButton variant="primary" size="sm" onClick={handleSave}>
-              Save
-            </AppButton>
-          </div>
-        </div>
+        <DialogFooter>
+          <AppButton variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
+            Cancel
+          </AppButton>
+          <AppButton
+            variant="primary"
+            size="sm"
+            onClick={handleSubmit}
+            loading={updateProfile.isPending}
+            disabled={updateProfile.isPending}
+          >
+            Save Changes
+          </AppButton>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

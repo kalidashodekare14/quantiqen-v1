@@ -35,6 +35,11 @@ export function UserTable({ users, onEditUser }: UserTableProps) {
 
   const columns = [
     { key: "userId" as const, label: "User ID" },
+    {
+      key: "displayName" as const,
+      label: "Name",
+      render: (row: PortalUser) => row.displayName ?? "—",
+    },
     { key: "email" as const, label: "Email" },
     {
       key: "role" as const,
@@ -86,7 +91,7 @@ export function UserTable({ users, onEditUser }: UserTableProps) {
       columns={columns}
       data={users}
       searchable
-      searchKeys={["userId", "email"]}
+      searchKeys={["userId", "displayName", "email"]}
       getRowId={(row) => row.id}
     />
   );
