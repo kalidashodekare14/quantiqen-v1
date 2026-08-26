@@ -11,6 +11,9 @@ interface AuditLogTableProps {
 const outcomeVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   ALLOW: "default",
   DENY: "destructive",
+  STEP_UP: "secondary",
+  SUCCESS: "default",
+  FAILURE: "destructive",
 };
 
 export function AuditLogTable({ entries }: AuditLogTableProps) {

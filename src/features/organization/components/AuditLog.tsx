@@ -6,7 +6,6 @@ import { RequireRole } from "@/components/auth/RequireRole";
 import { usePortalAuditLog } from "../hooks/useAuditLog";
 import { AuditLogTable } from "./AuditLogTable";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -14,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AUDIT_ACTIONS, AUDIT_OUTCOMES } from "@/constants/audit-log";
 
 export function AuditLog() {
   const [actionFilter, setActionFilter] = useState<string>("");
@@ -44,19 +44,36 @@ export function AuditLog() {
         />
 
         <div className="bg-card flex flex-wrap items-center gap-3 rounded-xl p-3">
-          <Input
-            placeholder="Filter by action..."
+          <Select
             value={actionFilter}
-            onChange={(e) => setActionFilter(e.target.value)}
-            className="w-64"
-          />
-          <Select value={outcomeFilter} onValueChange={setOutcomeFilter}>
+            onValueChange={(val) => setActionFilter(val === "ALL" ? "" : val)}
+          >
+            <SelectTrigger className="border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/30 h-8 w-64 rounded-lg border bg-transparent px-2.5 py-1 text-sm transition-colors focus-visible:ring-3">
+              <SelectValue placeholder="All actions" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All actions</SelectItem>
+              {AUDIT_ACTIONS.map((action) => (
+                <SelectItem key={action} value={action}>
+                  {action}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={outcomeFilter}
+            onValueChange={(val) => setOutcomeFilter(val === "ALL" ? "" : val)}
+          >
             <SelectTrigger className="border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/30 h-8 w-48 rounded-lg border bg-transparent px-2.5 py-1 text-sm transition-colors focus-visible:ring-3">
               <SelectValue placeholder="All outcomes" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALLOW">ALLOW</SelectItem>
-              <SelectItem value="DENY">DENY</SelectItem>
+              <SelectItem value="ALL">All outcomes</SelectItem>
+              {AUDIT_OUTCOMES.map((outcome) => (
+                <SelectItem key={outcome} value={outcome}>
+                  {outcome}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
