@@ -69,3 +69,20 @@ export interface CustomerJWTPayload {
   iat: number;
   exp: number;
 }
+
+export interface PasswordResetRequest {
+  orgId: string;
+  userId: string;
+}
+
+export interface PasswordResetResponse {
+  resetRequested: true;
+  delivery: string;
+  emailSent: boolean;
+  tokenExpiresIn: number;
+}
+
+export interface PasswordResetCompleteRequest {
+  token: string;
+  newPassword: string;
+}

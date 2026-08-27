@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Shield } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -21,6 +22,7 @@ const inputBase =
 
 export const LoginForm = () => {
   const { login } = useAuth();
+  const router = useRouter();
   const [orgId, setOrgId] = useState("");
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +31,7 @@ export const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  // console.log('turnstile token', turnstileToken);
+  console.log('turnstile token', turnstileToken);
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token);
@@ -171,6 +173,16 @@ export const LoginForm = () => {
               onError={handleTurnstileError}
               options={{ theme: "auto" }}
             />
+          </div>
+
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => router.push("/forgot-password")}
+              className="text-muted-foreground hover:text-chart-5 text-xs transition-colors lg:text-sm"
+            >
+              Forgot password?
+            </button>
           </div>
 
           {error && <FormError message={error} />}
