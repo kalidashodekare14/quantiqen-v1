@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { Clock, Users } from "lucide-react";
 import AppButton from "@/components/shared/AppButton";
@@ -9,7 +10,11 @@ import type { AIDecisionRequest } from "@/types/ai-engine.types";
 import { severityStyles } from "@/constants/severity";
 import { fadeInScale } from "@/lib/motion";
 import { useAIDecision } from "@/features/decisions/hooks/useAIDecision";
-import AIAnalysisModal from "@/features/ai-recommendations/components/AIAnalysisModal";
+
+const AIAnalysisModal = dynamic(
+  () => import("@/features/ai-recommendations/components/AIAnalysisModal"),
+  { ssr: false }
+);
 
 interface RecommendationCardProps {
   recommendation: Recommendation;
@@ -24,9 +29,9 @@ const statusStyles: Record<RecommendationStatus, string> = {
 
 const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
   const { mutate, isPending, isError, data: aiResult, reset } = useAIDecision();
-  const [modalOpen, setModalOpen] = useState(false);
+  const modalOpen = !!aiResult || isError;
 
-  const buildAIPayload = (rec: Recommendation): AIDecisionRequest => ({
+  const buildAIPayload = useCallback((rec: Recommendation): AIDecisionRequest => ({
     organization: "Acme Corp",
     findings: [{
       finding_id: rec.id,
@@ -37,17 +42,13 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
       affected_asset: "unknown",
       asset_type: "unknown",
     }]
-  });
+  }), []);
 
-  useEffect(() => {
-    if (aiResult || isError) {
-      setModalOpen(true);
-    }
-  }, [aiResult, isError]);
+  const payload = useMemo(() => buildAIPayload(recommendation), [buildAIPayload, recommendation]);
 
   const handleRetry = () => {
     reset();
-    mutate(buildAIPayload(recommendation));
+    mutate(payload);
   };
 
   return (
@@ -108,7 +109,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
           fullWidth
           loading={isPending}
           disabled={isPending}
-          onClick={() => mutate(buildAIPayload(recommendation))}
+          onClick={() => mutate(payload)}
         >
           {isPending ? "Analyzing..." : "Run AI Analysis"}
         </AppButton>
@@ -117,7 +118,6 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
       <AIAnalysisModal
         open={modalOpen}
         onOpenChange={(open) => {
-          setModalOpen(open);
           if (!open) reset();
         }}
         result={aiResult}

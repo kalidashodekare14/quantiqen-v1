@@ -1,34 +1,32 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import AppLoading from "@/components/shared/AppLoading";
 
 export default function Home() {
   const { isAuthenticated, attemptSilentRefresh } = useAuth();
   const router = useRouter();
-  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard");
+      router.replace("/dashboard");
       return;
     }
 
     attemptSilentRefresh().then((success) => {
       if (success) {
-        router.push("/dashboard");
+        router.replace("/dashboard");
       } else {
-        router.push("/login");
+        router.replace("/login");
       }
-      setReady(true);
     });
   }, [isAuthenticated, attemptSilentRefresh, router]);
 
-  if (!ready) {
-    return <AppLoading />;
+  if (isAuthenticated) {
+    return null;
   }
 
-  return null;
+  return <AppLoading />;
 }

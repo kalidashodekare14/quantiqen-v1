@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Select,
@@ -33,12 +33,6 @@ const PreferencesCard = ({ preferences }: PreferencesCardProps) => {
   const [language, setLanguage] = useState(preferences.language);
   const [timezone, setTimezone] = useState(preferences.timezone);
   const [dateFormat, setDateFormat] = useState(preferences.dateFormat);
-
-  useEffect(() => {
-    setLanguage(preferences.language);
-    setTimezone(preferences.timezone);
-    setDateFormat(preferences.dateFormat);
-  }, [preferences]);
 
   const rows = [
     {
