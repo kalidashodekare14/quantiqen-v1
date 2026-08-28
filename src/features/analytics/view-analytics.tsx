@@ -1,14 +1,34 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { useAnalytics } from "./hooks/useAnalytics";
-import RiskTrendChart from "./components/RiskTrendChart";
-import DecisionTrendChart from "./components/DecisionTrendChart";
-import ApiUsageChart from "./components/ApiUsageChart";
-import RiskDistributionChart from "./components/RiskDistributionChart";
-import SecurityScoreChart from "./components/SecurityScoreChart";
-import DailyDecisionChart from "./components/DailyDecisionChart";
 import AnalyticsSkeleton from "./components/AnalyticsSkeleton";
+
+const RiskTrendChart = dynamic(
+  () => import("./components/RiskTrendChart"),
+  { ssr: false, loading: () => <div className="bg-card/80 border border-foreground/10 rounded-xl p-4 h-64 animate-pulse" /> }
+);
+const DecisionTrendChart = dynamic(
+  () => import("./components/DecisionTrendChart"),
+  { ssr: false, loading: () => <div className="bg-card/80 border border-foreground/10 rounded-xl p-4 h-64 animate-pulse" /> }
+);
+const ApiUsageChart = dynamic(
+  () => import("./components/ApiUsageChart"),
+  { ssr: false, loading: () => <div className="bg-card/80 border border-foreground/10 rounded-xl p-4 h-64 animate-pulse" /> }
+);
+const RiskDistributionChart = dynamic(
+  () => import("./components/RiskDistributionChart"),
+  { ssr: false, loading: () => <div className="bg-card/80 border border-foreground/10 rounded-xl p-4 h-64 animate-pulse" /> }
+);
+const SecurityScoreChart = dynamic(
+  () => import("./components/SecurityScoreChart"),
+  { ssr: false, loading: () => <div className="bg-card/80 border border-foreground/10 rounded-xl p-4 h-64 animate-pulse" /> }
+);
+const DailyDecisionChart = dynamic(
+  () => import("./components/DailyDecisionChart"),
+  { ssr: false, loading: () => <div className="bg-card/80 border border-foreground/10 rounded-xl p-4 h-64 animate-pulse" /> }
+);
 
 const ViewAnalytics = () => {
   const { data, isLoading, isError } = useAnalytics();

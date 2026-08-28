@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import type { AIDecisionItem } from "@/types/ai-engine.types";
@@ -33,10 +33,10 @@ function getScoreBgColor(score: number): string {
 const DecisionSidePanel = ({ decision, onClose, findings }: DecisionSidePanelProps) => {
   const { mutate, isPending, isError, data: aiResult, reset } = useAIDecision();
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     reset();
     onClose();
-  };
+  }, [reset, onClose]);
 
   const relatedFinding = findings?.find((f) => f.id === decision?.finding_id);
 

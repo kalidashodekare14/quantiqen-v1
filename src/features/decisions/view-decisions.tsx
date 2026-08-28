@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/shared/PageHeader";
 import AppButton from "@/components/shared/AppButton";
 import { useFindings } from "./hooks/useFindings";
@@ -10,10 +11,17 @@ import type { AIDecisionItem, AIDecisionRequest } from "@/types/ai-engine.types"
 import type { Finding } from "@/types/finding.types";
 import FindingsTable from "./components/FindingsTable";
 import AIDecisionsTable from "./components/AIDecisionsTable";
-import FindingSidePanel from "./components/FindingSidePanel";
-import AIDecisionSidePanel from "./components/AIDecisionSidePanel";
 import HealthBanner from "./components/HealthBanner";
 import DecisionsSkeleton from "./components/DecisionsSkeleton";
+
+const FindingSidePanel = dynamic(
+  () => import("./components/FindingSidePanel"),
+  { ssr: false }
+);
+const AIDecisionSidePanel = dynamic(
+  () => import("./components/AIDecisionSidePanel"),
+  { ssr: false }
+);
 
 const buildPayload = (findings: Finding[]): AIDecisionRequest => ({
   organization: findings[0]?.organization ?? "Acme Corp",

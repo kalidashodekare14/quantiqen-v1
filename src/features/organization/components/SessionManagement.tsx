@@ -48,12 +48,6 @@ export function SessionManagement() {
       (s) => s.active && !s.currentDevice,
     );
 
-    console.log("[SessionManagement] handleRevokeAll called", {
-      totalSessions: sessions?.length,
-      activeOtherSessions: activeSessions?.length,
-      sessionIds: activeSessions?.map((s) => s.id),
-    });
-
     if (!activeSessions?.length) {
       toast.info("No other active sessions to revoke");
       return;

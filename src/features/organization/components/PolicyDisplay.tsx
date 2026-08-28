@@ -15,11 +15,11 @@ export function PolicyDisplay({ policy }: PolicyDisplayProps) {
         <div className="mt-4 grid gap-3">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-sm">Deny Threshold</span>
-            <Badge variant="outline">{policy.mfaPolicy.denyThreshold}</Badge>
+            <Badge variant="outline">{policy.mfaPolicy.denyThreshold ?? 0}</Badge>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-sm">Step-Up Threshold</span>
-            <Badge variant="outline">{policy.mfaPolicy.stepUpThreshold}</Badge>
+            <Badge variant="outline">{policy.mfaPolicy.stepUpThreshold ?? 0}</Badge>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-sm">Require MFA on Login</span>

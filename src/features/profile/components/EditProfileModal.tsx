@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -26,14 +26,6 @@ const EditProfileModal = ({ profile, open, onOpenChange }: EditProfileModalProps
   const [email, setEmail] = useState(profile.email);
   const [phone, setPhone] = useState(profile.phone);
   const updateProfile = useUpdateProfile();
-
-  useEffect(() => {
-    if (open) {
-      setDisplayName(profile.displayName ?? "");
-      setEmail(profile.email);
-      setPhone(profile.phone);
-    }
-  }, [open, profile]);
 
   const handleSubmit = async () => {
     try {

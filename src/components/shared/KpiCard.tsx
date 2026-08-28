@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, animate } from "framer-motion";
 import {
   Shield,
@@ -59,15 +59,18 @@ const KpiCard = ({ card }: KpiCardProps) => {
   const colorVar = getColorVar(card.color);
   const maxSparkValue = Math.max(...card.sparkline, 1);
   const [displayValue, setDisplayValue] = useState(0);
+  const controlsRef = useRef<ReturnType<typeof animate> | null>(null);
 
   useEffect(() => {
-    setDisplayValue(0);
-    const controls = animate(0, card.value, {
+    controlsRef.current?.stop();
+    controlsRef.current = animate(0, card.value, {
       duration: 1,
       ease: "easeOut",
       onUpdate: (latest) => setDisplayValue(Math.round(latest)),
     });
-    return controls.stop;
+    return () => {
+      controlsRef.current?.stop();
+    };
   }, [card.value]);
 
   return (

@@ -27,13 +27,11 @@ function getGreeting(): string {
 const RADIUS = 42;
 
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-console.log("circumference", CIRCUMFERENCE);
 
 const WelcomeBar = ({ organization, summary }: WelcomeBarProps) => {
   const score = summary.securityScore;
   const scoreColor = getScoreColor(score);
   const strokeOffset = CIRCUMFERENCE - (score / 100) * CIRCUMFERENCE;
-  console.log("strockoffset", strokeOffset);
 
   return (
     <motion.div

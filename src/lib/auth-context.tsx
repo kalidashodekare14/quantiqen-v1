@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/services/auth.service";
 import { tokenManager } from "./token-manager";
@@ -141,23 +141,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [clearAuth, router]);
 
+  const value = useMemo(
+    () => ({
+      isAuthenticated,
+      user,
+      pendingScreen,
+      stepUpData,
+      isLoggingOut,
+      login,
+      logout,
+      setAccessToken,
+      clearAuth,
+      setPendingScreen,
+      setStepUpData,
+      attemptSilentRefresh,
+    }),
+    [
+      isAuthenticated,
+      user,
+      pendingScreen,
+      stepUpData,
+      isLoggingOut,
+      login,
+      logout,
+      setAccessToken,
+      clearAuth,
+      setPendingScreen,
+      setStepUpData,
+      attemptSilentRefresh,
+    ],
+  );
+
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        user,
-        pendingScreen,
-        stepUpData,
-        isLoggingOut,
-        login,
-        logout,
-        setAccessToken,
-        clearAuth,
-        setPendingScreen,
-        setStepUpData,
-        attemptSilentRefresh,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
