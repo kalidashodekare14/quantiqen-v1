@@ -15,7 +15,6 @@ const ViewDashboard = () => {
 
   if (!data) return null;
 
-  console.log("checking data", data);
   return (
     <div>
       <WelcomeBar organization={data.organization} summary={data?.securitySummary} />

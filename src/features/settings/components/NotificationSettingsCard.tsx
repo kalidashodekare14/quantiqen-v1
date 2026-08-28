@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Switch } from "@/components/ui/switch";
 import type { NotificationSettings } from "@/types/settings.types";
@@ -20,10 +20,6 @@ const TOGGLES: { key: keyof NotificationSettings; label: string }[] = [
 
 const NotificationSettingsCard = ({ notifications }: NotificationSettingsCardProps) => {
   const [toggles, setToggles] = useState(notifications);
-
-  useEffect(() => {
-    setToggles(notifications);
-  }, [notifications]);
 
   const handleToggle = (key: keyof NotificationSettings) => {
     setToggles((prev) => ({ ...prev, [key]: !prev[key] }));

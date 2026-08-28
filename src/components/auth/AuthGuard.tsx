@@ -15,22 +15,21 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
   const [refreshAttempted, setRefreshAttempted] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      setRefreshAttempted(true);
-      return;
-    }
-
-    if (refreshAttempted) return;
-
+    if (isAuthenticated || refreshAttempted) return;
     attemptSilentRefresh().finally(() => setRefreshAttempted(true));
   }, [isAuthenticated, attemptSilentRefresh, refreshAttempted]);
 
-  if (!refreshAttempted) {
+  useEffect(() => {
+    if (refreshAttempted && !isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [refreshAttempted, isAuthenticated, router]);
+
+  if (!refreshAttempted && !isAuthenticated) {
     return <AppLoading />;
   }
 
   if (!isAuthenticated) {
-    router.replace("/login");
     return null;
   }
 

@@ -6,15 +6,20 @@ import { Building2, ChevronDown, Search, X } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { NotificationBell } from "./notification-bell";
 import { UserNav } from "./user-nav";
 import { ThemeToggle } from "@/components/theme";
+import { useProfile } from "@/features/profile/hooks/useProfile";
 import dashboardData from "@/mock-data/dashboard.json";
 
 export function AppHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const { data: profile, isLoading } = useProfile();
+
+  const orgName = profile?.organizationName ?? "";
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
@@ -28,11 +33,15 @@ export function AppHeader() {
         <div className="flex items-center gap-1">
           <SidebarTrigger />
 
-          <Button variant="ghost" className="hidden gap-2 lg:flex">
-            <Building2 className="size-4" />
-            <span>{dashboardData.organization.name}</span>
-            <ChevronDown className="text-muted-foreground size-3.5" />
-          </Button>
+          {isLoading ? (
+            <Skeleton className="hidden h-8 w-32 rounded-lg lg:block" />
+          ) : orgName ? (
+            <Button variant="ghost" className="hidden gap-2 lg:flex">
+              <Building2 className="size-4" />
+              <span>{orgName}</span>
+              <ChevronDown className="text-muted-foreground size-3.5" />
+            </Button>
+          ) : null}
         </div>
 
         <div className="mx-auto hidden w-full max-w-sm lg:block">

@@ -1,17 +1,26 @@
-export interface Profile {
+import type { CustomerRole } from "@/types/auth.types";
+
+export interface PortalProfile {
   id: string;
-  name: string;
+  userId: string;
+  displayName: string | null;
+  role: CustomerRole;
+  status: "ACTIVE" | "SUSPENDED";
   email: string;
-  role: string;
-  department: string;
-  avatarInitials: string;
   phone: string;
-  timezone: string;
-  joinedAt: string;
-  lastLogin: string;
-  twoFactorEnabled: boolean;
+  mustChangePassword: boolean;
+  mfaEnabled: boolean;
+  organizationName: string;
+  lastLoginAt: string | null;
+  createdAt: string;
 }
 
 export interface ProfileData {
-  profile: Profile;
+  user: PortalProfile;
+}
+
+export interface UpdateProfileData {
+  displayName?: string | null;
+  email?: string;
+  phone?: string;
 }
