@@ -3,11 +3,11 @@
 import { motion } from "framer-motion";
 import AppButton from "@/components/shared/AppButton";
 import { cn } from "@/lib/utils";
-import type { Profile } from "@/types/profile.types";
+import type { PortalProfile } from "@/types/profile.types";
 import { fadeInUp } from "@/lib/motion";
 
 interface SecuritySettingsProps {
-  profile: Profile;
+  profile: PortalProfile;
 }
 
 const SecuritySettings = ({ profile }: SecuritySettingsProps) => {
@@ -24,24 +24,24 @@ const SecuritySettings = ({ profile }: SecuritySettingsProps) => {
               Two-Factor Authentication
             </span>
             <span className="text-muted-foreground text-xs lg:text-sm">
-              {profile.twoFactorEnabled ? "Enabled" : "Disabled"}
+              {profile.mfaEnabled ? "Enabled" : "Disabled"}
             </span>
           </div>
 
           <button
             type="button"
             role="switch"
-            aria-checked={profile.twoFactorEnabled}
+            aria-checked={profile.mfaEnabled}
             disabled
             className={cn(
               "inline-flex h-5 w-9 shrink-0 cursor-not-allowed items-center rounded-full border-2 border-transparent transition-colors",
-              profile.twoFactorEnabled ? "bg-chart-5" : "bg-muted",
+              profile.mfaEnabled ? "bg-chart-5" : "bg-muted",
             )}
           >
             <span
               className={cn(
                 "pointer-events-none block size-4 rounded-full bg-white shadow-sm ring-0 transition-transform",
-                profile.twoFactorEnabled ? "translate-x-4" : "translate-x-0",
+                profile.mfaEnabled ? "translate-x-4" : "translate-x-0",
               )}
             />
           </button>

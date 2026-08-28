@@ -23,22 +23,38 @@ const ProfileSkeleton = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="bg-card rounded-xl border p-5">
-            <Skeleton className="mb-4 h-4 w-32" />
-            <div className="flex flex-col">
-              {Array.from({ length: 5 }).map((_, j) => (
-                <div
-                  key={j}
-                  className="border-border flex items-center justify-between border-b py-3 last:border-b-0"
-                >
-                  <Skeleton className="h-3.5 w-20" />
-                  <Skeleton className="h-4 w-36" />
-                </div>
-              ))}
+        <div className="bg-card rounded-xl border p-5">
+          <Skeleton className="mb-4 h-4 w-32" />
+          <div className="flex flex-col">
+            {Array.from({ length: 8 }).map((_, j) => (
+              <div
+                key={j}
+                className="border-border flex items-center justify-between border-b py-3 last:border-b-0"
+              >
+                <Skeleton className="h-3.5 w-20" />
+                <Skeleton className="h-4 w-36" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-card rounded-xl border p-5">
+          <Skeleton className="mb-4 h-4 w-32" />
+          <div className="flex flex-col">
+            {Array.from({ length: 2 }).map((_, j) => (
+              <div
+                key={j}
+                className="border-border flex items-center justify-between border-b py-3 last:border-b-0"
+              >
+                <Skeleton className="h-3.5 w-32" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+            ))}
+            <div className="pt-4">
+              <Skeleton className="h-9 w-32 rounded-lg" />
             </div>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

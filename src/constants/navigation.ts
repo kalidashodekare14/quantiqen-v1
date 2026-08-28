@@ -8,6 +8,10 @@ import {
   Sparkles,
   FileText,
   Building2,
+  Users,
+  Shield,
+  ScrollText,
+  BookOpen,
   Bell,
   Settings,
   User,
@@ -15,7 +19,14 @@ import {
 
 import { routes } from "./routes";
 
-export const navigationItems = [
+export interface NavItem {
+  title: string;
+  href: string;
+  icon: typeof LayoutDashboard;
+  children?: { title: string; href: string; icon: typeof Users }[];
+}
+
+export const navigationItems: NavItem[] = [
   {
     title: "Dashboard",
     href: routes.dashboard,
@@ -60,6 +71,12 @@ export const navigationItems = [
     title: "Organization",
     href: routes.organization,
     icon: Building2,
+    children: [
+      { title: "Users", href: routes.organizationUsers, icon: Users },
+      { title: "Sessions", href: routes.organizationSessions, icon: Shield },
+      { title: "Policy", href: routes.organizationPolicy, icon: ScrollText },
+      { title: "Audit Log", href: routes.organizationAuditLog, icon: BookOpen },
+    ],
   },
   {
     title: "Notifications",
@@ -76,4 +93,4 @@ export const navigationItems = [
     href: routes.profile,
     icon: User,
   },
-] as const;
+];

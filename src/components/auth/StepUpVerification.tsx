@@ -9,7 +9,6 @@ import AppButton from "@/components/shared/AppButton";
 import { FormError } from "@/components/shared/FormError";
 import { useAuth } from "@/lib/auth-context";
 import { authApi } from "@/services/auth.service";
-import { tokenManager } from "@/lib/token-manager";
 import { getFriendlyError } from "@/utils/errorMessages";
 import { cn } from "@/lib/utils";
 import type { LoginStepUp } from "@/types/auth.types";
@@ -33,7 +32,7 @@ type Step = "enroll" | "confirm" | "verify";
 
 export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
   const router = useRouter();
-  const { clearAuth } = useAuth();
+  const { clearAuth, setAccessToken } = useAuth();
   const [step, setStep] = useState<Step>(
     stepUpData.mfaEnrollmentRequired ? "enroll" : "verify",
   );
@@ -157,7 +156,7 @@ export const StepUpVerification = ({ stepUpData }: StepUpVerificationProps) => {
     setCodeError(false);
     try {
       const res = await authApi.stepUpVerify({ stepUpToken: stepUpData.stepUpToken, code });
-      tokenManager.set(res.accessToken);
+      setAccessToken(res.accessToken);
       router.push("/dashboard");
     } catch (err: unknown) {
       const result = getFriendlyError(err);

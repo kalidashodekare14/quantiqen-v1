@@ -4,15 +4,26 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import AppButton from "@/components/shared/AppButton";
 import EditProfileModal from "./EditProfileModal";
-import type { Profile } from "@/types/profile.types";
+import type { PortalProfile } from "@/types/profile.types";
 import { fadeInUp } from "@/lib/motion";
 
 interface ProfileHeaderProps {
-  profile: Profile;
+  profile: PortalProfile;
+}
+
+function getInitials(name: string | null): string {
+  if (!name) return "??";
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 }
 
 const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
   const [editOpen, setEditOpen] = useState(false);
+  const displayName = profile.displayName ?? profile.userId;
 
   return (
     <>
@@ -22,14 +33,14 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
       >
         <div className="flex items-center gap-5">
           <div className="bg-chart-5/10 border-chart-5/20 flex size-16 items-center justify-center rounded-xl border">
-            <span className="text-chart-5 text-2xl font-bold">{profile.avatarInitials}</span>
+            <span className="text-chart-5 text-2xl font-bold">{getInitials(displayName)}</span>
           </div>
 
           <div className="flex flex-col gap-1">
-            <h2 className="text-card-foreground text-xl font-bold">{profile.name}</h2>
+            <h2 className="text-card-foreground text-xl font-bold">{displayName}</h2>
             <p className="text-muted-foreground text-sm lg:text-base">{profile.role}</p>
             <span className="bg-chart-5/10 text-chart-5 border-chart-5/20 mt-0.5 w-fit rounded-full border px-2.5 py-1 text-xs font-medium lg:text-sm">
-              {profile.department}
+              {profile.organizationName}
             </span>
           </div>
         </div>

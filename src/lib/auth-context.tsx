@@ -5,14 +5,17 @@ import { useRouter } from "next/navigation";
 import { authApi } from "@/services/auth.service";
 import { tokenManager } from "./token-manager";
 import { seedCsrfToken } from "./axios";
-import type { LoginStepUp } from "@/types/auth.types";
+import { decodeCustomerJWT } from "./jwt";
+import type { CustomerJWTPayload, LoginStepUp } from "@/types/auth.types";
 
 export type AuthScreen = "login" | "change-password" | "step-up";
 
 interface AuthContextValue {
   isAuthenticated: boolean;
+  user: CustomerJWTPayload | null;
   pendingScreen: AuthScreen;
   stepUpData: LoginStepUp | null;
+  isLoggingOut: boolean;
   login: (orgId: string, userId: string, password: string, turnstileToken?: string) => Promise<void>;
   logout: () => Promise<void>;
   setAccessToken: (token: string) => void;
@@ -37,17 +40,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return typeof window !== "undefined" && tokenManager.get() !== null;
   });
+  const [user, setUser] = useState<CustomerJWTPayload | null>(null);
   const [pendingScreen, setPendingScreen] = useState<AuthScreen>("login");
   const [stepUpData, setStepUpData] = useState<LoginStepUp | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const setAccessToken = useCallback((token: string) => {
     tokenManager.set(token);
+    const decoded = decodeCustomerJWT(token);
+    setUser(decoded);
     setIsAuthenticated(true);
   }, []);
 
   const clearAuth = useCallback(() => {
     tokenManager.clear();
     setIsAuthenticated(false);
+    setUser(null);
     setPendingScreen("login");
     setStepUpData(null);
   }, []);
@@ -62,6 +70,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await seedCsrfToken();
         const data = await authApi.refresh();
         tokenManager.set(data.accessToken);
+        const decoded = decodeCustomerJWT(data.accessToken);
+        setUser(decoded);
         setIsAuthenticated(true);
         return true;
       } catch {
@@ -89,6 +99,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if ("authenticated" in res && res.authenticated) {
         tokenManager.set(res.accessToken);
+        const decoded = decodeCustomerJWT(res.accessToken);
+        setUser(decoded);
         setIsAuthenticated(true);
         setStepUpData(null);
 
@@ -119,10 +131,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
+    setIsLoggingOut(true);
     try {
       await authApi.logout();
     } finally {
       clearAuth();
+      setIsLoggingOut(false);
       router.push("/login");
     }
   }, [clearAuth, router]);
@@ -131,8 +145,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         isAuthenticated,
+        user,
         pendingScreen,
         stepUpData,
+        isLoggingOut,
         login,
         logout,
         setAccessToken,
