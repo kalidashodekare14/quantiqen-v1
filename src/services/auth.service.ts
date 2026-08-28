@@ -10,9 +10,6 @@ import type {
   StepUpVerifyRequest,
   StepUpVerifyResponse,
   MfaStatusResponse,
-  PasswordResetRequest,
-  PasswordResetResponse,
-  PasswordResetCompleteRequest,
 } from "@/types/auth.types";
 
 export const authApi = {
@@ -56,19 +53,5 @@ export const authApi = {
 
   getMfaStatus(): Promise<MfaStatusResponse> {
     return api.get("/api/v1/auth/mfa/status").then((res) => res.data);
-  },
-
-  requestPasswordReset(
-    data: PasswordResetRequest,
-    turnstileToken?: string,
-  ): Promise<AxiosResponse<PasswordResetResponse>> {
-    return api.post("/api/v1/auth/password-reset/request", data, {
-      headers: turnstileToken ? { "x-turnstile-token": turnstileToken } : undefined,
-      validateStatus: () => true,
-    });
-  },
-
-  completePasswordReset(data: PasswordResetCompleteRequest): Promise<{ ok: true }> {
-    return api.post("/api/v1/auth/password-reset/complete", data).then((res) => res.data);
   },
 };

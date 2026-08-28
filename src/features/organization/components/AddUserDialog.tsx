@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Check, Copy, UserPlus } from "lucide-react";
+import { UserPlus, Copy, Check, CopyCheck } from "lucide-react";
 import { toast } from "sonner";
 import { useCreatePortalUser } from "../hooks/useUserManagement";
 import type { CreateUserData, CreateUserResponse } from "../types/user-management.types";
@@ -39,8 +39,9 @@ export function AddUserDialog() {
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState<Exclude<CustomerRole, "CUSTOMER_ADMIN">>("ANALYST");
   const [createdUser, setCreatedUser] = useState<CreateUserResponse | null>(null);
-  const [copied, setCopied] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [copiedUserId, setCopiedUserId] = useState(false);
+  const [copiedPassword, setCopiedPassword] = useState(false);
+  const [copiedAll, setCopiedAll] = useState(false);
   const createUser = useCreatePortalUser();
 
   const handleSubmit = async () => {
@@ -62,22 +63,9 @@ export function AddUserDialog() {
     }
   };
 
-  const handleCopyPassword = async () => {
-    if (!createdUser) return;
-    try {
-      await navigator.clipboard.writeText(createdUser.temporaryPassword);
-      setCopied(true);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy password");
-    }
-  };
-
   const handleClose = () => {
     setOpen(false);
     setCreatedUser(null);
-    setCopied(false);
     resetForm();
   };
 
@@ -109,32 +97,84 @@ export function AddUserDialog() {
             <DialogHeader>
               <DialogTitle>User Created Successfully</DialogTitle>
               <DialogDescription>
-                Share the temporary password with the new user. It will not be shown again.
+                The temporary password expires on{" "}
+                {new Date(createdUser.temporaryPasswordExpiresAt).toLocaleString()}.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-2">
-              <div className="grid gap-2">
-                <span className="text-sm font-medium">Temporary Password</span>
-                <div className="flex items-center gap-2">
-                  <code className="bg-muted text-muted-foreground flex-1 truncate rounded-md px-3 py-2 font-mono text-sm">
+            <div className="rounded-lg border bg-muted/50 p-4 font-mono text-sm">
+              <div className="mb-3 grid gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-xs">User ID</span>
+                  <span className="bg-background flex items-center gap-2 rounded border px-2 py-0.5 font-semibold">
+                    {createdUser.user.userId}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(createdUser.user.userId);
+                        setCopiedUserId(true);
+                        setTimeout(() => setCopiedUserId(false), 2000);
+                      }}
+                      className="text-muted-foreground hover:text-foreground shrink-0 transition-colors"
+                      title="Copy User ID"
+                    >
+                      {copiedUserId ? (
+                        <Check className="size-3.5 text-green-500" />
+                      ) : (
+                        <Copy className="size-3.5" />
+                      )}
+                    </button>
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-xs">Temporary Password</span>
+                  <span className="bg-background flex items-center gap-2 rounded border px-2 py-0.5 font-semibold tracking-wide">
                     {createdUser.temporaryPassword}
-                  </code>
-                  <button
-                    onClick={handleCopyPassword}
-                    type="button"
-                    aria-label="Copy temporary password"
-                    className="text-muted-foreground hover:bg-muted hover:text-card-foreground flex size-8 shrink-0 items-center justify-center rounded-md transition-colors"
-                  >
-                    {copied ? <Check className="text-chart-2 size-4" /> : <Copy className="size-4" />}
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(createdUser.temporaryPassword);
+                        setCopiedPassword(true);
+                        setTimeout(() => setCopiedPassword(false), 2000);
+                      }}
+                      className="text-muted-foreground hover:text-foreground shrink-0 transition-colors"
+                      title="Copy password"
+                    >
+                      {copiedPassword ? (
+                        <Check className="size-3.5 text-green-500" />
+                      ) : (
+                        <Copy className="size-3.5" />
+                      )}
+                    </button>
+                  </span>
                 </div>
               </div>
-              <div className="text-sm text-muted-foreground">
-                Expires:{" "}
-                {new Date(createdUser.temporaryPasswordExpiresAt).toLocaleString()}
-              </div>
+              <p className="text-muted-foreground text-xs">
+                Please share these credentials with the user through a secure channel (phone, in person, etc.).
+              </p>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex flex-row items-center justify-between sm:flex-row">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const text = `User ID: ${createdUser.user.userId}\nTemporary Password: ${createdUser.temporaryPassword}`;
+                  navigator.clipboard.writeText(text);
+                  setCopiedAll(true);
+                  setTimeout(() => setCopiedAll(false), 2000);
+                }}
+              >
+                {copiedAll ? (
+                  <>
+                    <CopyCheck className="mr-1.5 size-3.5" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="mr-1.5 size-3.5" />
+                    Copy All
+                  </>
+                )}
+              </Button>
               <Button onClick={handleClose}>Done</Button>
             </DialogFooter>
           </>
@@ -143,7 +183,7 @@ export function AddUserDialog() {
             <DialogHeader>
               <DialogTitle>Add User</DialogTitle>
               <DialogDescription>
-                Create a new user in your organization. They will receive a temporary password.
+                Create a new user in your organization. A temporary password will be generated.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-2">

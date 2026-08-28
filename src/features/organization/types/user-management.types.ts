@@ -35,4 +35,5 @@ export interface CreateUserResponse {
   temporaryPassword: string;
   temporaryPasswordExpiresAt: string;
   delivery: string;
+  emailSent: boolean;
 }
