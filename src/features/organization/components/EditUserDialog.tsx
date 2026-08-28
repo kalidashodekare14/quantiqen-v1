@@ -35,8 +35,17 @@ interface EditUserDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface FormErrors {
+  displayName?: string;
+  email?: string;
+}
+
 function deriveRole(role: CustomerRole): Exclude<CustomerRole, "CUSTOMER_ADMIN"> {
   return role === "CUSTOMER_ADMIN" ? "ANALYST" : role;
+}
+
+function validateEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function EditUserForm({
@@ -53,10 +62,48 @@ function EditUserForm({
   const [status, setStatus] = useState<"ACTIVE" | "SUSPENDED">(user.status);
   const [email, setEmail] = useState(user.email);
   const [phone, setPhone] = useState(user.phone);
+  const [errors, setErrors] = useState<FormErrors>({});
   const updateUser = useUpdatePortalUser();
 
+  const validate = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!displayName.trim()) {
+      newErrors.displayName = "Display name is required";
+    } else if (displayName.trim().length < 2) {
+      newErrors.displayName = "Display name must be at least 2 characters";
+    }
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!validateEmail(email.trim())) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const clearError = (field: keyof FormErrors) => {
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
   const handleSubmit = async () => {
-    const data: UpdateUserData = { displayName: displayName || null, role, status, email, phone };
+    if (!validate()) return;
+
+    const data: UpdateUserData = {
+      displayName: displayName.trim() || null,
+      role,
+      status,
+      email: email.trim(),
+      phone,
+    };
     try {
       await updateUser.mutateAsync({ userId: user.id, data });
       toast.success("User updated successfully");
@@ -72,14 +119,21 @@ function EditUserForm({
       <div className="grid gap-4 py-2">
         <div className="grid gap-2">
           <label className="text-sm font-medium" htmlFor="edit-displayName">
-            Display Name
+            Display Name <span className="text-destructive">*</span>
           </label>
           <Input
             id="edit-displayName"
             value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            onChange={(e) => {
+              setDisplayName(e.target.value);
+              clearError("displayName");
+            }}
             placeholder="e.g. Bob Analyst"
+            className={errors.displayName ? "border-destructive" : ""}
           />
+          {errors.displayName && (
+            <p className="text-destructive text-xs">{errors.displayName}</p>
+          )}
         </div>
         <div className="grid gap-2">
           <label className="text-sm font-medium">Role</label>
@@ -110,14 +164,21 @@ function EditUserForm({
         </div>
         <div className="grid gap-2">
           <label className="text-sm font-medium" htmlFor="edit-email">
-            Email
+            Email <span className="text-destructive">*</span>
           </label>
           <Input
             id="edit-email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              clearError("email");
+            }}
+            className={errors.email ? "border-destructive" : ""}
           />
+          {errors.email && (
+            <p className="text-destructive text-xs">{errors.email}</p>
+          )}
         </div>
         <div className="grid gap-2">
           <label className="text-sm font-medium" htmlFor="edit-phone">

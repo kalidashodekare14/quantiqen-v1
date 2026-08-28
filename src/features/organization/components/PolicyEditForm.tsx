@@ -20,8 +20,8 @@ function PolicyEditFields({
   policy: PortalPolicy;
   onDone: () => void;
 }) {
-  const [denyThreshold, setDenyThreshold] = useState(policy.mfaPolicy.denyThreshold);
-  const [stepUpThreshold, setStepUpThreshold] = useState(policy.mfaPolicy.stepUpThreshold);
+  const [denyThreshold, setDenyThreshold] = useState(policy.mfaPolicy.denyThreshold ?? 0);
+  const [stepUpThreshold, setStepUpThreshold] = useState(policy.mfaPolicy.stepUpThreshold ?? 0);
   const [requireMfaOnLogin, setRequireMfaOnLogin] = useState(
     policy.mfaPolicy.requireMfaOnLogin,
   );

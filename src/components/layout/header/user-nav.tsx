@@ -14,6 +14,7 @@ import {
 import { routes } from "@/constants/routes";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useAuth } from "@/lib/auth-context";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useProfile } from "@/features/profile/hooks/useProfile";
 import dashboardData from "@/mock-data/dashboard.json";
 
@@ -32,7 +33,7 @@ function getInitials(name: string | null | undefined): string {
 export function UserNav() {
   const isLg = useMediaQuery(LG_BREAKPOINT);
   const { user, logout, isLoggingOut } = useAuth();
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading } = useProfile();
 
   const displayName = profile?.displayName ?? user?.user_id ?? "User";
   const email = profile?.email ?? "";
@@ -42,6 +43,10 @@ export function UserNav() {
   const handleLogout = async () => {
     await logout();
   };
+
+  if (isLoading) {
+    return <Skeleton className="size-8 rounded-full" />;
+  }
 
   return (
     <DropdownMenu>

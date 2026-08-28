@@ -31,6 +31,16 @@ const assignableRoles: Exclude<CustomerRole, "CUSTOMER_ADMIN">[] = [
   "READ_ONLY",
 ];
 
+interface FormErrors {
+  userId?: string;
+  displayName?: string;
+  email?: string;
+}
+
+function validateEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export function AddUserDialog() {
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState("");
@@ -42,15 +52,53 @@ export function AddUserDialog() {
   const [copiedUserId, setCopiedUserId] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
   const [copiedAll, setCopiedAll] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
   const createUser = useCreatePortalUser();
 
+  const validate = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!userId.trim()) {
+      newErrors.userId = "User ID is required";
+    } else if (userId.trim().length < 3) {
+      newErrors.userId = "User ID must be at least 3 characters";
+    }
+
+    if (!displayName.trim()) {
+      newErrors.displayName = "Display name is required";
+    } else if (displayName.trim().length < 2) {
+      newErrors.displayName = "Display name must be at least 2 characters";
+    }
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!validateEmail(email.trim())) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const clearError = (field: keyof FormErrors) => {
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
   const handleSubmit = async () => {
+    if (!validate()) return;
+
     const data: CreateUserData = {
       role,
-      userId,
-      displayName,
-      email,
-      phone: phone || undefined,
+      userId: userId.trim(),
+      displayName: displayName.trim(),
+      email: email.trim(),
+      phone: phone.trim() || undefined,
     };
 
     try {
@@ -75,6 +123,7 @@ export function AddUserDialog() {
     setEmail("");
     setPhone("");
     setRole("ANALYST");
+    setErrors({});
   };
 
   return (
@@ -189,37 +238,58 @@ export function AddUserDialog() {
             <div className="grid gap-4 py-2">
               <div className="grid gap-2">
                 <label className="text-sm font-medium" htmlFor="userId">
-                  User ID
+                  User ID <span className="text-destructive">*</span>
                 </label>
                 <Input
                   id="userId"
                   value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
+                  onChange={(e) => {
+                    setUserId(e.target.value);
+                    clearError("userId");
+                  }}
                   placeholder="e.g. bob"
+                  className={errors.userId ? "border-destructive" : ""}
                 />
+                {errors.userId && (
+                  <p className="text-destructive text-xs">{errors.userId}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <label className="text-sm font-medium" htmlFor="displayName">
-                  Display Name
+                  Display Name <span className="text-destructive">*</span>
                 </label>
                 <Input
                   id="displayName"
                   value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
+                  onChange={(e) => {
+                    setDisplayName(e.target.value);
+                    clearError("displayName");
+                  }}
                   placeholder="e.g. Bob Analyst"
+                  className={errors.displayName ? "border-destructive" : ""}
                 />
+                {errors.displayName && (
+                  <p className="text-destructive text-xs">{errors.displayName}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <label className="text-sm font-medium" htmlFor="email">
-                  Email
+                  Email <span className="text-destructive">*</span>
                 </label>
                 <Input
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    clearError("email");
+                  }}
                   placeholder="e.g. bob@acme.example"
+                  className={errors.email ? "border-destructive" : ""}
                 />
+                {errors.email && (
+                  <p className="text-destructive text-xs">{errors.email}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <label className="text-sm font-medium" htmlFor="phone">

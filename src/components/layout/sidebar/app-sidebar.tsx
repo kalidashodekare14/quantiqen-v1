@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth-context";
 import { useProfile } from "@/features/profile/hooks/useProfile";
 
@@ -28,7 +29,7 @@ function getInitials(name: string | null | undefined): string {
 
 export function AppSidebar() {
   const { user } = useAuth();
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading } = useProfile();
 
   const displayName = profile?.displayName ?? user?.user_id ?? "User";
   const role = user?.role ?? "";
@@ -52,8 +53,17 @@ export function AppSidebar() {
                 <AvatarFallback className="text-xs">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{displayName}</span>
-                <span className="text-muted-foreground truncate text-xs">{role}</span>
+                {isLoading ? (
+                  <>
+                    <Skeleton className="h-4 w-24 rounded" />
+                    <Skeleton className="mt-1 h-3 w-16 rounded" />
+                  </>
+                ) : (
+                  <>
+                    <span className="truncate font-semibold">{displayName}</span>
+                    <span className="text-muted-foreground truncate text-xs">{role}</span>
+                  </>
+                )}
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
