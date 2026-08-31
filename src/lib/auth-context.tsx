@@ -94,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (orgId: string, userId: string, password: string, turnstileToken?: string) => {
+      await seedCsrfToken();
       const response = await authApi.login({ orgId, userId, password }, turnstileToken);
       const res = response.data;
 

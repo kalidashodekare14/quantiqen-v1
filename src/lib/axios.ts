@@ -19,8 +19,8 @@ export function seedCsrfToken(): Promise<void> {
     try {
       const res = await api.get("/health");
       csrfToken = res.data?.csrfToken ?? null;
-    } catch {
-      /* ignore — will fail closed on first POST anyway */
+    } catch (err) {
+      console.error("[csrf] seeding failed:", err);
     }
     csrfSeeded = true;
   })();
@@ -29,7 +29,7 @@ export function seedCsrfToken(): Promise<void> {
 }
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: "",
   timeout: 30000,
   withCredentials: true,
   headers: {
@@ -101,7 +101,7 @@ api.interceptors.response.use(
 
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh`,
+        "/api/v1/auth/refresh",
         null,
         { withCredentials: true },
       );
