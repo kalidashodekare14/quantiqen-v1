@@ -15,11 +15,12 @@ import type { RiskTrendPoint } from "@/types/analytics.types";
 
 interface RiskTrendChartProps {
   data: RiskTrendPoint[];
+  subtitle?: string;
 }
 
-const RiskTrendChart = ({ data }: RiskTrendChartProps) => {
+const RiskTrendChart = ({ data, subtitle = "Last 14 days" }: RiskTrendChartProps) => {
   return (
-    <ChartCard title="Risk Trend" subtitle="Last 14 days">
+    <ChartCard title="Risk Trend" subtitle={subtitle}>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
@@ -43,7 +44,7 @@ const RiskTrendChart = ({ data }: RiskTrendChartProps) => {
             stroke="#f87171"
             strokeWidth={2}
             dot={false}
-            name="Risk Score"
+            name="Avg Risk Score"
           />
           <Line
             type="monotone"
@@ -51,7 +52,7 @@ const RiskTrendChart = ({ data }: RiskTrendChartProps) => {
             stroke="#fb923c"
             strokeWidth={2}
             dot={false}
-            name="Threats"
+            name="Total Risks"
           />
         </LineChart>
       </ResponsiveContainer>

@@ -1,3 +1,4 @@
+// @mock-retained - no platform/identity endpoint exists for this data; parked intentionally.
 import recommendationsData from "@/mock-data/recommendations.json"
 import { RecommendationsData } from "@/types/recommendation.types"
 

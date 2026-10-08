@@ -1,3 +1,4 @@
+// @mock-retained - no platform/identity endpoint exists for this data; parked intentionally.
 import notificationsData from "@/mock-data/notifications.json";
 
 import { NotificationsData } from "@/types/notification.types";

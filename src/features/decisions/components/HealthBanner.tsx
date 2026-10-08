@@ -11,9 +11,17 @@ const slideInRight = {
 };
 
 const HealthBanner = () => {
-  const { isError } = useHealthCheck();
+  const { data, isError } = useHealthCheck();
 
-  if (!isError) return null;
+  const isDegraded = data !== undefined && data.platformState !== "HEALTHY";
+
+  if (!isError && !isDegraded) return null;
+
+  const message = isError
+    ? "Platform Unreachable — Cannot connect to the platform backend."
+    : `Platform Degraded (${data?.platformState})${
+        data?.suspensionActive ? " · Suspension active" : ""
+      }`;
 
   return (
     <motion.div
@@ -22,9 +30,7 @@ const HealthBanner = () => {
     >
       <div className="flex items-center gap-3">
         <AlertTriangle className="text-destructive size-5 shrink-0" />
-        <p className="text-destructive text-sm">
-          AI Engine Unavailable — Cannot connect to backend. Analysis is disabled.
-        </p>
+        <p className="text-destructive text-sm">{message}</p>
       </div>
       <span className="text-muted-foreground text-xs">Retrying every 30 seconds...</span>
     </motion.div>

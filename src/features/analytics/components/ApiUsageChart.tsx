@@ -15,11 +15,12 @@ import type { ApiUsagePoint } from "@/types/analytics.types";
 
 interface ApiUsageChartProps {
   data: ApiUsagePoint[];
+  subtitle?: string;
 }
 
-const ApiUsageChart = ({ data }: ApiUsageChartProps) => {
+const ApiUsageChart = ({ data, subtitle = "Last 14 days" }: ApiUsageChartProps) => {
   return (
-    <ChartCard title="API Usage" subtitle="Last 14 days">
+    <ChartCard title="API Usage" subtitle={subtitle}>
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} barSize={12}>
           <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
@@ -41,13 +42,7 @@ const ApiUsageChart = ({ data }: ApiUsageChartProps) => {
             dataKey="requests"
             fill="#60a5fa"
             radius={[4, 4, 0, 0]}
-            name="Requests"
-          />
-          <Bar
-            dataKey="errors"
-            fill="#f87171"
-            radius={[4, 4, 0, 0]}
-            name="Errors"
+            name="Events"
           />
         </BarChart>
       </ResponsiveContainer>

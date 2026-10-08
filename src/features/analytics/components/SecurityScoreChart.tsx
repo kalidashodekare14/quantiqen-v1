@@ -14,11 +14,12 @@ import type { SecurityScorePoint } from "@/types/analytics.types";
 
 interface SecurityScoreChartProps {
   data: SecurityScorePoint[];
+  subtitle?: string;
 }
 
-const SecurityScoreChart = ({ data }: SecurityScoreChartProps) => {
+const SecurityScoreChart = ({ data, subtitle = "Last 14 days" }: SecurityScoreChartProps) => {
   return (
-    <ChartCard title="Security Score Timeline" subtitle="Last 14 days">
+    <ChartCard title="Security Score Timeline" subtitle={subtitle}>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data}>
           <defs>

@@ -15,11 +15,12 @@ import type { DecisionTrendPoint } from "@/types/analytics.types";
 
 interface DecisionTrendChartProps {
   data: DecisionTrendPoint[];
+  subtitle?: string;
 }
 
-const DecisionTrendChart = ({ data }: DecisionTrendChartProps) => {
+const DecisionTrendChart = ({ data, subtitle = "Last 14 days" }: DecisionTrendChartProps) => {
   return (
-    <ChartCard title="Decision Trend" subtitle="Last 14 days">
+    <ChartCard title="Decision Trend" subtitle={subtitle}>
       <ResponsiveContainer width="100%" height={220}>
         <AreaChart data={data}>
           <defs>

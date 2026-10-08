@@ -9,7 +9,7 @@ Enterprise Security Decision Infrastructure Dashboard
 
 ## Overview
 
-QUANTIQEN is an enterprise-grade Security Decision Infrastructure (SDI) dashboard built for AnantNetra Technologies. It provides real-time security monitoring, AI-driven recommendations, and centralized management of security decisions, assets, and risk analytics. This V1 prototype uses mock JSON data to demonstrate the full UI/UX; real API integration is planned for the next sprint.
+QUANTIQEN is an enterprise-grade Security Decision Infrastructure (SDI) dashboard built for AnantNetra Technologies. It provides real-time security monitoring, AI-driven recommendations, and centralized management of security decisions, assets, and risk analytics. This version is integrated with the live platform backend (`https://quantiqen-backend.onrender.com`) via a Next.js proxy; a small set of features without backend endpoints remain on annotated mock data.
 
 ## Features
 
@@ -71,7 +71,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser. The login page redirects to `/dashboard` after authentication.
 
-> **Note:** `NEXT_PUBLIC_API_URL` is not required for V1 — mock data uses direct JSON imports, not Axios. Add this variable when connecting the real backend in the next sprint.
+> **Note:** Identity/auth traffic uses `NEXT_PUBLIC_API_URL` (identity service, unchanged). Platform traffic is proxied through `/platform/:path*` → `NEXT_PUBLIC_PLATFORM_API_URL` (defaults to `https://quantiqen-backend.onrender.com`).
 
 ### Build
 
@@ -137,36 +137,17 @@ src/
 └── utils/                        # Pure utility functions (color, date, string)
 ```
 
-## Mock Data Strategy
+## Data Source Status
 
-Every feature follows a three-layer architecture: **View → Hook → Service → Mock JSON**. Services currently import static JSON files directly and cast them to typed interfaces — no Axios calls are made. This means `NEXT_PUBLIC_API_URL` has no effect on V1; it exists solely for the next sprint when real endpoints replace the JSON imports. When the real API becomes available, only the service file changes — views and hooks remain untouched.
+Every feature follows a three-layer architecture: **View → Hook → Service → API/Mock**. Live features call the platform backend through `src/lib/platform-axios.ts` (baseURL `/platform`, Bearer JWT) or the identity service (`src/lib/axios.ts`, unchanged). Views and hooks are agnostic — they receive the same typed data either way.
 
-### Before (mock)
+### Live (platform backend)
 
-```ts
-// features/dashboard/services/dashboard.service.ts
-import dashboardData from "@/mock-data/dashboard.json";
-import { DashboardData } from "@/types/dashboard.types";
+Dashboard · Analytics · Monitoring (feed + Situations + Network Observations) · Decision Center · Assets · API Management · Reports · Organization overview · Guardrail policies · Dual audit log (portal + platform) · Compliance · Scans · Teams · Notification preferences · Webhooks · Delivery log · Platform Ops (status/DLQ/incidents) · Profile (identity) · MFA/IP policy (identity)
 
-export const getDashboard = async () => {
-  return dashboardData as unknown as DashboardData;
-};
-```
+### Mock-retained (`@mock-retained` — no backend endpoints)
 
-### After (real API)
-
-```ts
-// features/dashboard/services/dashboard.service.ts
-import { api } from "@/lib/axios";
-import { DashboardData } from "@/types/dashboard.types";
-
-export const getDashboard = async () => {
-  const { data } = await api.get<DashboardData>("/dashboard");
-  return data;
-};
-```
-
-The hook and view need zero changes — they receive the same typed data either way. This pattern is identical across all 12 features.
+AI Recommendations · Notifications inbox · Findings tab · General UI settings · Report PDF export (client-side `.md`) · Global search
 
 ## Available Routes
 
@@ -185,6 +166,12 @@ The hook and view need zero changes — they receive the same typed data either 
 | `/notifications`      | Notifications      | Severity-coded notification list                 |
 | `/profile`            | Profile            | User profile with edit modal                     |
 | `/settings`           | Settings           | Appearance, notifications, preferences, security |
+| `/scans`              | Scans              | Scan policies, jobs, and results                 |
+| `/organization/teams` | Teams              | Team CRUD and member management                  |
+| `/organization/guardrails` | Guardrails    | Policy rules builder, versions, activate/archive |
+| `/organization/compliance` | Compliance    | Framework controls and coverage                  |
+| `/organization/audit-log`  | Audit Log      | Portal + platform audit with source toggle       |
+| `/platform-ops`       | Platform Ops       | Status, DLQ replay, incidents (admin only)       |
 
 ## Error Handling
 
@@ -246,17 +233,18 @@ The app uses a **dark-by-default** theme with full light mode support via `next-
 
 1. Push the repository to GitHub
 2. Import the project in [Vercel](https://vercel.com/new)
-3. Configure environment variable:
-   - `NEXT_PUBLIC_API_URL` — your API base URL (not required for V1 — mock data uses direct JSON imports, not Axios. Add it when connecting the real backend in the next sprint.)
+3. Configure environment variables:
+   - `NEXT_PUBLIC_API_URL` — identity service base URL (auth/portal endpoints)
+   - `NEXT_PUBLIC_PLATFORM_API_URL` — platform backend base URL (optional; defaults to `https://quantiqen-backend.onrender.com`)
 4. Deploy — zero configuration required
 
 ### Live Demo
 
 [https://quantiqen.vercel.app](https://quantiqen.vercel.app)
 
-## Next Sprint
+## Remaining Work
 
-The next sprint will replace all 12 mock JSON files with live API endpoints. The service layer (in `src/features/*/services/`) is the only code that will change — each service function will switch from importing static JSON to calling the Axios client configured in `src/lib/axios.ts`. Every view, hook, component, and type will remain identical. The `NEXT_PUBLIC_API_URL` environment variable is already wired into the Axios instance and ready to go.
+Features annotated `@mock-retained` above await backend endpoints (notifications inbox, findings, AI recommendations, general UI settings, global search, report PDF export). When endpoints land, only the service file changes — views and hooks remain untouched. Full integration plan and API contract: `docs/API.md` (116 platform endpoints) and `docs/TASK.md` (phase log).
 
 ---
 

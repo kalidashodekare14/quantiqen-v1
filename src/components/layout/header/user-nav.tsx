@@ -16,7 +16,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { useAuth } from "@/lib/auth-context";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfile } from "@/features/profile/hooks/useProfile";
-import dashboardData from "@/mock-data/dashboard.json";
+import { useOrganization } from "@/hooks/use-organization";
 
 const LG_BREAKPOINT = "(min-width: 1024px)";
 
@@ -34,10 +34,11 @@ export function UserNav() {
   const isLg = useMediaQuery(LG_BREAKPOINT);
   const { user, logout, isLoggingOut } = useAuth();
   const { data: profile, isLoading } = useProfile();
+  const { data: organization } = useOrganization();
 
   const displayName = profile?.displayName ?? user?.user_id ?? "User";
   const email = profile?.email ?? "";
-  const orgName = profile?.organizationName ?? "";
+  const orgName = organization?.orgName ?? profile?.organizationName ?? "";
   const initials = getInitials(profile?.displayName ?? user?.user_id);
 
   const handleLogout = async () => {
@@ -76,7 +77,7 @@ export function UserNav() {
           )}
           {!isLg && (
             <span className="bg-primary/10 text-primary mt-2 inline-block rounded-full px-2 py-0.5 text-[10px] leading-normal font-medium">
-              {dashboardData.organization.plan} Plan
+              {organization?.planTier ?? "Free"} Plan
             </span>
           )}
         </div>

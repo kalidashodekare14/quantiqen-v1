@@ -3,7 +3,9 @@
 import { PageHeader } from "@/components/shared/PageHeader";
 import { useSettings } from "./hooks/useSettings";
 import AppearanceSettings from "./components/AppearanceSettings";
-import NotificationSettingsCard from "./components/NotificationSettingsCard";
+import NotificationPreferencesCard from "./components/NotificationPreferencesCard";
+import WebhooksCard from "./components/WebhooksCard";
+import DeliveryLogCard from "./components/DeliveryLogCard";
 import PreferencesCard from "./components/PreferencesCard";
 import SecurityCard from "./components/SecurityCard";
 import SettingsSkeleton from "./components/SettingsSkeleton";
@@ -26,7 +28,11 @@ const ViewSettings = () => {
 
       <AppearanceSettings />
 
-      <NotificationSettingsCard notifications={settings.notifications} />
+      <NotificationPreferencesCard />
+
+      <WebhooksCard />
+
+      <DeliveryLogCard />
 
       <PreferencesCard preferences={settings.preferences} />
 

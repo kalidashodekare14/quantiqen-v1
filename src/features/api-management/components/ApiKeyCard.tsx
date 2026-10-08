@@ -1,114 +1,177 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Copy, Check } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { RefreshCw, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import AppButton from "@/components/shared/AppButton";
-import type { ApiKey } from "@/types/api-management.types";
-import { formatRelativeTime } from "@/utils/date/date";
-import { maskKey } from "@/utils/string/maskKey";
-import UsageProgress from "./UsageProgress";
+import { getFriendlyError } from "@/utils/errorMessages";
+import { formatDateTime, formatRelativeTime } from "@/utils/date/date";
+import type { ApiKey, RotateApiKeyResponse } from "@/types/platform/api-key.types";
+import { useDeleteApiKey, useRotateApiKey } from "../hooks/useApiManagement";
 import { fadeInScale } from "@/lib/motion";
 
 interface ApiKeyCardProps {
   apiKey: ApiKey;
+  isAdmin: boolean;
+  onRotated: (response: RotateApiKeyResponse) => void;
 }
 
-type tokenStatus = "Active" | "Expired";
-
-const statusStyles: Record<tokenStatus, string> = {
-  Active: "bg-chart-2/10 text-chart-2",
-  Expired: "bg-destructive/10 text-destructive",
+const statusStyles: Record<string, string> = {
+  ACTIVE: "bg-chart-2/10 text-chart-2",
+  REVOKED: "bg-destructive/10 text-destructive",
+  EXPIRED: "bg-chart-3/10 text-chart-3",
 };
 
-const ApiKeyCard = ({ apiKey }: ApiKeyCardProps) => {
-  const [copied, setCopied] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+const environmentStyles: Record<string, string> = {
+  live: "bg-destructive/10 text-destructive",
+  test: "bg-chart-5/10 text-chart-5",
+  dev: "bg-muted text-muted-foreground",
+};
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(apiKey.key);
+const ApiKeyCard = ({ apiKey, isAdmin, onRotated }: ApiKeyCardProps) => {
+  const [confirmRevoke, setConfirmRevoke] = useState(false);
 
-      setCopied(true);
+  const rotate = useRotateApiKey();
+  const revoke = useDeleteApiKey();
 
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+  const isActive = apiKey.status === "ACTIVE";
 
-      timeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-    } catch {
-      // Handle error
-      console.error("Failed to copy API key.");
-    }
+  const handleRotate = () => {
+    rotate.mutate(apiKey.id, {
+      onSuccess: (response) => onRotated(response),
+      onError: (error) => toast.error(getFriendlyError(error).message),
+    });
   };
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+  const handleRevoke = () => {
+    revoke.mutate(apiKey.id, {
+      onSuccess: () => {
+        toast.success("API key revoked.");
+        setConfirmRevoke(false);
+      },
+      onError: (error) => {
+        setConfirmRevoke(false);
+        toast.error(getFriendlyError(error).message);
+      },
+    });
+  };
 
   return (
     <motion.div
       {...fadeInScale}
       className="bg-card/80 backdrop-blur-md border border-foreground/10 flex flex-col gap-4 rounded-xl p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5"
     >
-      <div className="flex items-center justify-between">
-        <span className="text-card-foreground text-sm font-semibold lg:text-base">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-card-foreground truncate text-sm font-semibold lg:text-base">
           {apiKey.name}
         </span>
         <span
-          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${
-            statusStyles[apiKey.tokenStatus]
-          }`}
+          className={`inline-block shrink-0 rounded-full px-2 py-0.5 text-xs font-medium lg:text-sm ${statusStyles[apiKey.status] ?? "bg-muted text-muted-foreground"}`}
         >
-          {apiKey.tokenStatus}
+          {apiKey.status}
         </span>
       </div>
 
-      <div className="flex items-center gap-2">
-        <code className="bg-muted text-muted-foreground flex-1 truncate rounded-md px-2 py-1 font-mono text-sm lg:text-base">
-          {maskKey(apiKey.key)}
-        </code>
-        <button
-          onClick={handleCopy}
-          type="button"
-          aria-label="Copy API Key"
-          className="text-muted-foreground hover:bg-muted hover:text-card-foreground flex size-7 shrink-0 items-center justify-center rounded-md transition-colors"
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span
+          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${environmentStyles[apiKey.environment] ?? "bg-muted text-muted-foreground"}`}
         >
-          {copied ? <Check className="text-chart-2 size-3.5" /> : <Copy className="size-3.5" />}
-        </button>
+          {apiKey.environment}
+        </span>
+        {apiKey.scopes.map((scope) => (
+          <Badge key={scope} variant="secondary" className="font-mono text-xs">
+            {scope}
+          </Badge>
+        ))}
       </div>
 
-      <div className="space-y-3">
-        <UsageProgress title="Daily Usage" current={apiKey.dailyUsage} limit={apiKey.dailyLimit} />
-        <UsageProgress
-          title="Monthly Usage"
-          current={apiKey.monthlyUsage}
-          limit={apiKey.monthlyLimit}
-        />
-      </div>
-
-      <div className="flex items-center justify-between text-xs lg:text-sm">
-        <div>
-          <span className="text-muted-foreground">Remaining: </span>
-          <span className="text-chart-5 font-medium">
-            {apiKey.remainingRequests.toLocaleString()}
+      <div className="flex flex-col gap-1.5 text-xs lg:text-sm">
+        <div className="flex justify-between gap-2">
+          <span className="text-muted-foreground">Created</span>
+          <span className="text-card-foreground" title={formatDateTime(apiKey.createdAt)}>
+            {formatRelativeTime(apiKey.createdAt)}
           </span>
         </div>
-        <div>
-          <span className="text-muted-foreground">Last used: </span>
-          <span className="text-card-foreground">{formatRelativeTime(apiKey.lastUsed)}</span>
+        <div className="flex justify-between gap-2">
+          <span className="text-muted-foreground">Expires</span>
+          <span className="text-card-foreground">
+            {apiKey.expiresAt ? formatDateTime(apiKey.expiresAt) : "Never"}
+          </span>
         </div>
+        <div className="flex justify-between gap-2">
+          <span className="text-muted-foreground">Last used</span>
+          <span className="text-card-foreground">
+            {apiKey.lastUsedAt ? formatRelativeTime(apiKey.lastUsedAt) : "Never"}
+          </span>
+        </div>
+        {apiKey.revokedAt && (
+          <div className="flex justify-between gap-2">
+            <span className="text-muted-foreground">Revoked</span>
+            <span className="text-destructive" title={formatDateTime(apiKey.revokedAt)}>
+              {formatRelativeTime(apiKey.revokedAt)}
+            </span>
+          </div>
+        )}
       </div>
 
-      <AppButton variant="outline" size="lg" fullWidth>
-        Regenerate Key
-      </AppButton>
+      {isAdmin && (
+        <div className="flex gap-2">
+          <AppButton
+            variant="outline"
+            size="md"
+            className="flex-1"
+            disabled={!isActive || rotate.isPending}
+            loading={rotate.isPending}
+            onClick={handleRotate}
+          >
+            <RefreshCw className="mr-1.5 size-4" />
+            Regenerate Key
+          </AppButton>
+          <AppButton
+            variant="danger"
+            size="md"
+            disabled={!isActive || revoke.isPending}
+            onClick={() => setConfirmRevoke(true)}
+            aria-label="Revoke API key"
+          >
+            <Trash2 className="size-4" />
+          </AppButton>
+        </div>
+      )}
+
+      <AlertDialog open={confirmRevoke} onOpenChange={setConfirmRevoke}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Revoke API key?</AlertDialogTitle>
+            <AlertDialogDescription>
+              &ldquo;{apiKey.name}&rdquo; will stop working immediately. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={revoke.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleRevoke}
+              disabled={revoke.isPending}
+            >
+              {revoke.isPending ? "Revoking…" : "Revoke"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 };

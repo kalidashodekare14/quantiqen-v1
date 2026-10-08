@@ -1,5 +1,6 @@
 import axios from "axios";
 import { toast } from "sonner";
+import { refreshAccessToken } from "./refresh-token";
 import { tokenManager } from "./token-manager";
 
 let csrfToken: string | null = null;
@@ -100,13 +101,7 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const res = await axios.post(
-        "/api/v1/auth/refresh",
-        null,
-        { withCredentials: true },
-      );
-      const { accessToken: newToken } = res.data;
-      tokenManager.set(newToken);
+      const newToken = await refreshAccessToken();
       processQueue(null, newToken);
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return api(originalRequest);

@@ -1,6 +1,6 @@
 "use client";
 
-import { Zap, Server, Brain, AlertTriangle, ShieldAlert, CheckCircle } from "lucide-react";
+import { Zap, Server, Brain, AlertTriangle, ShieldAlert, Activity } from "lucide-react";
 import { StatPills } from "@/components/shared/StatPills";
 import type { MonitoringStats as MonitoringStatsType } from "@/types/monitoring.types";
 
@@ -18,32 +18,31 @@ const MonitoringStats = ({ stats }: MonitoringStatsProps) => {
           icon: Zap,
         },
         {
-          value: stats.assetsUpdated.toLocaleString(),
-          label: "Assets Updated",
+          value: stats.assets.toLocaleString(),
+          label: "Total Assets",
           icon: Server,
         },
         {
-          value: stats.decisionsCreated.toLocaleString(),
-          label: "Decisions Created",
+          value: stats.decisions.toLocaleString(),
+          label: "Decisions",
           icon: Brain,
         },
         {
-          value: stats.risksChanged.toLocaleString(),
-          label: "Risks Changed",
+          value: stats.risks.toLocaleString(),
+          label: "Active Risks",
           color: "warning",
           icon: AlertTriangle,
         },
         {
-          value: stats.securityEvents.toLocaleString(),
-          label: "Security Events",
-          color: "danger",
-          icon: ShieldAlert,
+          value: stats.events.toLocaleString(),
+          label: "Events",
+          icon: Activity,
         },
         {
-          value: stats.decisionsDelivered.toLocaleString(),
-          label: "Decisions Delivered",
-          color: "success",
-          icon: CheckCircle,
+          value: stats.findings.toLocaleString(),
+          label: "Findings",
+          color: "danger",
+          icon: ShieldAlert,
         },
       ]}
     />
