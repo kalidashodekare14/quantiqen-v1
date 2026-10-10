@@ -60,6 +60,10 @@ function getEventMessage(event: StreamEvent, label: string): string {
   return label;
 }
 
+function resolveEventDate(event: StreamEvent): string {
+  return event.createdAt ?? event.timestamp ?? event.occurredAt ?? event.receivedAt ?? "";
+}
+
 function mapStreamEvent(event: StreamEvent): MonitoringEvent {
   const label = getEventLabel(event.type);
 
@@ -67,7 +71,7 @@ function mapStreamEvent(event: StreamEvent): MonitoringEvent {
     id: event.id,
     type: label,
     message: getEventMessage(event, label),
-    timestamp: event.createdAt,
+    timestamp: resolveEventDate(event),
     severity: getEventSeverity(event),
     asset: readString(event.payload, "assetName") ?? readString(event.payload, "assetId"),
   };
@@ -83,6 +87,10 @@ export const getMonitoringData = async (): Promise<MonitoringData> => {
   const summary = summaryRes.data;
   const requestsToday =
     usageRes.data.length > 0 ? usageRes.data[usageRes.data.length - 1].count : 0;
+
+  if (recentRes.data.events.length > 0) {
+    console.info("[monitoring] raw recent event", recentRes.data.events[0]);
+  }
 
   return {
     lastUpdated: recentRes.data.timestamp,

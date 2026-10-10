@@ -6724,6 +6724,139 @@ None.
 
 ---
 
+### 10.1b `GET /api/v1/dashboard/overview` — Single dashboard overview (org + stats + 8 KPI cards)
+
+Single aggregate payload powering the whole dashboard page (WelcomeBar + StatsRow + all KPI cards) — replaces the frontend's ~12 parallel dashboard requests. **Additive:** `GET /dashboard/summary` (10.1) is unchanged.
+
+**Auth:** Bearer JWT · **RBAC:** GET default-allow · **Cache:** Redis `dashboard:overview:{orgId}:{days}`, **TTL 60s** (fail-open to live compute)
+
+#### Path / Query Parameters
+
+| Param  | Type | Required | Default | Notes                                                                                              |
+| ------ | ---- | -------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `days` | int  | No       | `14`    | Sparkline window, valid 1–90. Invalid (non-numeric, `< 1`, `> 90`) → **14**, silently — never 422. |
+
+#### Request Body Schema (JSON)
+
+`Request Body: None`
+
+#### Success Response Schema (JSON)
+
+```json
+// 200 OK
+{
+  "timestamp": "2026-10-10T12:00:00.000Z",
+  "organization": {
+    "name": "Acme Corp",
+    "plan": "PRO",
+    "users": 8,
+    "assets": 12,
+    "apiKeys": 10
+  },
+  "stats": {
+    "securityScore": 74,
+    "totalAssets": 12,
+    "activeApiKeys": 5,
+    "apiRequestsToday": 120,
+    "activeRisks": 40,
+    "pendingDecisions": 3
+  },
+  "cards": [
+    {
+      "id": "security-decision",
+      "value": 74,
+      "percentageChange": 5,
+      "trend": "up",
+      "sparkline": [70, 71, 74]
+    },
+    {
+      "id": "business-risk",
+      "value": 61,
+      "percentageChange": -3,
+      "trend": "down",
+      "sparkline": [65, 64, 61]
+    },
+    {
+      "id": "organization-health",
+      "value": 82,
+      "percentageChange": 2,
+      "trend": "up",
+      "sparkline": [80, 81, 82]
+    },
+    {
+      "id": "findings",
+      "value": 56,
+      "percentageChange": 8,
+      "trend": "up",
+      "sparkline": [40, 48, 56]
+    },
+    {
+      "id": "events",
+      "value": 120,
+      "percentageChange": 12,
+      "trend": "up",
+      "sparkline": [90, 107, 120]
+    },
+    {
+      "id": "decisions",
+      "value": 42,
+      "percentageChange": 0,
+      "trend": "stable",
+      "sparkline": [40, 42, 42]
+    },
+    {
+      "id": "assets",
+      "value": 12,
+      "percentageChange": 20,
+      "trend": "up",
+      "sparkline": [9, 10, 12]
+    },
+    {
+      "id": "active-api-keys",
+      "value": 5,
+      "percentageChange": 0,
+      "trend": "stable",
+      "sparkline": [5, 5, 5]
+    }
+  ]
+}
+```
+
+#### Hard Guarantees
+
+- Always exactly 8 cards, in the order above — even for empty orgs.
+- `sparkline` is dense and ascending (one point per day, oldest first, capped at `days`), and `sparkline.at(-1) === value` for every card.
+- Count cards (`findings`, `events`, `decisions`, `assets`, `active-api-keys`) zero-fill empty days; score cards (`security-decision`, `business-risk`, `organization-health`) carry the previous value forward (seeded by the last snapshot before the window); zero history → `[value]` (single point).
+- `percentageChange` = last point vs previous point, integer, never `null` (`prev=0 && last>0` → `100`; `prev=0 && last=0` → `0`; `< 2` points → `0`). `trend` always matches its sign (`>0` up, `<0` down, else `stable`).
+- Consistency: `stats.securityScore` / `stats.totalAssets` / `stats.activeApiKeys` equal the corresponding card values, and `organization.assets` / `organization.apiKeys` are computed from the same snapshot — all numbers agree by construction.
+- Series sources: score cards read nightly snapshots (`organization_score_history`, `daily_risk_snapshots`); count cards are live `GROUP BY DATE(...)` counts; current score values reuse the exact `ScoringService` computation used by `GET /dashboard/summary` — the three can never drift.
+
+#### Error Response Schema (JSON)
+
+```json
+// 401 Unauthorized
+{
+  "error": {
+    "code": "Unauthorized",
+    "message": "Unauthorized",
+    "request_id": "550e8400-e29b-41d4-a716-446655440120"
+  }
+}
+```
+
+```json
+// 500 Internal Server Error — unhandled scoring/DB failure
+{
+  "error": {
+    "code": "INTERNAL_SERVER_ERROR",
+    "message": "An unexpected error occurred",
+    "request_id": "550e8400-e29b-41d4-a716-446655440121"
+  }
+}
+```
+
+---
+
 ### 10.2 `GET /api/v1/analytics/risk-trend` — Risk trend (snapshot)
 
 **Auth:** Bearer JWT · **RBAC:** GET default-allow

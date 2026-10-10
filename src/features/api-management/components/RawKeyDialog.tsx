@@ -46,8 +46,8 @@ const RawKeyDialog = ({ open, onClose, rawKey, title, rotated }: RawKeyDialogPro
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex items-center gap-2 rounded-lg border bg-muted/50 p-3">
-          <code className="text-card-foreground flex-1 overflow-x-auto font-mono text-sm whitespace-nowrap">
+        <div className="flex items-start gap-2 rounded-lg border bg-muted/50 p-3">
+          <code className="text-card-foreground min-w-0 flex-1 break-all font-mono text-sm leading-relaxed">
             {rawKey}
           </code>
           <Button
@@ -55,6 +55,7 @@ const RawKeyDialog = ({ open, onClose, rawKey, title, rotated }: RawKeyDialogPro
             size="sm"
             onClick={handleCopy}
             aria-label="Copy API key"
+            className="shrink-0"
           >
             {copied ? (
               <>

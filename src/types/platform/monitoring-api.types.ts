@@ -3,7 +3,10 @@ export interface StreamEvent {
   organizationId: string;
   type: string;
   payload: Record<string, unknown> | null;
-  createdAt: string;
+  createdAt?: string;
+  timestamp?: string;
+  occurredAt?: string;
+  receivedAt?: string;
 }
 
 export interface MonitoringRecentResponse {
