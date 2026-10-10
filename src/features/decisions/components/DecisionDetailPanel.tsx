@@ -10,6 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { statusBadgeClass, tierBadgeClass } from "../decision-badges";
 import { formatDateTime, formatRelativeTime } from "@/utils/date/date";
 import { useDecisionDetail } from "../hooks/useDecisions";
+import { useUsers } from "@/hooks/use-users";
+import { useTeams } from "@/hooks/use-teams";
 import DecisionActions from "./decision-panel/DecisionActions";
 import NotesSection from "./decision-panel/NotesSection";
 import RemediationSection from "./decision-panel/RemediationSection";
@@ -43,6 +45,18 @@ function DetailField({ label, value }: { label: string; value: React.ReactNode }
 const DecisionDetailPanel = ({ decisionId, onClose }: DecisionDetailPanelProps) => {
   const [showEngineVersions, setShowEngineVersions] = useState(false);
   const { data: decision, isLoading, isError, refetch } = useDecisionDetail(decisionId);
+  const { data: users } = useUsers();
+  const { data: teams } = useTeams();
+
+  const resolveUserName = (id: string) => {
+    const user = users?.find((u) => u.id === id);
+    return user ? (user.name ?? user.email ?? user.qipUserId) : id;
+  };
+
+  const resolveTeamName = (id: string) => {
+    const team = teams?.find((t) => t.id === id);
+    return team?.name ?? id;
+  };
 
   const drivers = decision ? Object.entries(decision.risk.drivers) : [];
 
@@ -214,7 +228,19 @@ const DecisionDetailPanel = ({ decisionId, onClose }: DecisionDetailPanelProps) 
                   <DetailField label="Business owner" value={decision.businessOwner} />
                   <DetailField
                     label="Assigned to"
-                    value={decision.assignedToUserId ?? "Unassigned"}
+                    value={
+                      decision.assignedToUserId
+                        ? resolveUserName(decision.assignedToUserId)
+                        : "Unassigned"
+                    }
+                  />
+                  <DetailField
+                    label="Primary team"
+                    value={
+                      decision.primaryTeamId
+                        ? resolveTeamName(decision.primaryTeamId)
+                        : "—"
+                    }
                   />
                   <DetailField
                     label="SLA breach at"

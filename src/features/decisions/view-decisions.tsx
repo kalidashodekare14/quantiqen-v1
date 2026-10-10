@@ -168,7 +168,7 @@ const ViewDecisions = () => {
             <SelectContent>
               <SelectItem value="ALL">All owners</SelectItem>
               {users?.map((user) => (
-                <SelectItem key={user.qipUserId} value={user.qipUserId}>
+                <SelectItem key={user.id} value={user.id}>
                   {user.name ?? user.email ?? user.qipUserId}
                 </SelectItem>
               ))}

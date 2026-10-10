@@ -54,10 +54,20 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
   const assignOwner = useAssignDecisionOwner();
   const assignTeam = useAssignDecisionTeam();
 
-  const { data: users } = useUsers();
-  const { data: teams } = useTeams();
+  const { data: users, isError: usersError } = useUsers();
+  const { data: teams, isError: teamsError } = useTeams();
 
   const canTransition = ["PENDING", "UNDER_REVIEW"].includes(decision.status);
+
+  const resolveUserName = (id: string) => {
+    const user = users?.find((u) => u.id === id);
+    return user ? (user.name ?? user.email ?? user.qipUserId) : id;
+  };
+
+  const resolveTeamName = (id: string) => {
+    const team = teams?.find((t) => t.id === id);
+    return team?.name ?? id;
+  };
 
   const closeDialog = () => {
     setDialog(null);
@@ -151,14 +161,14 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
               <SelectValue
                 placeholder={
                   decision.assignedToUserId
-                    ? `Current: ${decision.assignedToUserId}`
+                    ? `Current: ${resolveUserName(decision.assignedToUserId)}`
                     : "Select a user"
                 }
               />
             </SelectTrigger>
             <SelectContent>
               {users?.map((user) => (
-                <SelectItem key={user.qipUserId} value={user.qipUserId}>
+                <SelectItem key={user.id} value={user.id}>
                   {user.name ?? user.email ?? user.qipUserId}
                 </SelectItem>
               ))}
@@ -176,9 +186,12 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
             disabled={!ownerId || assignOwner.isPending}
             onClick={handleAssignOwner}
           >
-            Assign
+            {assignOwner.isPending ? "Assigning…" : "Assign"}
           </Button>
         </div>
+        {usersError && (
+          <p className="text-destructive text-xs">Unable to load users.</p>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -188,7 +201,9 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
             <SelectTrigger className="h-9 flex-1" aria-label="Select team">
               <SelectValue
                 placeholder={
-                  decision.primaryTeamId ? `Current: ${decision.primaryTeamId}` : "Select a team"
+                  decision.primaryTeamId
+                    ? `Current: ${resolveTeamName(decision.primaryTeamId)}`
+                    : "Select a team"
                 }
               />
             </SelectTrigger>
@@ -212,9 +227,17 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
             disabled={!teamId || assignTeam.isPending}
             onClick={handleAssignTeam}
           >
-            Assign
+            {assignTeam.isPending ? "Assigning…" : "Assign"}
           </Button>
         </div>
+        {teamsError && (
+          <p className="text-destructive text-xs">Unable to load teams.</p>
+        )}
+        {teams && teams.length === 0 && !teamsError && (
+          <p className="text-muted-foreground text-xs">
+            No teams available — create teams under Organization → Teams.
+          </p>
+        )}
       </div>
 
       <Dialog open={dialog === "approve"} onOpenChange={(open) => !open && closeDialog()}>
