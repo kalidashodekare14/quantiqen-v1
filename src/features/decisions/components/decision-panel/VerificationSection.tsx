@@ -24,7 +24,11 @@ import {
 import { useRole } from "@/hooks/use-role";
 import { formatDateTime } from "@/utils/date/date";
 import { getFriendlyError } from "@/utils/errorMessages";
-import type { VerificationResult, VerificationType } from "@/types/platform/decision-api.types";
+import type {
+  DecisionStatus,
+  VerificationResult,
+  VerificationType,
+} from "@/types/platform/decision-api.types";
 import { useDecisionVerifications, useSubmitVerification } from "../../hooks/useDecisions";
 import CorrectionDialog from "./CorrectionDialog";
 import EvidenceInputList, {
@@ -34,6 +38,7 @@ import EvidenceInputList, {
 
 interface VerificationSectionProps {
   decisionId: string;
+  decisionStatus: DecisionStatus;
 }
 
 const VERIFICATION_TYPES: VerificationType[] = ["TECHNICAL_RECHECK", "SECURITY_VALIDATION"];
@@ -45,7 +50,7 @@ const resultBadgeClass: Record<VerificationResult, string> = {
   PARTIAL: "bg-chart-3/10 text-chart-3",
 };
 
-const VerificationSection = ({ decisionId }: VerificationSectionProps) => {
+const VerificationSection = ({ decisionId, decisionStatus }: VerificationSectionProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [verificationType, setVerificationType] = useState<VerificationType>("TECHNICAL_RECHECK");
   const [result, setResult] = useState<VerificationResult>("PASS");
@@ -59,6 +64,7 @@ const VerificationSection = ({ decisionId }: VerificationSectionProps) => {
   const { hasAnyRole } = useRole();
   const isAdmin = hasAnyRole(["CUSTOMER_ADMIN"]);
   const canCorrect = hasAnyRole(["CUSTOMER_ADMIN", "ANALYST"]);
+  const canSubmitVerification = decisionStatus === "REMEDIATION_SUBMITTED";
 
   const { data, isLoading } = useDecisionVerifications(decisionId);
   const submitVerification = useSubmitVerification();
@@ -83,10 +89,11 @@ const VerificationSection = ({ decisionId }: VerificationSectionProps) => {
         },
       },
       {
-        onSuccess: (response) => {
-          const outcome = response.outcome.outcomeType;
-          if (outcome === "VERIFIED") {
+        onSuccess: () => {
+          if (result === "PASS") {
             toast.success("Verification passed — decision verified.");
+          } else if (result === "PARTIAL") {
+            toast.info("Verification partial — decision reopened for re-analysis.");
           } else {
             toast.info("Verification failed — decision reopened for re-analysis.");
           }
@@ -103,11 +110,16 @@ const VerificationSection = ({ decisionId }: VerificationSectionProps) => {
         <p className="text-muted-foreground text-sm">
           {data ? `${data.total} verification${data.total === 1 ? "" : "s"}` : "Verification"}
         </p>
-        {isAdmin && (
-          <Button size="sm" variant="outline" onClick={() => setDialogOpen(true)}>
-            Submit verification
-          </Button>
-        )}
+        {isAdmin &&
+          (canSubmitVerification ? (
+            <Button size="sm" variant="outline" onClick={() => setDialogOpen(true)}>
+              Submit verification
+            </Button>
+          ) : (
+            <span className="text-muted-foreground text-xs">
+              Verification is available after remediation is submitted.
+            </span>
+          ))}
       </div>
 
       {isLoading ? (

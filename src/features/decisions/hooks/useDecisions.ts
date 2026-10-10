@@ -19,12 +19,17 @@ import type {
   SubmitVerificationResponse,
 } from "@/types/platform/decision-api.types";
 
-export const useDecisions = (params: DecisionListParams) => {
+interface UseDecisionsOptions {
+  refetchInterval?: number | false | (() => number | false);
+}
+
+export const useDecisions = (params: DecisionListParams, options?: UseDecisionsOptions) => {
   return useQuery({
     queryKey: ["decisions", params],
     queryFn: () => decisionService.list(params),
     staleTime: 15000,
     refetchOnWindowFocus: false,
+    refetchInterval: options?.refetchInterval,
   });
 };
 

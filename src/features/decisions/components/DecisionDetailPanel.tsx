@@ -296,11 +296,17 @@ const DecisionDetailPanel = ({ decisionId, onClose }: DecisionDetailPanelProps) 
               </PanelSection>
 
               <PanelSection title="Remediation">
-                <RemediationSection decisionId={decision.id} />
+                <RemediationSection
+                  decisionId={decision.id}
+                  decisionStatus={decision.status}
+                />
               </PanelSection>
 
               <PanelSection title="Verification">
-                <VerificationSection decisionId={decision.id} />
+                <VerificationSection
+                  decisionId={decision.id}
+                  decisionStatus={decision.status}
+                />
               </PanelSection>
             </div>
           )}

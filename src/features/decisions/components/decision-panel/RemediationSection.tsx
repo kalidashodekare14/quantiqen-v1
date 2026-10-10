@@ -26,6 +26,7 @@ import { useRole } from "@/hooks/use-role";
 import { formatDateTime } from "@/utils/date/date";
 import { getFriendlyError } from "@/utils/errorMessages";
 import type {
+  DecisionStatus,
   RemediationActionType,
 } from "@/types/platform/decision-api.types";
 import { useDecisionRemediations, useSubmitRemediation } from "../../hooks/useDecisions";
@@ -37,6 +38,7 @@ import EvidenceInputList, {
 
 interface RemediationSectionProps {
   decisionId: string;
+  decisionStatus: DecisionStatus;
 }
 
 const ACTION_TYPES: RemediationActionType[] = [
@@ -47,7 +49,9 @@ const ACTION_TYPES: RemediationActionType[] = [
   "DOCUMENTATION",
 ];
 
-const RemediationSection = ({ decisionId }: RemediationSectionProps) => {
+const SUBMITTABLE_STATUSES: DecisionStatus[] = ["APPROVED", "IN_PROGRESS", "REOPENED"];
+
+const RemediationSection = ({ decisionId, decisionStatus }: RemediationSectionProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [actionType, setActionType] = useState<RemediationActionType>("PATCH_APPLIED");
   const [title, setTitle] = useState("");
@@ -61,6 +65,7 @@ const RemediationSection = ({ decisionId }: RemediationSectionProps) => {
   const { hasAnyRole } = useRole();
   const isAdmin = hasAnyRole(["CUSTOMER_ADMIN"]);
   const canCorrect = hasAnyRole(["CUSTOMER_ADMIN", "ANALYST"]);
+  const canSubmitRemediation = SUBMITTABLE_STATUSES.includes(decisionStatus);
 
   const { data, isLoading } = useDecisionRemediations(decisionId);
   const submitRemediation = useSubmitRemediation();
@@ -106,11 +111,16 @@ const RemediationSection = ({ decisionId }: RemediationSectionProps) => {
         <p className="text-muted-foreground text-sm">
           {data ? `${data.total} remediation action${data.total === 1 ? "" : "s"}` : "Remediation"}
         </p>
-        {isAdmin && (
-          <Button size="sm" variant="outline" onClick={() => setDialogOpen(true)}>
-            Submit remediation
-          </Button>
-        )}
+        {isAdmin &&
+          (canSubmitRemediation ? (
+            <Button size="sm" variant="outline" onClick={() => setDialogOpen(true)}>
+              Submit remediation
+            </Button>
+          ) : (
+            <span className="text-muted-foreground text-xs">
+              Remediation is available for approved, in-progress, or reopened decisions.
+            </span>
+          ))}
       </div>
 
       {isLoading ? (

@@ -99,6 +99,7 @@ const EvidenceInputList = ({ evidences, onChange }: EvidenceInputListProps) => {
               value={evidence.title}
               onChange={(e) => update(index, { title: e.target.value })}
               className="h-9 flex-1"
+              maxLength={500}
             />
             <Button
               type="button"
@@ -115,6 +116,7 @@ const EvidenceInputList = ({ evidences, onChange }: EvidenceInputListProps) => {
             value={evidence.description}
             onChange={(e) => update(index, { description: e.target.value })}
             className="h-9"
+            maxLength={10000}
           />
         </div>
       ))}

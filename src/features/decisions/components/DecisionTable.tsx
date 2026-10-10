@@ -8,9 +8,10 @@ import { formatRelativeTime } from "@/utils/date/date";
 interface DecisionTableProps {
   decisions: DecisionListItem[];
   onRowClick: (decision: DecisionListItem) => void;
+  pageSize: number;
 }
 
-const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
+const DecisionTable = ({ decisions, onRowClick, pageSize }: DecisionTableProps) => {
   return (
     <DataTable<DecisionListItem>
       columns={[
@@ -64,7 +65,8 @@ const DecisionTable = ({ decisions, onRowClick }: DecisionTableProps) => {
       data={decisions}
       onRowClick={onRowClick}
       getRowId={(row) => row.id}
-      pageSize={10}
+      pageSize={pageSize}
+      showPagination={false}
     />
   );
 };

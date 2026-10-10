@@ -32,6 +32,7 @@ interface DataTableProps<T> {
   };
   pageSize?: number;
   getRowId: (row: T) => string;
+  showPagination?: boolean;
 }
 
 export const DataTable = <T,>({
@@ -43,6 +44,7 @@ export const DataTable = <T,>({
   filterOptions,
   getRowId,
   pageSize = 10,
+  showPagination = true,
 }: DataTableProps<T>) => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<string>("All");
@@ -168,26 +170,28 @@ export const DataTable = <T,>({
 
       <div className="bg-card text-muted-foreground flex items-center justify-between rounded-xl p-3 text-sm">
         <span>{filtered.length > 0 ? `${from}-${to} of ${filtered.length}` : "0 of 0"}</span>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={safePage <= 1}
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            className="border-chart-5 border"
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={safePage >= totalPages}
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            className="border-chart-5 border"
-          >
-            Next
-          </Button>
-        </div>
+        {showPagination && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={safePage <= 1}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              className="border-chart-5 border"
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={safePage >= totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              className="border-chart-5 border"
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
