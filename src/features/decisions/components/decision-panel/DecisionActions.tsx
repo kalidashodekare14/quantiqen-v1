@@ -108,7 +108,10 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
     assignOwner.mutate(
       { id: decision.id, assignedToUserId: ownerId },
       {
-        onSuccess: () => toast.success("Owner assigned."),
+        onSuccess: () => {
+          setOwnerId("");
+          toast.success("Owner assigned.");
+        },
         onError: handleError,
       },
     );
@@ -119,7 +122,10 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
     assignTeam.mutate(
       { id: decision.id, teamId },
       {
-        onSuccess: () => toast.success("Decision reassigned to team."),
+        onSuccess: () => {
+          setTeamId("");
+          toast.success("Decision reassigned to team.");
+        },
         onError: handleError,
       },
     );
