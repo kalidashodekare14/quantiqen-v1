@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Download } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,7 +33,10 @@ import {
   useReportVersions,
   useUpdateReportStatus,
 } from "../hooks/useReports";
-import { downloadReport } from "../report-download";
+import { exportReport } from "../report-export";
+import type { ReportExportFormat } from "../report-export";
+import { normalizeReportContent } from "../report-content";
+import ReportDownloadMenu from "./ReportDownloadMenu";
 
 interface ReportViewerDialogProps {
   report: Report;
@@ -54,6 +56,7 @@ const ReportViewerDialog = ({ report, open, onClose }: ReportViewerDialogProps) 
   const [selectedVersionId, setSelectedVersionId] = useState<string>("latest");
   const [correctionTarget, setCorrectionTarget] = useState<ReportStatus | null>(null);
   const [correctionNote, setCorrectionNote] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
 
   const { hasAnyRole } = useRole();
   const isAdmin = hasAnyRole(["CUSTOMER_ADMIN"]);
@@ -68,14 +71,22 @@ const ReportViewerDialog = ({ report, open, onClose }: ReportViewerDialogProps) 
 
   const activeVersion =
     selectedVersionId === "latest" ? detail?.versions[0] : selectedVersion;
+  const content = normalizeReportContent(activeVersion?.content);
   const transitions = REPORT_TRANSITIONS[detail?.status ?? report.status];
 
   const handleError = (error: unknown) => toast.error(getFriendlyError(error).message);
 
-  const handleDownload = () => {
-    if (!detail || !activeVersion) return;
-    downloadReport(detail, activeVersion);
-    toast.success("Report downloaded.");
+  const handleExport = async (format: ReportExportFormat) => {
+    if (!detail || !activeVersion || isExporting) return;
+    setIsExporting(true);
+    try {
+      await exportReport(detail, activeVersion, format);
+      toast.success("Report downloaded.");
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const applyTransition = (target: ReportStatus, note?: string) => {
@@ -155,16 +166,13 @@ const ReportViewerDialog = ({ report, open, onClose }: ReportViewerDialogProps) 
             </SelectContent>
           </Select>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="ml-auto"
-            onClick={handleDownload}
-            disabled={!activeVersion}
-          >
-            <Download className="mr-1.5 size-4" />
-            Download
-          </Button>
+          <div className="ml-auto">
+            <ReportDownloadMenu
+              size="sm"
+              disabled={!activeVersion || isExporting}
+              onSelect={handleExport}
+            />
+          </div>
         </div>
 
         {isLoading ? (
@@ -190,18 +198,31 @@ const ReportViewerDialog = ({ report, open, onClose }: ReportViewerDialogProps) 
 
             <p className="text-muted-foreground text-xs">
               Version {activeVersion.versionNumber} · generated{" "}
-              {formatDateTime(activeVersion.content.generatedAt)} · hash{" "}
-              <span className="font-mono">{activeVersion.contentHash.slice(0, 12)}…</span>
+              {formatDateTime(content.generatedAt)}
+              {activeVersion.contentHash ? (
+                <>
+                  {" · hash "}
+                  <span className="font-mono">
+                    {activeVersion.contentHash.slice(0, 12)}…
+                  </span>
+                </>
+              ) : null}
             </p>
 
-            {activeVersion.content.sections.map((section, index) => (
-              <div key={`${section.heading}-${index}`} className="border-border border-t pt-3">
-                <p className="text-card-foreground text-sm font-semibold">{section.heading}</p>
-                <p className="text-muted-foreground mt-1 text-sm whitespace-pre-wrap">
-                  {section.body}
-                </p>
-              </div>
-            ))}
+            {content.sections.length === 0 ? (
+              <p className="text-muted-foreground py-4 text-center text-sm">
+                No content available for this version.
+              </p>
+            ) : (
+              content.sections.map((section, index) => (
+                <div key={`${section.heading}-${index}`} className="border-border border-t pt-3">
+                  <p className="text-card-foreground text-sm font-semibold">{section.heading}</p>
+                  <p className="text-muted-foreground mt-1 text-sm whitespace-pre-wrap">
+                    {section.body}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
         )}
 

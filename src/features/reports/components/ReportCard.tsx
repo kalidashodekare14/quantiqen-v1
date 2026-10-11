@@ -1,17 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileText, Download } from "lucide-react";
+import { FileText } from "lucide-react";
 
 import AppButton from "@/components/shared/AppButton";
 import { formatDateTime, formatRelativeTime } from "@/utils/date/date";
 import { fadeInScale } from "@/lib/motion";
 import type { Report, ReportStatus, ReportType } from "@/types/platform/report-api.types";
+import type { ReportExportFormat } from "../report-export";
+import ReportDownloadMenu from "./ReportDownloadMenu";
 
 interface ReportCardProps {
   report: Report;
+  exporting?: boolean;
   onView: (report: Report) => void;
-  onDownload: (report: Report) => void;
+  onDownload: (report: Report, format: ReportExportFormat) => void;
 }
 
 const typeBadgeStyles: Record<ReportType, string> = {
@@ -31,7 +34,12 @@ const statusStyles: Record<ReportStatus, string> = {
   PUBLISHED: "bg-chart-2/10 text-chart-2 border-chart-2/20",
 };
 
-export const ReportCard = ({ report, onView, onDownload }: ReportCardProps) => {
+export const ReportCard = ({
+  report,
+  exporting,
+  onView,
+  onDownload,
+}: ReportCardProps) => {
   return (
     <motion.div
       {...fadeInScale}
@@ -81,14 +89,11 @@ export const ReportCard = ({ report, onView, onDownload }: ReportCardProps) => {
         >
           View
         </AppButton>
-        <AppButton
-          variant="outline"
+        <ReportDownloadMenu
           size="lg"
-          icon={<Download className="size-4" />}
-          onClick={() => onDownload(report)}
-        >
-          Download
-        </AppButton>
+          disabled={exporting}
+          onSelect={(format) => onDownload(report, format)}
+        />
       </div>
     </motion.div>
   );

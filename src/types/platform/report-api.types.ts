@@ -35,12 +35,18 @@ export interface ReportVersionContent {
   generatedAt: string;
 }
 
+export type ReportContentRaw =
+  | ReportVersionContent
+  | Record<string, unknown>
+  | string
+  | null;
+
 export interface ReportVersion {
   id: string;
   organizationId: string;
   reportId: string;
   versionNumber: number;
-  content: ReportVersionContent;
+  content: ReportContentRaw;
   contentHash: string;
   createdByUserId: string;
   correctionNote: string | null;

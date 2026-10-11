@@ -25,11 +25,12 @@ import type {
 } from "@/types/platform/report-api.types";
 import { reportService } from "./services/reportService";
 import { useReports } from "./hooks/useReports";
+import { exportReport } from "./report-export";
+import type { ReportExportFormat } from "./report-export";
 import { ReportCard } from "./components/ReportCard";
 import ReportsSkeleton from "./components/ReportsSkeleton";
 import ReportViewerDialog from "./components/ReportViewerDialog";
 import GenerateReportDialog from "./components/GenerateReportDialog";
-import { downloadReport } from "./report-download";
 
 const REPORT_STATUSES: ReportStatus[] = [
   "GENERATED",
@@ -58,6 +59,7 @@ export const ViewReports = () => {
   const [page, setPage] = useState(1);
   const [generateOpen, setGenerateOpen] = useState(false);
   const [viewingReport, setViewingReport] = useState<Report | null>(null);
+  const [exportingId, setExportingId] = useState<string | null>(null);
 
   const { hasAnyRole } = useRole();
   const isAdmin = hasAnyRole(["CUSTOMER_ADMIN"]);
@@ -73,7 +75,9 @@ export const ViewReports = () => {
 
   const { data, isLoading, isError, refetch } = useReports(params);
 
-  const handleDownload = async (report: Report) => {
+  const handleDownload = async (report: Report, format: ReportExportFormat) => {
+    if (exportingId) return;
+    setExportingId(report.id);
     try {
       const detail = await reportService.getById(report.id);
       const latestVersion = detail.versions[0];
@@ -81,10 +85,12 @@ export const ViewReports = () => {
         toast.error("This report has no versions to download.");
         return;
       }
-      downloadReport(detail, latestVersion);
+      await exportReport(detail, latestVersion, format);
       toast.success("Report downloaded.");
     } catch (error) {
       toast.error(getFriendlyError(error).message);
+    } finally {
+      setExportingId(null);
     }
   };
 
@@ -213,6 +219,7 @@ export const ViewReports = () => {
             <ReportCard
               key={report.id}
               report={report}
+              exporting={exportingId === report.id}
               onView={setViewingReport}
               onDownload={handleDownload}
             />
