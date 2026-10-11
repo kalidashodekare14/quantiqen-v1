@@ -11,12 +11,15 @@ import type {
   CreateCorrectionRequest,
   DecisionListParams,
   DecisionStatusResult,
+  DecisionStatusTransitionResult,
   DecisionTeamAssignment,
+  ReopenDecisionRequest,
   RejectDecisionRequest,
   SubmitRemediationRequest,
   SubmitRemediationResponse,
   SubmitVerificationRequest,
   SubmitVerificationResponse,
+  UpdateDecisionStatusRequest,
 } from "@/types/platform/decision-api.types";
 
 interface UseDecisionsOptions {
@@ -120,6 +123,20 @@ export const useRejectDecision = () => {
     { id: string; body: RejectDecisionRequest },
     DecisionStatusResult
   >(({ id, body }) => decisionService.reject(id, body));
+};
+
+export const useUpdateDecisionStatus = () => {
+  return useInvalidatedDecisionMutation<
+    { id: string; body: UpdateDecisionStatusRequest },
+    DecisionStatusTransitionResult
+  >(({ id, body }) => decisionService.updateStatus(id, body));
+};
+
+export const useReopenDecision = () => {
+  return useInvalidatedDecisionMutation<
+    { id: string; body: ReopenDecisionRequest },
+    DecisionStatusTransitionResult
+  >(({ id, body }) => decisionService.reopen(id, body));
 };
 
 export const useAssignDecisionOwner = () => {

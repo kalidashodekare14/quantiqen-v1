@@ -203,6 +203,23 @@ export interface DecisionStatusResult {
   status: DecisionStatus;
 }
 
+export interface DecisionStatusTransitionResult {
+  id: string;
+  status: DecisionStatus;
+  fromStatus: DecisionStatus;
+  toStatus: DecisionStatus;
+}
+
+export interface UpdateDecisionStatusRequest {
+  status: DecisionStatus;
+  expectedStatus: DecisionStatus;
+  note?: string;
+}
+
+export interface ReopenDecisionRequest {
+  note?: string;
+}
+
 export interface AssignDecisionOwnerRequest {
   assignedToUserId: string;
 }

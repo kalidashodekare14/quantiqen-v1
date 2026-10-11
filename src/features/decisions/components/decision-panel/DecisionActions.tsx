@@ -25,19 +25,46 @@ import { useRole } from "@/hooks/use-role";
 import { useTeams } from "@/hooks/use-teams";
 import { useUsers } from "@/hooks/use-users";
 import { getFriendlyError } from "@/utils/errorMessages";
-import type { DecisionDetail } from "@/types/platform/decision-api.types";
+import type { DecisionDetail, DecisionStatus } from "@/types/platform/decision-api.types";
 import {
   useApproveDecision,
   useAssignDecisionOwner,
   useAssignDecisionTeam,
   useRejectDecision,
+  useReopenDecision,
+  useUpdateDecisionStatus,
 } from "../../hooks/useDecisions";
 
 interface DecisionActionsProps {
   decision: DecisionDetail;
 }
 
-type ActionDialog = "approve" | "reject" | null;
+type ActionDialog = "approve" | "reject" | "reopen" | null;
+
+/**
+ * Mirrors DECISION_STATUS_TRANSITIONS in the platform backend
+ * (decisions.service.ts) — keep in sync. Transitions owned by the
+ * dedicated approve/reject/remediation/verification/reopen endpoints
+ * are deliberately excluded.
+ */
+const STATUS_TRANSITIONS: Record<DecisionStatus, readonly DecisionStatus[]> = {
+  PENDING: ["UNDER_REVIEW", "IN_PROGRESS"],
+  UNDER_REVIEW: ["IN_PROGRESS"],
+  APPROVED: ["IN_PROGRESS", "RESOLVED"],
+  IN_PROGRESS: ["RESOLVED", "UNDER_REVIEW"],
+  RESOLVED: ["IN_PROGRESS"],
+  REOPENED: ["IN_PROGRESS"],
+  EXPIRED: ["UNDER_REVIEW"],
+  REJECTED: [],
+  REMEDIATION_SUBMITTED: [],
+  VERIFIED: [],
+};
+
+const TRANSITION_LABELS: Partial<Record<DecisionStatus, string>> = {
+  UNDER_REVIEW: "Move to review",
+  IN_PROGRESS: "Start work",
+  RESOLVED: "Mark resolved",
+};
 
 const DecisionActions = ({ decision }: DecisionActionsProps) => {
   const { hasAnyRole } = useRole();
@@ -48,11 +75,17 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
   const [reason, setReason] = useState("");
   const [ownerId, setOwnerId] = useState("");
   const [teamId, setTeamId] = useState("");
+  const [nextStatus, setNextStatus] = useState<DecisionStatus | "">("");
 
   const approve = useApproveDecision();
   const reject = useRejectDecision();
   const assignOwner = useAssignDecisionOwner();
   const assignTeam = useAssignDecisionTeam();
+  const updateStatus = useUpdateDecisionStatus();
+  const reopen = useReopenDecision();
+
+  const transitions = STATUS_TRANSITIONS[decision.status] ?? [];
+  const canReopen = decision.status === "VERIFIED" || decision.status === "RESOLVED";
 
   const { data: users, isError: usersError } = useUsers();
   const { data: teams, isError: teamsError } = useTeams();
@@ -96,6 +129,36 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
       {
         onSuccess: () => {
           toast.success("Decision rejected.");
+          closeDialog();
+        },
+        onError: handleError,
+      },
+    );
+  };
+
+  const handleMoveStatus = () => {
+    if (!nextStatus) return;
+    updateStatus.mutate(
+      {
+        id: decision.id,
+        body: { status: nextStatus, expectedStatus: decision.status },
+      },
+      {
+        onSuccess: () => {
+          setNextStatus("");
+          toast.success("Decision status updated.");
+        },
+        onError: handleError,
+      },
+    );
+  };
+
+  const handleReopen = () => {
+    reopen.mutate(
+      { id: decision.id, body: note.trim() ? { note: note.trim() } : {} },
+      {
+        onSuccess: () => {
+          toast.success("Decision reopened.");
           closeDialog();
         },
         onError: handleError,
@@ -157,7 +220,44 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
         >
           Reject
         </Button>
+        {canReopen && (
+          <Button size="sm" variant="outline" onClick={() => setDialog("reopen")}>
+            Reopen
+          </Button>
+        )}
       </div>
+
+      {transitions.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <Label className="text-sm">Change status</Label>
+          <div className="flex gap-2">
+            <Select
+              value={nextStatus}
+              onValueChange={(value) => setNextStatus(value as DecisionStatus)}
+            >
+              <SelectTrigger className="h-9 flex-1" aria-label="Select next status">
+                <SelectValue placeholder="Select next status" />
+              </SelectTrigger>
+              <SelectContent>
+                {transitions.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {TRANSITION_LABELS[status] ?? status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-9"
+              disabled={!nextStatus || updateStatus.isPending}
+              onClick={handleMoveStatus}
+            >
+              {updateStatus.isPending ? "Moving…" : "Move"}
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         <Label className="text-sm">Assign owner</Label>
@@ -293,6 +393,33 @@ const DecisionActions = ({ decision }: DecisionActionsProps) => {
             </Button>
             <Button variant="destructive" onClick={handleReject} disabled={reject.isPending}>
               {reject.isPending ? "Rejecting…" : "Reject"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={dialog === "reopen"} onOpenChange={(open) => !open && closeDialog()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reopen decision</DialogTitle>
+            <DialogDescription>
+              Reopening moves this decision to REOPENED so remediation can continue. An optional
+              note is recorded in history.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Reopen note (optional, max 2000 characters)"
+            maxLength={2000}
+            rows={4}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={closeDialog}>
+              Cancel
+            </Button>
+            <Button onClick={handleReopen} disabled={reopen.isPending}>
+              {reopen.isPending ? "Reopening…" : "Reopen"}
             </Button>
           </DialogFooter>
         </DialogContent>

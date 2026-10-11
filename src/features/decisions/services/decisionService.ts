@@ -14,13 +14,16 @@ import type {
   DecisionListResponse,
   DecisionNote,
   DecisionStatusResult,
+  DecisionStatusTransitionResult,
   DecisionTeamAssignment,
+  ReopenDecisionRequest,
   RejectDecisionRequest,
   RemediationListResponse,
   SubmitRemediationRequest,
   SubmitRemediationResponse,
   SubmitVerificationRequest,
   SubmitVerificationResponse,
+  UpdateDecisionStatusRequest,
   VerificationListResponse,
 } from "@/types/platform/decision-api.types";
 
@@ -61,6 +64,25 @@ export const decisionService = {
 
   reject: async (id: string, body: RejectDecisionRequest): Promise<DecisionStatusResult> => {
     const res = await platformApi.post<DecisionStatusResult>(`/decisions/${id}/reject`, body);
+    return res.data;
+  },
+
+  updateStatus: async (
+    id: string,
+    body: UpdateDecisionStatusRequest,
+  ): Promise<DecisionStatusTransitionResult> => {
+    const res = await platformApi.patch<DecisionStatusTransitionResult>(
+      `/decisions/${id}/status`,
+      body,
+    );
+    return res.data;
+  },
+
+  reopen: async (id: string, body: ReopenDecisionRequest): Promise<DecisionStatusTransitionResult> => {
+    const res = await platformApi.post<DecisionStatusTransitionResult>(
+      `/decisions/${id}/reopen`,
+      body,
+    );
     return res.data;
   },
 
