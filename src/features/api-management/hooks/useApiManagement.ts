@@ -2,24 +2,17 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { API_USAGE_QUERY_KEY, useApiUsage } from "@/hooks/use-api-usage";
 import { apiManagementService } from "../services/apiManagement.service";
-import type { ApiUsageRow } from "@/types/platform/analytics-api.types";
 import type { ApiKey, CreateApiKeyRequest } from "@/types/platform/api-key.types";
+
+export { useApiUsage };
 
 export const useApiManagement = () => {
   return useQuery<ApiKey[]>({
     queryKey: ["api-keys"],
     queryFn: apiManagementService.list,
     staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
-};
-
-export const useApiUsage = () => {
-  return useQuery<ApiUsageRow[]>({
-    queryKey: ["api-usage"],
-    queryFn: apiManagementService.getDailyUsage,
-    staleTime: 60000,
     refetchOnWindowFocus: false,
   });
 };
@@ -33,7 +26,7 @@ const useApiKeyMutation = <TVariables, TData>(
     mutationFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
-      queryClient.invalidateQueries({ queryKey: ["api-usage"] });
+      queryClient.invalidateQueries({ queryKey: API_USAGE_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });

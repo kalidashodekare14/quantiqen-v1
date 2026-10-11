@@ -10,9 +10,11 @@ export interface DailyRiskSnapshotPoint {
   minRiskScore: number;
 }
 
+import type { DecisionStatus, RiskTier } from "@/types/platform/decision-api.types";
+
 export interface DecisionTrendRow {
   date: string;
-  status: string;
+  status: DecisionStatus;
   count: number;
 }
 
@@ -33,7 +35,7 @@ export interface SecurityScoreSnapshotPoint {
 }
 
 export interface RiskDistributionRow {
-  tier: string;
+  tier: RiskTier;
   count: number;
   avgScore: number;
 }

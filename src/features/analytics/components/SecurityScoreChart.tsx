@@ -9,53 +9,53 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import ChartCard from "@/components/shared/ChartCard";
-import type { SecurityScorePoint } from "@/types/analytics.types";
+
+import ChartPanel from "./ChartPanel";
+import { tooltipContentStyle, useChartColors } from "../hooks/useChartColors";
+import type { SecurityScorePoint, SectionResult } from "@/types/analytics.types";
 
 interface SecurityScoreChartProps {
-  data: SecurityScorePoint[];
+  section: SectionResult<SecurityScorePoint[]>;
   subtitle?: string;
+  onRetry?: () => void;
 }
 
-const SecurityScoreChart = ({ data, subtitle = "Last 14 days" }: SecurityScoreChartProps) => {
+const SecurityScoreChart = ({ section, subtitle, onRetry }: SecurityScoreChartProps) => {
+  const colors = useChartColors();
+  const data = section.status === "ok" ? section.data : [];
+  const scoreColor = colors.series[1];
+
   return (
-    <ChartCard title="Security Score Timeline" subtitle={subtitle}>
+    <ChartPanel
+      title="Security Score Timeline"
+      subtitle={subtitle}
+      status={section.status}
+      isEmpty={data.length === 0}
+      onRetry={onRetry}
+    >
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data}>
           <defs>
             <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#34d399" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
+              <stop offset="5%" stopColor={scoreColor} stopOpacity={0.2} />
+              <stop offset="95%" stopColor={scoreColor} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
-          <XAxis
-            dataKey="date"
-            tick={{ fontSize: 11, fill: "#4a5568" }}
-          />
-          <YAxis
-            domain={[0, 100]}
-            tick={{ fontSize: 11, fill: "#4a5568" }}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#141820",
-              border: "1px solid #2d3748",
-              borderRadius: "8px",
-              fontSize: "12px",
-            }}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fill: colors.axis }} />
+          <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: colors.axis }} />
+          <Tooltip contentStyle={tooltipContentStyle(colors)} />
           <Line
             type="monotone"
             dataKey="score"
-            stroke="#34d399"
+            stroke={scoreColor}
             strokeWidth={2}
             dot={false}
             name="Security Score"
           />
         </LineChart>
       </ResponsiveContainer>
-    </ChartCard>
+    </ChartPanel>
   );
 };
 

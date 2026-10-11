@@ -1,12 +1,14 @@
+import { apiUsageService } from "@/services/api-usage.service";
 import { platformApi } from "@/lib/platform-axios";
 import type {
-  AnalyticsData,
+  AnalyticsResult,
   ApiUsagePoint,
   AssetCategoryPoint,
   DailyDecisionPoint,
   DecisionTrendPoint,
   RiskDistributionPoint,
   RiskTrendPoint,
+  SectionResult,
   SecurityScorePoint,
   ThreatDistributionPoint,
 } from "@/types/analytics.types";
@@ -20,8 +22,14 @@ import type {
   SecurityScoreSnapshotPoint,
   ThreatCategoryRow,
 } from "@/types/platform/analytics-api.types";
+import type { DecisionStatus } from "@/types/platform/decision-api.types";
 
-const RESOLVED_STATUSES = new Set(["RESOLVED", "REJECTED", "EXPIRED", "VERIFIED"]);
+const RESOLVED_STATUSES: ReadonlySet<DecisionStatus> = new Set<DecisionStatus>([
+  "RESOLVED",
+  "REJECTED",
+  "EXPIRED",
+  "VERIFIED",
+]);
 
 function shortDate(value: string): string {
   return new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -33,6 +41,13 @@ function titleCase(value: string): string {
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function toSection<S, U>(result: PromiseSettledResult<S>, map: (value: S) => U): SectionResult<U> {
+  if (result.status === "fulfilled") {
+    return { status: "ok", data: map(result.value) };
+  }
+  return { status: "error" };
 }
 
 function mapRiskTrend(rows: DailyRiskSnapshotPoint[]): RiskTrendPoint[] {
@@ -48,12 +63,12 @@ function mapDecisionTrend(rows: DecisionTrendRow[]): DecisionTrendPoint[] {
 
   rows.forEach((row) => {
     const date = shortDate(row.date);
-    const entry = byDate.get(date) ?? { date, decisions: 0, resolved: 0, pending: 0 };
+    const entry = byDate.get(date) ?? { date, decisions: 0, resolved: 0, open: 0 };
     entry.decisions += row.count;
     if (RESOLVED_STATUSES.has(row.status)) {
       entry.resolved += row.count;
     } else {
-      entry.pending += row.count;
+      entry.open += row.count;
     }
     byDate.set(date, entry);
   });
@@ -61,11 +76,10 @@ function mapDecisionTrend(rows: DecisionTrendRow[]): DecisionTrendPoint[] {
   return Array.from(byDate.values());
 }
 
-function mapApiUsage(rows: ApiUsageRow[]): ApiUsagePoint[] {
-  return rows.map((row) => ({
+function mapApiUsage(rows: ApiUsageRow[], days: number): ApiUsagePoint[] {
+  return rows.slice(-days).map((row) => ({
     date: shortDate(row.date),
     requests: row.count,
-    errors: 0,
   }));
 }
 
@@ -92,33 +106,48 @@ function mapThreatDistribution(rows: ThreatCategoryRow[]): ThreatDistributionPoi
   return rows.map((row) => ({ name: titleCase(row.category), value: row.count }));
 }
 
-export const analyticsService = async (days: number): Promise<AnalyticsData> => {
-  const [riskTrendRes, decisionTrendRes, apiUsageRes, riskDistRes, assetCatRes, scoreRes, dailyRes, threatRes] =
-    await Promise.all([
-      platformApi.get<DailyRiskSnapshotPoint[]>("/analytics/risk-trend", { params: { days } }),
-      platformApi.get<DecisionTrendRow[]>("/analytics/decision-trend", { params: { days } }),
-      platformApi.get<ApiUsageRow[]>("/analytics/api-usage", { params: { period: "day" } }),
-      platformApi.get<RiskDistributionRow[]>("/analytics/risk-distribution"),
-      platformApi.get<AssetCategoryRow[]>("/analytics/assets-by-category", {
-        params: { groupBy: "assetType" },
-      }),
-      platformApi.get<SecurityScoreSnapshotPoint[]>("/analytics/security-score-timeline", {
-        params: { days },
-      }),
-      platformApi.get<DailyDecisionRow[]>("/analytics/daily-decision-count", {
-        params: { days: 7 },
-      }),
-      platformApi.get<ThreatCategoryRow[]>("/analytics/threat-distribution"),
-    ]);
+export const analyticsService = async (days: number): Promise<AnalyticsResult> => {
+  const [
+    riskTrendRes,
+    decisionTrendRes,
+    apiUsageRes,
+    riskDistRes,
+    assetCatRes,
+    scoreRes,
+    dailyRes,
+    threatRes,
+  ] = await Promise.allSettled([
+    platformApi.get<DailyRiskSnapshotPoint[]>("/analytics/risk-trend", { params: { days } }),
+    platformApi.get<DecisionTrendRow[]>("/analytics/decision-trend", { params: { days } }),
+    apiUsageService.getDailyUsage(),
+    platformApi.get<RiskDistributionRow[]>("/analytics/risk-distribution"),
+    platformApi.get<AssetCategoryRow[]>("/analytics/assets-by-category", {
+      params: { groupBy: "assetType" },
+    }),
+    platformApi.get<SecurityScoreSnapshotPoint[]>("/analytics/security-score-timeline", {
+      params: { days },
+    }),
+    platformApi.get<DailyDecisionRow[]>("/analytics/daily-decision-count", {
+      params: { days },
+    }),
+    platformApi.get<ThreatCategoryRow[]>("/analytics/threat-distribution"),
+  ]);
 
-  return {
-    riskTrend: mapRiskTrend(riskTrendRes.data),
-    decisionTrend: mapDecisionTrend(decisionTrendRes.data),
-    apiUsage: mapApiUsage(apiUsageRes.data),
-    riskDistribution: mapRiskDistribution(riskDistRes.data),
-    assetsByCategory: mapAssetCategories(assetCatRes.data),
-    securityScoreTimeline: mapSecurityScore(scoreRes.data),
-    dailyDecisionCount: mapDailyDecisions(dailyRes.data),
-    threatDistribution: mapThreatDistribution(threatRes.data),
+  const result: AnalyticsResult = {
+    riskTrend: toSection(riskTrendRes, (res) => mapRiskTrend(res.data)),
+    decisionTrend: toSection(decisionTrendRes, (res) => mapDecisionTrend(res.data)),
+    apiUsage: toSection(apiUsageRes, (rows) => mapApiUsage(rows, days)),
+    riskDistribution: toSection(riskDistRes, (res) => mapRiskDistribution(res.data)),
+    assetsByCategory: toSection(assetCatRes, (res) => mapAssetCategories(res.data)),
+    securityScoreTimeline: toSection(scoreRes, (res) => mapSecurityScore(res.data)),
+    dailyDecisionCount: toSection(dailyRes, (res) => mapDailyDecisions(res.data)),
+    threatDistribution: toSection(threatRes, (res) => mapThreatDistribution(res.data)),
   };
+
+  const allFailed = Object.values(result).every((section) => section.status === "error");
+  if (allFailed) {
+    throw new Error("All analytics endpoints failed");
+  }
+
+  return result;
 };

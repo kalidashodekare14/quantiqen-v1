@@ -1,5 +1,4 @@
 import { platformApi } from "@/lib/platform-axios";
-import type { ApiUsageRow } from "@/types/platform/analytics-api.types";
 import type {
   ApiKey,
   ApiKeyWithSecret,
@@ -29,13 +28,6 @@ export const apiManagementService = {
 
   remove: async (id: string): Promise<DeleteApiKeyResponse> => {
     const res = await platformApi.delete<DeleteApiKeyResponse>(`/api-keys/${id}`);
-    return res.data;
-  },
-
-  getDailyUsage: async (): Promise<ApiUsageRow[]> => {
-    const res = await platformApi.get<ApiUsageRow[]>("/analytics/api-usage", {
-      params: { period: "day" },
-    });
     return res.data;
   },
 };

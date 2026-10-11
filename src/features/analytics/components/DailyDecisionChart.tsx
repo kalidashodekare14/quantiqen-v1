@@ -1,49 +1,39 @@
 "use client";
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import ChartCard from "@/components/shared/ChartCard";
-import type { DailyDecisionPoint } from "@/types/analytics.types";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+
+import ChartPanel from "./ChartPanel";
+import { tooltipContentStyle, useChartColors } from "../hooks/useChartColors";
+import type { DailyDecisionPoint, SectionResult } from "@/types/analytics.types";
 
 interface DailyDecisionChartProps {
-  data: DailyDecisionPoint[];
+  section: SectionResult<DailyDecisionPoint[]>;
+  subtitle?: string;
+  onRetry?: () => void;
 }
 
-const DailyDecisionChart = ({ data }: DailyDecisionChartProps) => {
+const DailyDecisionChart = ({ section, subtitle, onRetry }: DailyDecisionChartProps) => {
+  const colors = useChartColors();
+  const data = section.status === "ok" ? section.data : [];
+
   return (
-    <ChartCard title="Daily Decision Count" subtitle="This week">
+    <ChartPanel
+      title="Daily Decision Count"
+      subtitle={subtitle}
+      status={section.status}
+      isEmpty={data.length === 0}
+      onRetry={onRetry}
+    >
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} barSize={20}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
-          <XAxis
-            dataKey="day"
-            tick={{ fontSize: 11, fill: "#4a5568" }}
-          />
-          <YAxis tick={{ fontSize: 11, fill: "#4a5568" }} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#141820",
-              border: "1px solid #2d3748",
-              borderRadius: "8px",
-              fontSize: "12px",
-            }}
-          />
-          <Bar
-            dataKey="count"
-            fill="#a78bfa"
-            radius={[4, 4, 0, 0]}
-            name="Decisions"
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+          <XAxis dataKey="day" tick={{ fontSize: 11, fill: colors.axis }} />
+          <YAxis tick={{ fontSize: 11, fill: colors.axis }} />
+          <Tooltip contentStyle={tooltipContentStyle(colors)} />
+          <Bar dataKey="count" fill={colors.series[0]} radius={[4, 4, 0, 0]} name="Decisions" />
         </BarChart>
       </ResponsiveContainer>
-    </ChartCard>
+    </ChartPanel>
   );
 };
 

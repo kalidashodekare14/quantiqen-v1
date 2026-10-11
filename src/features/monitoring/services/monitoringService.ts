@@ -1,11 +1,8 @@
+import { apiUsageService } from "@/services/api-usage.service";
 import { platformApi } from "@/lib/platform-axios";
 import type { MonitoringData, MonitoringEvent, EventSeverity } from "@/types/monitoring.types";
-import type { ApiUsageRow } from "@/types/platform/analytics-api.types";
 import type { DashboardSummaryResponse } from "@/types/platform/dashboard-api.types";
-import type {
-  MonitoringRecentResponse,
-  StreamEvent,
-} from "@/types/platform/monitoring-api.types";
+import type { MonitoringRecentResponse, StreamEvent } from "@/types/platform/monitoring-api.types";
 
 const EVENT_LABELS: Record<string, string> = {
   "finding.new": "New Finding",
@@ -19,9 +16,7 @@ const EVENT_LABELS: Record<string, string> = {
 };
 
 function humanizeType(type: string): string {
-  return type
-    .replace(/[._]/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return type.replace(/[._]/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function getEventLabel(type: string): string {
@@ -78,15 +73,14 @@ function mapStreamEvent(event: StreamEvent): MonitoringEvent {
 }
 
 export const getMonitoringData = async (): Promise<MonitoringData> => {
-  const [recentRes, summaryRes, usageRes] = await Promise.all([
+  const [recentRes, summaryRes, usageRows] = await Promise.all([
     platformApi.get<MonitoringRecentResponse>("/monitoring/recent"),
     platformApi.get<DashboardSummaryResponse>("/dashboard/summary"),
-    platformApi.get<ApiUsageRow[]>("/analytics/api-usage", { params: { period: "day" } }),
+    apiUsageService.getDailyUsage(),
   ]);
 
   const summary = summaryRes.data;
-  const requestsToday =
-    usageRes.data.length > 0 ? usageRes.data[usageRes.data.length - 1].count : 0;
+  const requestsToday = usageRows.length > 0 ? usageRows[usageRows.length - 1].count : 0;
 
   if (recentRes.data.events.length > 0) {
     console.info("[monitoring] raw recent event", recentRes.data.events[0]);
