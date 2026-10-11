@@ -9035,6 +9035,310 @@ Path: none.
 
 ---
 
+### 12.12 `GET /api/v1/notifications` — List notification inbox
+
+**Auth:** Bearer JWT · **RBAC:** GET default-allow · **Status:** `200`
+
+**NotificationStream enum (inbox streams):** `SECURITY`, `OPERATIONS`
+
+The inbox is **org-shared**: one row per logical dispatch (written by the `notifications` queue via `recordInbox` on the job's first attempt, before the preference check), and the read state is shared across the organization. Inbox items are exactly the `notification_logs` rows with `stream NOT NULL` — legacy per-channel delivery-log rows (`stream NULL`) are never returned by any inbox endpoint.
+
+#### Query Parameters
+
+| Name | Type | Required | Validation / default |
+| ---- | ---- | -------- | -------------------- |
+| `stream` | enum `SECURITY \| OPERATIONS` | no | Omit = both streams (`{ in: [SECURITY, OPERATIONS] }`). Invalid → 422. |
+| `unreadOnly` | boolean | no | Default `false`. `true` → filters `readAt = null`. Invalid → 422. |
+| `page` | int | no | Default `1`. `< 1` → 422. |
+| `limit` | int | no | 1–100, default `20`. Out of range → 422. |
+
+Path parameters: none. Request body: none.
+
+Sorting: `createdAt DESC` (no secondary tie-break). Filtering happens before pagination; `page` beyond the last page returns `200` with `items: []` (not 404/422).
+
+#### Request Body Schema (JSON)
+
+`Request Body: None`
+
+#### Success Response Schema (JSON)
+
+```json
+// 200 OK — { items, total, page, limit } (flat envelope, NOT the nested `pagination` object)
+{
+  "items": [
+    {
+      "id": "3c1f0a8e-7d2b-4c5a-9e6f-0b1d2c3e4f50",
+      "organizationId": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+      "notificationType": "CRITICAL_RISK_DETECTED",
+      "channel": "IN_APP",
+      "recipientInfo": {},
+      "delivered": true,
+      "errorMessage": null,
+      "payload": {
+        "findingId": "fnd-0001",
+        "riskScore": 91,
+        "tier": "CRITICAL",
+        "previousTier": "HIGH",
+        "summary": { "business_risk": "...", "technical_risk": "..." }
+      },
+      "readAt": null,
+      "stream": "SECURITY",
+      "createdAt": "2026-10-04T12:00:00.000Z"
+    },
+    {
+      "id": "8b2e9d7c-6a1f-4b3e-8d5c-2f0e1a3b5c70",
+      "organizationId": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+      "notificationType": "SCAN_COMPLETED",
+      "channel": "IN_APP",
+      "recipientInfo": {},
+      "delivered": true,
+      "errorMessage": null,
+      "payload": {
+        "scanJobId": "scn-0001",
+        "assetId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "hostname": "api.acmecorp.com",
+        "checks": 4,
+        "highFindings": 1
+      },
+      "readAt": "2026-10-04T13:00:00.000Z",
+      "stream": "OPERATIONS",
+      "createdAt": "2026-10-04T11:00:00.000Z"
+    }
+  ],
+  "total": 42,
+  "page": 1,
+  "limit": 20
+}
+```
+
+**Empty inbox:**
+
+```json
+// 200 OK
+{
+  "items": [],
+  "total": 0,
+  "page": 1,
+  "limit": 20
+}
+```
+
+| Field | Type | Notes |
+| ----- | ---- | ----- |
+| `items` | NotificationLog[] | Page slice of full inbox rows — notification content lives in `payload` (opaque producer JSON); there are no `title`/`message`/`severity` fields |
+| `total` | int | Total rows matching the filters |
+| `page` / `limit` | int | Echo of effective page/limit |
+
+> **Note:** this envelope has **no `totalPages`** and **no top-level `unreadCount`** — use §12.13 for the badge count.
+
+#### Error Response Schema (JSON)
+
+```json
+// 401 Unauthorized — missing/malformed/expired JWT
+{
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Invalid or expired token",
+    "request_id": "550e8400-e29b-41d4-a716-44665544017b"
+  }
+}
+```
+
+```json
+// 422 Unprocessable Entity — invalid enum / non-boolean / limit out of range / unknown query key
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "stream must be one of the following values: SECURITY, OPERATIONS; limit must not be greater than 100",
+    "request_id": "550e8400-e29b-41d4-a716-44665544017c"
+  }
+}
+```
+
+*(500 — standard block. No 403/404 cases exist for this endpoint.)*
+
+---
+
+### 12.13 `GET /api/v1/notifications/unread-count` — Badge count
+
+**Auth:** Bearer JWT · **RBAC:** GET default-allow · **Status:** `200`
+
+Lightweight badge endpoint for the header bell — cheap enough to poll every 15–30 s. Path and query parameters: none. Request body: none.
+
+**Unread semantics:** count of inbox rows (`stream IN (SECURITY, OPERATIONS)`) with `readAt = null` for the organization. The count is **org-shared** — any user marking an inbox item read (§12.14 / §12.15) decrements it for the whole organization.
+
+#### Request Body Schema (JSON)
+
+`Request Body: None`
+
+#### Success Response Schema (JSON)
+
+```json
+// 200 OK
+{
+  "count": 4
+}
+```
+
+| Field | Type | Notes |
+| ----- | ---- | ----- |
+| `count` | int >= 0 | Key is **`count`** (not `unreadCount`) |
+
+#### Error Response Schema (JSON)
+
+```json
+// 401 Unauthorized
+{
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Invalid or expired token",
+    "request_id": "550e8400-e29b-41d4-a716-44665544017d"
+  }
+}
+```
+
+*(500 — standard block. No 403/404 cases.)*
+
+---
+
+### 12.14 `POST /api/v1/notifications/:id/read` — Mark one as read (org-shared)
+
+**Auth:** Bearer JWT · **RBAC:** `@RequireAnalystOrAdmin()` · **Status:** `200` · Audit action: `NOTIFICATION_READ`
+
+Idempotently marks a single inbox item read for the whole organization. The transition is one-way (`readAt: null → timestamp`) — there is **no un-read endpoint**. Read state is the only mutable content on an inbox row; notification payloads are never modified or deleted.
+
+#### Path / Query Parameters
+
+| Location | Name | Type | Required |
+| -------- | ---- | ---- | -------- |
+| path | `id` | string (uuid) | yes |
+
+Query: none. Request body: none.
+
+Invalid uuid → **422** (`"id must be a UUID"`, global `UuidParamPipe`) — this backend never returns 400 for path-uuid validation.
+
+#### Request Body Schema (JSON)
+
+`Request Body: None`
+
+#### Behavior
+
+| Current state | Effect | Response |
+| ------------- | ------ | -------- |
+| unread (`readAt: null`) | Set `readAt = now()` | `200` full updated row |
+| already read (`readAt` set) | **No-op** — `readAt` untouched | `200` unchanged row |
+| missing / other org / legacy delivery-log row (`stream NULL`) | — | `404` |
+
+Never `409` for state conflicts — repeated reads are safe (multi-tab double-taps).
+
+#### Success Response Schema (JSON)
+
+```json
+// 200 OK — full NotificationLog row
+{
+  "id": "3c1f0a8e-7d2b-4c5a-9e6f-0b1d2c3e4f50",
+  "organizationId": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+  "notificationType": "CRITICAL_RISK_DETECTED",
+  "channel": "IN_APP",
+  "recipientInfo": {},
+  "delivered": true,
+  "errorMessage": null,
+  "payload": { "findingId": "fnd-0001", "riskScore": 91, "tier": "CRITICAL" },
+  "readAt": "2026-10-04T14:00:00.000Z",
+  "stream": "SECURITY",
+  "createdAt": "2026-10-04T12:00:00.000Z"
+}
+```
+
+#### Error Response Schema (JSON)
+
+```json
+// 403 Forbidden — AUDITOR / READ_ONLY
+{
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "Requires CUSTOMER_ADMIN or ANALYST role",
+    "request_id": "550e8400-e29b-41d4-a716-44665544017e"
+  }
+}
+```
+
+```json
+// 404 Not Found — missing, cross-tenant, or non-inbox row (message identical in all cases)
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Notification not found",
+    "request_id": "550e8400-e29b-41d4-a716-44665544017f"
+  }
+}
+```
+
+```json
+// 422 Unprocessable Entity — id is not a valid uuid
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "id must be a UUID",
+    "request_id": "550e8400-e29b-41d4-a716-446655440180"
+  }
+}
+```
+
+*(401 / 500 — standard blocks.)*
+
+---
+
+### 12.15 `POST /api/v1/notifications/read-all` — Mark all as read (org-shared)
+
+**Auth:** Bearer JWT · **RBAC:** `@RequireAdmin()` · **Status:** `200` · Audit action: `NOTIFICATIONS_READ_ALL`
+
+Idempotently marks every unread inbox item for the organization as read in one bulk update. The as-built endpoint accepts **no scope filters** (no type/severity/stream body).
+
+#### Path / Query Parameters
+
+None. Request body: none.
+
+#### Request Body Schema (JSON)
+
+`Request Body: None`
+
+#### Behavior
+
+Single `updateMany` where `stream IN (SECURITY, OPERATIONS) AND readAt = null` → `readAt = now()`. Rows already read are not touched. `count` is the number of rows actually transitioned; a repeat call returns `count: 0`.
+
+#### Success Response Schema (JSON)
+
+```json
+// 200 OK
+{
+  "organizationId": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+  "count": 4
+}
+```
+
+| Field | Type | Notes |
+| ----- | ---- | ----- |
+| `organizationId` | string (uuid) | Echo of the JWT org scope |
+| `count` | int >= 0 | Rows transitioned `unread → read` this call |
+
+#### Error Response Schema (JSON)
+
+```json
+// 403 Forbidden — non-admin
+{
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "Requires CUSTOMER_ADMIN role",
+    "request_id": "550e8400-e29b-41d4-a716-446655440181"
+  }
+}
+```
+
+*(401 / 500 — standard blocks. No 404/422 cases.)*
+
+---
+
 ## Step 13 — Audit Trail
 
 ### 13.1 `GET /api/v1/audit-logs` — Query audit log

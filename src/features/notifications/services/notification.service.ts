@@ -1,8 +1,30 @@
-// @mock-retained - no platform/identity endpoint exists for this data; parked intentionally.
-import notificationsData from "@/mock-data/notifications.json";
+import { platformApi } from "@/lib/platform-axios";
+import type {
+  NotificationInboxListResponse,
+  NotificationInboxParams,
+  NotificationLog,
+  ReadAllResponse,
+  UnreadCountResponse,
+} from "@/types/platform/notification-api.types";
 
-import { NotificationsData } from "@/types/notification.types";
+export const notificationService = {
+  list: async (params: NotificationInboxParams = {}): Promise<NotificationInboxListResponse> => {
+    const res = await platformApi.get<NotificationInboxListResponse>("/notifications", { params });
+    return res.data;
+  },
 
-export const notificationService = async (): Promise<NotificationsData> => {
-  return notificationsData as unknown as NotificationsData;
+  unreadCount: async (): Promise<UnreadCountResponse> => {
+    const res = await platformApi.get<UnreadCountResponse>("/notifications/unread-count");
+    return res.data;
+  },
+
+  markRead: async (id: string): Promise<NotificationLog> => {
+    const res = await platformApi.post<NotificationLog>(`/notifications/${id}/read`);
+    return res.data;
+  },
+
+  markAllRead: async (): Promise<ReadAllResponse> => {
+    const res = await platformApi.post<ReadAllResponse>("/notifications/read-all");
+    return res.data;
+  },
 };

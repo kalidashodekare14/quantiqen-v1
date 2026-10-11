@@ -16,7 +16,7 @@
 | Scans | Full dedicated Scanning page/section. |
 | Teams | Full team management (not just a dropdown). |
 | Real-time | **Polling only** — `GET /monitoring/recent` every 5s (backend's designed fallback). SSE (`12.1`) deferred. |
-| Notifications inbox / Findings / AI Recommendations / general UI settings | **Mock retained** (no backend endpoints exist), integrated in a later step. |
+| Findings / AI Recommendations / general UI settings | **Mock retained** (no backend endpoints exist), integrated in a later step. Notifications inbox → **live** (`12.12`–`12.15`). |
 | Dashboard | `GET /dashboard/summary` (`10.1`) + associated dashboard/analytics APIs (`10.2`–`10.9`). |
 | Profile | Keep + fully verify the existing live identity integration. |
 | Parked code | `ai-response.json`, `profile.json`, unused components (`DecisionTable`, `DecisionSidePanel`, `AIDecisionResult`, `AIDecisionError`, `useDecisions`, `decisionService`, `useAIBatchDecision`) — **retain, no deletions.** |
@@ -33,7 +33,9 @@ Every UI-capable group in `docs/API.md` has a home below. Intentionally excluded
 
 ### Remaining backend API gaps (to raise with backend team)
 
-1. Notifications inbox list + unread count · 2. `GET /findings` · 3. AI recommendations list · 4. Global search · 5. Report PDF/binary export (JSON content only) · 6. General UI settings persistence · 7. Identity `/auth` + `/portal` documentation.
+1. `GET /findings` · 2. AI recommendations list · 3. Global search · 4. Report PDF/binary export (JSON content only) · 5. General UI settings persistence · 6. Identity `/auth` + `/portal` documentation.
+
+> **Resolved:** notifications inbox list + unread count + mark-read (`12.12`–`12.15`) now exist in `docs/API.md`.
 
 ---
 
@@ -58,7 +60,7 @@ Every UI-capable group in `docs/API.md` has a home below. Intentionally excluded
 | `/profile` | Identity as-is + dead-button fix | `/portal/me`, `authApi.changePassword` | 🔄 |
 | `/scans` **(new)** | Real | `9.1`–`9.8` | ⬜ |
 | `/platform-ops` **(new, admin)** | Real | `14.3`, `14.5`–`14.12` | ⬜ |
-| `/notifications` | Mock retained | none exist | 🚫 |
+| `/notifications` | Real | `12.12` list · `12.13` unread-count · `12.14` mark-read · `12.15` read-all | ✅ |
 | `/ai-recommendations` | Mock retained | none exist | 🚫 |
 | `/settings` | General mock retained; alert toggles → `12.3`/`12.4` | `12.3`–`12.5` | ⬜ |
 | Findings tab (`/decision`) | Mock retained | none exist | 🚫 |
@@ -197,7 +199,8 @@ Existing `src/types/*.types.ts` remain **view models**; mappers live beside serv
 | Mock file | Decision |
 | --- | --- |
 | `dashboard`, `analytics`, `monitoring`, `assets`, `api-management`, `reports`, `organization`, `decisions` | **Replace** |
-| `findings`, `recommendations`, `notifications`, `settings` | **Retain** (no endpoints — later step) |
+| `findings`, `recommendations`, `settings` | **Retain** (no endpoints — later step) |
+| `notifications` | **Retired from use** (service now calls `12.12`–`12.15`; JSON kept parked, not deleted) |
 | `profile`, `ai-response` | **Retain parked** (unused, harmless) |
 
 ## 5. Proposed New Routes
@@ -224,3 +227,4 @@ Existing `src/types/*.types.ts` remain **view models**; mappers live beside serv
 | 2026-10-07 | Phase 13 ✅ | RBAC audit 13/13 OK (0 mismatches); error pass: +429, 404/generic server messages (fixed cp1252 byte breaking build); README mock→live rewrite; final gates: lint ✓ tsc ✓ build ✓ (25 routes) |
 | 2026-10-07 | Phase 10 ✅ | Settings: notification preferences (12.3–12.5 upsert/list/delete w/ channels+emails), webhook manager (12.6–12.10), delivery log (12.11 status filter); general UI settings mock-retained; gates: tsc ✓ lint ✓ |
 | 2026-10-07 | Phase 11 ✅ | New /platform-ops (admin-only nav): status 14.3 + health 14.5 + suspension 14.6, DLQ 14.7–14.9 (filters, dry-run/replay), incidents 14.10–14.12 (state machine + resolution notes); gates: tsc ✓ lint ✓ |
+| 2026-10-11 | Phase 14 ✅ | Notifications inbox live → `12.12`–`12.15`: list (stream/unreadOnly filters, flat envelope pagination), unread-count badge (30s poll), mark-one-read (analyst/admin), read-all (admin, confirm dialog); client-side type→label/severity/link/payload-message mapping; bell ← `12.13` `count`; mock JSON parked unused; gates: tsc ✓ lint ✓ build ✓ (27 routes) |

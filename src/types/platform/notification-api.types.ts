@@ -102,3 +102,44 @@ export interface WebhookDelivery {
   lastAttemptAt: string | null;
   createdAt: string;
 }
+
+export type NotificationStream = "SECURITY" | "OPERATIONS";
+
+export const NOTIFICATION_STREAMS: NotificationStream[] = ["SECURITY", "OPERATIONS"];
+
+export interface NotificationLog {
+  id: string;
+  organizationId: string;
+  notificationType: NotificationType;
+  channel: NotificationChannel;
+  recipientInfo: Record<string, unknown>;
+  delivered: boolean;
+  errorMessage: string | null;
+  payload: Record<string, unknown>;
+  readAt: string | null;
+  stream: NotificationStream;
+  createdAt: string;
+}
+
+export interface NotificationInboxParams {
+  stream?: NotificationStream;
+  unreadOnly?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+export interface NotificationInboxListResponse {
+  items: NotificationLog[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface UnreadCountResponse {
+  count: number;
+}
+
+export interface ReadAllResponse {
+  organizationId: string;
+  count: number;
+}
