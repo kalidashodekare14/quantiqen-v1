@@ -42,6 +42,23 @@ function DetailField({ label, value }: { label: string; value: React.ReactNode }
   );
 }
 
+function MonoValue({ value }: { value: string | null | undefined }) {
+  if (!value) return <span>—</span>;
+  return (
+    <span title={value} className="block truncate font-mono text-xs">
+      {value}
+    </span>
+  );
+}
+
+function EngineGroupLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
+      {children}
+    </p>
+  );
+}
+
 const DecisionDetailPanel = ({ decisionId, onClose }: DecisionDetailPanelProps) => {
   const [showEngineVersions, setShowEngineVersions] = useState(false);
   const { data: decision, isLoading, isError, refetch } = useDecisionDetail(decisionId);
@@ -275,11 +292,80 @@ const DecisionDetailPanel = ({ decisionId, onClose }: DecisionDetailPanelProps) 
                     <ChevronDown className="size-3.5" />
                   )}
                 </button>
-                {showEngineVersions && (
-                  <pre className="bg-muted/50 text-muted-foreground mt-2 max-h-40 overflow-auto rounded-lg p-3 text-xs">
-                    {JSON.stringify(decision.engineVersions, null, 2)}
-                  </pre>
-                )}
+                {showEngineVersions &&
+                  (decision.engineVersions ? (
+                    <div className="bg-muted/50 mt-2 flex flex-col gap-3 rounded-lg p-3">
+                      <div>
+                        <EngineGroupLabel>Engines</EngineGroupLabel>
+                        <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-2">
+                          <DetailField label="AI engine" value={decision.engineVersions.aiEngine} />
+                          <DetailField
+                            label="Risk engine"
+                            value={decision.engineVersions.riskEngine}
+                          />
+                          <DetailField label="Scoring" value={decision.engineVersions.scoring} />
+                          <DetailField
+                            label="Knowledge base"
+                            value={decision.engineVersions.knowledge}
+                          />
+                          <DetailField
+                            label="Policy engine"
+                            value={decision.engineVersions.policyEngine}
+                          />
+                          <DetailField
+                            label="Policy version"
+                            value={decision.engineVersions.policyVersionId}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <EngineGroupLabel>Model</EngineGroupLabel>
+                        <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-2">
+                          <DetailField
+                            label="Provider"
+                            value={decision.engineVersions.aiModelProvider}
+                          />
+                          <DetailField
+                            label="Prompt version"
+                            value={decision.engineVersions.promptVersion}
+                          />
+                          <div className="col-span-2">
+                            <DetailField
+                              label="Model identifier"
+                              value={<MonoValue value={decision.engineVersions.aiModelIdentifier} />}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <EngineGroupLabel>Provenance</EngineGroupLabel>
+                        <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-2">
+                          <DetailField
+                            label="Evaluated at"
+                            value={
+                              decision.engineVersions.evaluatedAt
+                                ? formatDateTime(decision.engineVersions.evaluatedAt)
+                                : "—"
+                            }
+                          />
+                          <DetailField
+                            label="Trace ID"
+                            value={<MonoValue value={decision.engineVersions.traceId} />}
+                          />
+                          <div className="col-span-2">
+                            <DetailField
+                              label="Context hash"
+                              value={<MonoValue value={decision.engineVersions.inputContextHash} />}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground mt-2 text-sm">
+                      No engine version data available.
+                    </p>
+                  ))}
               </PanelSection>
 
               <PanelSection title="History">

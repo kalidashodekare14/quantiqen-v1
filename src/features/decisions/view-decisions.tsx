@@ -51,6 +51,19 @@ const ANALYZE_POLL_WINDOW_MS = 30000;
 const dayStartIso = (value: string) => new Date(`${value}T00:00:00`).toISOString();
 const dayEndIso = (value: string) => new Date(`${value}T23:59:59.999`).toISOString();
 
+type AnalysisFeedbackTone = "success" | "info" | "error";
+
+interface AnalysisFeedback {
+  tone: AnalysisFeedbackTone;
+  message: string;
+}
+
+const analysisFeedbackClasses: Record<AnalysisFeedbackTone, string> = {
+  success: "text-chart-2",
+  info: "text-muted-foreground",
+  error: "text-destructive",
+};
+
 const ViewDecisions = () => {
   const [selectedDecisionId, setSelectedDecisionId] = useState<string | null>(null);
 
@@ -61,6 +74,7 @@ const ViewDecisions = () => {
   const [dateTo, setDateTo] = useState("");
   const [page, setPage] = useState(1);
   const [pollUntil, setPollUntil] = useState(0);
+  const [analysisFeedback, setAnalysisFeedback] = useState<AnalysisFeedback | null>(null);
 
   const { hasAnyRole } = useRole();
   const canQueueAnalysis = hasAnyRole(["CUSTOMER_ADMIN", "ANALYST"]);
@@ -88,14 +102,27 @@ const ViewDecisions = () => {
   const { isError: isHealthError } = useHealthCheck();
   const analyzeDecisions = useAnalyzeDecisions();
 
-  const handleQueueAnalysis = () => {
+  const handleReanalysis = () => {
+    setAnalysisFeedback(null);
     analyzeDecisions.mutate(undefined, {
       onSuccess: (data) => {
-        toast.success(`Queued ${data.enqueuedCount} decision(s) for analysis.`);
+        if (data.enqueuedCount > 0) {
+          const message = `Re-analysis queued for ${data.enqueuedCount} pending decision(s).`;
+          setAnalysisFeedback({ tone: "success", message });
+          toast.success(message);
+        } else {
+          const message = "No pending decisions to re-analyze.";
+          setAnalysisFeedback({ tone: "info", message });
+          toast.info(message);
+        }
         setPollUntil(Date.now() + ANALYZE_POLL_WINDOW_MS);
         refetchDecisions();
       },
-      onError: (error) => toast.error(getFriendlyError(error).message),
+      onError: (error) => {
+        const message = getFriendlyError(error).message;
+        setAnalysisFeedback({ tone: "error", message });
+        toast.error(message);
+      },
     });
   };
 
@@ -107,15 +134,25 @@ const ViewDecisions = () => {
   };
 
   const headerAction = (
-    <AppButton
-      variant="primary"
-      size="md"
-      disabled={analyzeDecisions.isPending || isHealthError}
-      loading={analyzeDecisions.isPending}
-      onClick={handleQueueAnalysis}
-    >
-      Queue Re-analysis
-    </AppButton>
+    <div className="flex flex-col items-end gap-1">
+      <AppButton
+        variant="primary"
+        size="md"
+        disabled={analyzeDecisions.isPending || isHealthError}
+        loading={analyzeDecisions.isPending}
+        onClick={handleReanalysis}
+      >
+        Re-analysis
+      </AppButton>
+      {analysisFeedback && (
+        <p
+          role="status"
+          className={`text-xs ${analysisFeedbackClasses[analysisFeedback.tone]}`}
+        >
+          {analysisFeedback.message}
+        </p>
+      )}
+    </div>
   );
 
   return (
