@@ -23,13 +23,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRole } from "@/hooks/use-role";
+import { useUsers } from "@/hooks/use-users";
 import { formatDateTime } from "@/utils/date/date";
 import { getFriendlyError } from "@/utils/errorMessages";
 import type {
+  ActionStatus,
   DecisionStatus,
   RemediationActionType,
+  UpdateRemediationRequest,
 } from "@/types/platform/decision-api.types";
-import { useDecisionRemediations, useSubmitRemediation } from "../../hooks/useDecisions";
+import {
+  useDecisionRemediations,
+  useSubmitRemediation,
+  useUpdateRemediationAction,
+} from "../../hooks/useDecisions";
 import CorrectionDialog from "./CorrectionDialog";
 import EvidenceInputList, {
   toEvidenceInputs,
@@ -51,6 +58,8 @@ const ACTION_TYPES: RemediationActionType[] = [
 
 const SUBMITTABLE_STATUSES: DecisionStatus[] = ["APPROVED", "IN_PROGRESS", "REOPENED"];
 
+const ACTION_STATUSES: ActionStatus[] = ["OPEN", "IN_PROGRESS", "COMPLETED", "CANCELLED"];
+
 const RemediationSection = ({ decisionId, decisionStatus }: RemediationSectionProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [actionType, setActionType] = useState<RemediationActionType>("PATCH_APPLIED");
@@ -61,6 +70,7 @@ const RemediationSection = ({ decisionId, decisionStatus }: RemediationSectionPr
     evidenceId: string;
     evidenceTitle: string;
   } | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const { hasAnyRole } = useRole();
   const isAdmin = hasAnyRole(["CUSTOMER_ADMIN"]);
@@ -68,7 +78,9 @@ const RemediationSection = ({ decisionId, decisionStatus }: RemediationSectionPr
   const canSubmitRemediation = SUBMITTABLE_STATUSES.includes(decisionStatus);
 
   const { data, isLoading } = useDecisionRemediations(decisionId);
+  const { data: users } = useUsers();
   const submitRemediation = useSubmitRemediation();
+  const updateAction = useUpdateRemediationAction();
 
   const closeDialog = () => {
     setDialogOpen(false);
@@ -101,6 +113,23 @@ const RemediationSection = ({ decisionId, decisionStatus }: RemediationSectionPr
           closeDialog();
         },
         onError: (error) => toast.error(getFriendlyError(error).message),
+      },
+    );
+  };
+
+  const handleUpdateFollowUp = (actionId: string, body: UpdateRemediationRequest) => {
+    setUpdatingId(actionId);
+    updateAction.mutate(
+      { id: decisionId, actionId, body },
+      {
+        onSuccess: () => {
+          toast.success("Remediation action updated.");
+          setUpdatingId(null);
+        },
+        onError: (error) => {
+          toast.error(getFriendlyError(error).message);
+          setUpdatingId(null);
+        },
       },
     );
   };
@@ -140,6 +169,73 @@ const RemediationSection = ({ decisionId, decisionStatus }: RemediationSectionPr
               </div>
               {action.description && (
                 <p className="text-muted-foreground mt-1 text-sm">{action.description}</p>
+              )}
+
+              {isAdmin ? (
+                <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                  <Select
+                    value={action.status ?? "OPEN"}
+                    onValueChange={(value) =>
+                      handleUpdateFollowUp(action.id, { status: value as ActionStatus })
+                    }
+                  >
+                    <SelectTrigger
+                      className="h-8"
+                      aria-label="Follow-up status"
+                      disabled={updatingId === action.id}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ACTION_STATUSES.map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {status.replaceAll("_", " ")}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={action.assigneeUserId ?? ""}
+                    onValueChange={(value) =>
+                      handleUpdateFollowUp(action.id, { assigneeUserId: value })
+                    }
+                  >
+                    <SelectTrigger
+                      className="h-8"
+                      aria-label="Follow-up assignee"
+                      disabled={updatingId === action.id}
+                    >
+                      <SelectValue placeholder="Assign follow-up…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users?.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name ?? user.email ?? user.qipUserId}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    key={action.dueAt ?? "no-due"}
+                    type="date"
+                    className="h-8"
+                    aria-label="Follow-up due date"
+                    defaultValue={action.dueAt ? action.dueAt.slice(0, 10) : ""}
+                    disabled={updatingId === action.id}
+                    onChange={(e) => {
+                      if (!e.target.value) return;
+                      handleUpdateFollowUp(action.id, {
+                        dueAt: new Date(`${e.target.value}T23:59:59.999`).toISOString(),
+                      });
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="text-muted-foreground mt-2 flex flex-wrap items-center gap-2 text-xs">
+                  <Badge variant="outline">{(action.status ?? "OPEN").replaceAll("_", " ")}</Badge>
+                  {action.assigneeUserId && <span>Assignee: {action.assigneeUserId}</span>}
+                  {action.dueAt && <span>Due {formatDateTime(action.dueAt)}</span>}
+                </div>
               )}
 
               {action.evidenceLinks && action.evidenceLinks.length > 0 && (

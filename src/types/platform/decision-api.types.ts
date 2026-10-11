@@ -260,6 +260,8 @@ export type RemediationActionType =
   | "WORKAROUND"
   | "DOCUMENTATION";
 
+export type ActionStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+
 export type EvidenceType =
   | "DOCUMENT"
   | "LOG_EXTRACT"
@@ -316,7 +318,16 @@ export interface RemediationAction {
   submittedAt: string;
   createdAt: string;
   updatedAt: string;
+  status?: ActionStatus;
+  assigneeUserId?: string | null;
+  dueAt?: string | null;
   evidenceLinks?: RemediationEvidenceLink[];
+}
+
+export interface UpdateRemediationRequest {
+  status?: ActionStatus;
+  assigneeUserId?: string;
+  dueAt?: string;
 }
 
 export interface RemediationListResponse {

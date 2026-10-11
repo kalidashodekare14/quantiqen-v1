@@ -18,12 +18,14 @@ import type {
   DecisionTeamAssignment,
   ReopenDecisionRequest,
   RejectDecisionRequest,
+  RemediationAction,
   RemediationListResponse,
   SubmitRemediationRequest,
   SubmitRemediationResponse,
   SubmitVerificationRequest,
   SubmitVerificationResponse,
   UpdateDecisionStatusRequest,
+  UpdateRemediationRequest,
   VerificationListResponse,
 } from "@/types/platform/decision-api.types";
 
@@ -127,6 +129,10 @@ export const decisionService = {
     return res.data;
   },
 
+  deleteNote: async (id: string, noteId: string): Promise<void> => {
+    await platformApi.delete(`/decisions/${id}/notes/${noteId}`);
+  },
+
   listRemediations: async (id: string): Promise<RemediationListResponse> => {
     const res = await platformApi.get<RemediationListResponse>(`/decisions/${id}/remediation`, {
       params: { limit: 20 },
@@ -140,6 +146,18 @@ export const decisionService = {
   ): Promise<SubmitRemediationResponse> => {
     const res = await platformApi.post<SubmitRemediationResponse>(
       `/decisions/${id}/remediation`,
+      body,
+    );
+    return res.data;
+  },
+
+  updateRemediation: async (
+    id: string,
+    actionId: string,
+    body: UpdateRemediationRequest,
+  ): Promise<RemediationAction> => {
+    const res = await platformApi.patch<RemediationAction>(
+      `/decisions/${id}/remediation/${actionId}`,
       body,
     );
     return res.data;

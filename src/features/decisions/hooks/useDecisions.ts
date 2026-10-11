@@ -16,10 +16,9 @@ import type {
   ReopenDecisionRequest,
   RejectDecisionRequest,
   SubmitRemediationRequest,
-  SubmitRemediationResponse,
   SubmitVerificationRequest,
-  SubmitVerificationResponse,
   UpdateDecisionStatusRequest,
+  UpdateRemediationRequest,
 } from "@/types/platform/decision-api.types";
 
 interface UseDecisionsOptions {
@@ -177,21 +176,62 @@ export const useUpdateDecisionNote = () => {
   });
 };
 
+export const useDeleteDecisionNote = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, noteId }: { id: string; noteId: string }) =>
+      decisionService.deleteNote(id, noteId),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["decision-notes", variables.id] });
+    },
+  });
+};
+
 export const useSubmitRemediation = () => {
-  return useInvalidatedDecisionMutation<
-    { id: string; body: SubmitRemediationRequest },
-    SubmitRemediationResponse
-  >(({ id, body }) => decisionService.submitRemediation(id, body), {
-    invalidateList: false,
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, body }: { id: string; body: SubmitRemediationRequest }) =>
+      decisionService.submitRemediation(id, body),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["decisions"] });
+      queryClient.invalidateQueries({ queryKey: ["decision", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["decision-remediations", variables.id] });
+    },
+  });
+};
+
+export const useUpdateRemediationAction = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      actionId,
+      body,
+    }: {
+      id: string;
+      actionId: string;
+      body: UpdateRemediationRequest;
+    }) => decisionService.updateRemediation(id, actionId, body),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["decision-remediations", variables.id] });
+    },
   });
 };
 
 export const useSubmitVerification = () => {
-  return useInvalidatedDecisionMutation<
-    { id: string; body: SubmitVerificationRequest },
-    SubmitVerificationResponse
-  >(({ id, body }) => decisionService.submitVerification(id, body), {
-    invalidateList: false,
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, body }: { id: string; body: SubmitVerificationRequest }) =>
+      decisionService.submitVerification(id, body),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["decisions"] });
+      queryClient.invalidateQueries({ queryKey: ["decision", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["decision-verifications", variables.id] });
+    },
   });
 };
 
