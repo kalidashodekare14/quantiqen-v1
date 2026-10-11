@@ -68,6 +68,7 @@ export interface AssetRelationship {
 }
 
 export interface CreateAssetRelationshipRequest {
+  parentAssetId: string;
   childAssetId: string;
   relationshipType: string;
 }

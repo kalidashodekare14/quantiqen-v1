@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CUSTOM_RELATIONSHIP_TYPE, RELATIONSHIP_TYPES } from "@/constants/assets";
 import { useRole } from "@/hooks/use-role";
 import { formatDateTime } from "@/utils/date/date";
 import { getFriendlyError } from "@/utils/errorMessages";
@@ -45,6 +46,14 @@ interface AssetDetailPanelProps {
   onClose: () => void;
 }
 
+function isConflictError(err: unknown): boolean {
+  if (err && typeof err === "object" && "response" in err) {
+    const response = (err as { response?: { status?: number } }).response;
+    return response?.status === 409;
+  }
+  return false;
+}
+
 function DetailField({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
@@ -59,6 +68,7 @@ const AssetDetailPanel = ({ assetId, onClose }: AssetDetailPanelProps) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [childAssetId, setChildAssetId] = useState("");
   const [relationshipType, setRelationshipType] = useState("");
+  const [customRelationshipType, setCustomRelationshipType] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
 
   const { hasAnyRole } = useRole();
@@ -92,12 +102,8 @@ const AssetDetailPanel = ({ assetId, onClose }: AssetDetailPanelProps) => {
 
   const handleAddRelationship = () => {
     setFormError(null);
-    if (!childAssetId || childAssetId === "none") {
+    if (!childAssetId) {
       setFormError("Select a related asset.");
-      return;
-    }
-    if (!relationshipType.trim()) {
-      setFormError("Relationship type is required.");
       return;
     }
     if (childAssetId === assetId) {
@@ -105,18 +111,47 @@ const AssetDetailPanel = ({ assetId, onClose }: AssetDetailPanelProps) => {
       return;
     }
 
+    const isCustomType = relationshipType === CUSTOM_RELATIONSHIP_TYPE;
+    const typeValue = isCustomType ? customRelationshipType.trim() : relationshipType;
+
+    if (!typeValue) {
+      setFormError(isCustomType ? "Custom relationship type is required." : "Relationship type is required.");
+      return;
+    }
+    if (typeValue.length > 100) {
+      setFormError("Relationship type must be 100 characters or fewer.");
+      return;
+    }
+
+    const isDuplicate = relationships?.some(
+      (relationship) =>
+        relationship.parentAssetId === assetId &&
+        relationship.childAssetId === childAssetId &&
+        relationship.relationshipType === typeValue,
+    );
+    if (isDuplicate) {
+      setFormError("This relationship already exists.");
+      return;
+    }
+
     createRelationship.mutate(
       {
         id: assetId,
-        body: { childAssetId, relationshipType: relationshipType.trim() },
+        body: { parentAssetId: assetId, childAssetId, relationshipType: typeValue },
       },
       {
         onSuccess: () => {
           toast.success("Relationship created.");
           setChildAssetId("");
           setRelationshipType("");
+          setCustomRelationshipType("");
         },
-        onError: (error) => setFormError(getFriendlyError(error).message),
+        onError: (error) =>
+          setFormError(
+            isConflictError(error)
+              ? "This relationship already exists."
+              : getFriendlyError(error).message,
+          ),
       },
     );
   };
@@ -314,14 +349,31 @@ const AssetDetailPanel = ({ assetId, onClose }: AssetDetailPanelProps) => {
                             ))}
                         </SelectContent>
                       </Select>
-                      <Input
-                        placeholder="type (e.g. depends_on)"
-                        value={relationshipType}
-                        onChange={(e) => setRelationshipType(e.target.value)}
-                        maxLength={100}
-                        className="h-9 w-44"
-                      />
+                      <Select value={relationshipType} onValueChange={setRelationshipType}>
+                        <SelectTrigger className="h-9 w-44" aria-label="Relationship type">
+                          <SelectValue placeholder="Relationship type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {RELATIONSHIP_TYPES.map((type) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ))}
+                          <SelectItem value={CUSTOM_RELATIONSHIP_TYPE}>
+                            {CUSTOM_RELATIONSHIP_TYPE}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
+                    {relationshipType === CUSTOM_RELATIONSHIP_TYPE && (
+                      <Input
+                        placeholder="custom type (e.g. federates)"
+                        value={customRelationshipType}
+                        onChange={(e) => setCustomRelationshipType(e.target.value)}
+                        maxLength={100}
+                        className="h-9"
+                      />
+                    )}
                     {formError && <p className="text-destructive text-xs">{formError}</p>}
                     <div className="flex justify-end">
                       <Button
