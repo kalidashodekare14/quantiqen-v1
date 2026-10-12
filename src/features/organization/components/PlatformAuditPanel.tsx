@@ -30,7 +30,7 @@ const PLATFORM_RESOURCE_TYPES = [
   "UNKNOWN",
 ] as const;
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 10;
 
 export function PlatformAuditPanel() {
   const [action, setAction] = useState("");

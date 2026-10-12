@@ -17,15 +17,37 @@ interface PlatformAuditTableProps {
   entries: PlatformAuditLogEntry[];
 }
 
-const JsonBlock = ({ label, value }: { label: string; value: Record<string, unknown> }) => {
-  const isEmpty = Object.keys(value).length === 0;
+const JsonBlock = ({ label, value }: { label: string; value: unknown }) => {
+  let display: string;
+
+  if (value === null || value === undefined) {
+    display = "{}";
+  } else if (typeof value === "string") {
+    try {
+      const parsed: unknown = JSON.parse(value);
+      display =
+        parsed !== null && typeof parsed === "object"
+          ? JSON.stringify(parsed, null, 2)
+          : value;
+    } catch {
+      display = value;
+    }
+  } else if (typeof value === "object") {
+    display =
+      Object.keys(value as object).length === 0
+        ? "{}"
+        : JSON.stringify(value, null, 2);
+  } else {
+    display = String(value);
+  }
+
   return (
     <div>
       <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wider uppercase">
         {label}
       </p>
       <pre className="bg-muted text-card-foreground max-h-40 overflow-auto rounded-lg p-2 text-xs">
-        {isEmpty ? "{}" : JSON.stringify(value, null, 2)}
+        {display}
       </pre>
     </div>
   );
@@ -80,7 +102,9 @@ const AuditEntryDialog = ({
         <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wider uppercase">
           Hash Chain
         </p>
-        <p className="text-card-foreground font-mono text-xs break-all">{entry.hash}</p>
+        <p className="text-card-foreground font-mono text-xs break-all">
+          {entry.hash || "—"}
+        </p>
       </div>
     </DialogContent>
   </Dialog>
@@ -129,6 +153,9 @@ export function PlatformAuditTable({ entries }: PlatformAuditTableProps) {
         searchable
         searchKeys={["action", "actorUserId", "resourceType", "resourceId"]}
         getRowId={(row) => row.id}
+        pageSize={Math.max(entries.length, 1)}
+        showPagination={false}
+        showSummary={false}
         onRowClick={setSelected}
       />
       {selected && <AuditEntryDialog entry={selected} onClose={() => setSelected(null)} />}

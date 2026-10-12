@@ -9,8 +9,9 @@ export const useNotificationList = (params: NotificationInboxParams = {}) => {
   return useQuery({
     queryKey: ["notifications", "list", params],
     queryFn: () => notificationService.list(params),
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
+    staleTime: 15000,
+    refetchInterval: 15000,
+    refetchOnWindowFocus: true,
   });
 };
 
@@ -18,9 +19,9 @@ export const useUnreadCount = () => {
   return useQuery({
     queryKey: ["notifications", "unread-count"],
     queryFn: notificationService.unreadCount,
-    staleTime: 15000,
-    refetchInterval: 30000,
-    refetchOnWindowFocus: false,
+    staleTime: 10000,
+    refetchInterval: 15000,
+    refetchOnWindowFocus: true,
   });
 };
 

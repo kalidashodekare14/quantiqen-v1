@@ -6,8 +6,8 @@ export interface PlatformAuditLogEntry {
   actorRole: string;
   resourceType: string;
   resourceId: string;
-  beforeJson: Record<string, unknown>;
-  afterJson: Record<string, unknown>;
+  beforeJson: Record<string, unknown> | null;
+  afterJson: Record<string, unknown> | null;
   ipAddress: string;
   userAgent: string;
   correlationId: string;
