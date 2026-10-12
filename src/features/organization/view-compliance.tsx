@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
+import { DataTable, type Column } from "@/components/shared/DataTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDateTime } from "@/utils/date/date";
-import type { ControlStatus } from "@/types/platform/compliance-api.types";
+import type { ComplianceControl, ControlStatus } from "@/types/platform/compliance-api.types";
 import {
   useComplianceControl,
   useComplianceFramework,
@@ -28,6 +29,50 @@ const statusStyles: Record<ControlStatus, string> = {
   GAP: "bg-destructive/10 text-destructive border-destructive/20",
   NOT_APPLICABLE: "bg-muted text-muted-foreground border-border",
 };
+
+const controlColumns: Column<ComplianceControl>[] = [
+  {
+    key: "controlId",
+    label: "Control",
+    render: (row) => <span className="font-mono text-xs">{row.controlId}</span>,
+  },
+  { key: "controlName", label: "Name" },
+  {
+    key: "status",
+    label: "Status",
+    render: (row) => (
+      <span
+        className={`rounded-full border px-2 py-0.5 text-xs font-medium ${statusStyles[row.status]}`}
+      >
+        {row.status.replaceAll("_", " ")}
+      </span>
+    ),
+  },
+  {
+    key: "findingIds",
+    label: "Links",
+    render: (row) => (
+      <span className="text-muted-foreground text-xs">
+        {(row.findingIds ?? []).length} findings · {(row.evidenceIds ?? []).length} evidence ·{" "}
+        {(row.remediationIds ?? []).length} remediations
+      </span>
+    ),
+  },
+  {
+    key: "lastAssessedAt",
+    label: "Last Assessed",
+    render: (row) => (
+      <span className="text-muted-foreground text-xs">
+        {row.lastAssessedAt ? formatDateTime(row.lastAssessedAt) : "Never"}
+      </span>
+    ),
+  },
+  {
+    key: "id",
+    label: "",
+    render: () => <ChevronRight className="text-muted-foreground size-4" />,
+  },
+];
 
 const ControlDetailDialog = ({ controlId, onClose }: { controlId: string; onClose: () => void }) => {
   const { data: control, isLoading } = useComplianceControl(controlId);
@@ -69,7 +114,9 @@ const ControlDetailDialog = ({ controlId, onClose }: { controlId: string; onClos
               <div>
                 <p className="text-muted-foreground text-xs">Framework</p>
                 <p className="text-card-foreground text-sm font-medium">
-                  {control.framework.framework} ({control.framework.version})
+                  {control.framework
+                    ? `${control.framework.framework} (${control.framework.version})`
+                    : "—"}
                 </p>
               </div>
               <div>
@@ -82,9 +129,9 @@ const ControlDetailDialog = ({ controlId, onClose }: { controlId: string; onClos
 
             <div className="flex flex-col gap-2">
               {[
-                { label: "Linked Findings", ids: control.findingIds },
-                { label: "Linked Evidence", ids: control.evidenceIds },
-                { label: "Linked Remediations", ids: control.remediationIds },
+                { label: "Linked Findings", ids: control.findingIds ?? [] },
+                { label: "Linked Evidence", ids: control.evidenceIds ?? [] },
+                { label: "Linked Remediations", ids: control.remediationIds ?? [] },
               ].map((group) => (
                 <div key={group.label} className="flex flex-wrap items-center gap-2">
                   <span className="text-muted-foreground w-32 text-xs">{group.label}</span>
@@ -119,6 +166,8 @@ export const ViewCompliance = () => {
   const { data: framework, isLoading: frameworkLoading } = useComplianceFramework(
     selectedFrameworkId ?? undefined,
   );
+
+  const controls = framework?.controls ?? [];
 
   if (isLoading) {
     return (
@@ -167,64 +216,19 @@ export const ViewCompliance = () => {
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
           </div>
-        ) : framework.controls.length === 0 ? (
+        ) : controls.length === 0 ? (
           <div className="bg-card flex items-center justify-center rounded-xl p-10">
             <p className="text-muted-foreground text-sm">No controls found.</p>
           </div>
         ) : (
-          <div className="bg-card border-border overflow-x-auto rounded-xl border">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-border border-b">
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    Control
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    Name
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    Status
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    Links
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    Last Assessed
-                  </th>
-                  <th className="px-4 py-3" />
-                </tr>
-              </thead>
-              <tbody>
-                {framework.controls.map((control) => (
-                  <tr
-                    key={control.id}
-                    className="border-border hover:bg-muted/40 cursor-pointer border-b last:border-b-0"
-                    onClick={() => setSelectedControlId(control.id)}
-                  >
-                    <td className="px-4 py-3 font-mono text-xs">{control.controlId}</td>
-                    <td className="text-card-foreground px-4 py-3">{control.controlName}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full border px-2 py-0.5 text-xs font-medium ${statusStyles[control.status]}`}
-                      >
-                        {control.status.replaceAll("_", " ")}
-                      </span>
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 text-xs">
-                      {control.findingIds.length} findings · {control.evidenceIds.length} evidence ·{" "}
-                      {control.remediationIds.length} remediations
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 text-xs">
-                      {control.lastAssessedAt ? formatDateTime(control.lastAssessedAt) : "Never"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <ChevronRight className="text-muted-foreground size-4" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            columns={controlColumns}
+            data={controls}
+            searchable
+            searchKeys={["controlId", "controlName"]}
+            getRowId={(row) => row.id}
+            onRowClick={(row) => setSelectedControlId(row.id)}
+          />
         )}
 
         {selectedControlId && (

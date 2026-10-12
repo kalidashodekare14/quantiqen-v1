@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
-interface Column<T> {
+export interface Column<T> {
   key: Extract<keyof T, string>;
   label: string;
   render?: (row: T) => ReactNode;

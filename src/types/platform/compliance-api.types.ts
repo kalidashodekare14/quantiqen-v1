@@ -16,9 +16,9 @@ export interface ComplianceControl {
   controlName: string;
   description: string;
   status: ControlStatus;
-  findingIds: string[];
-  evidenceIds: string[];
-  remediationIds: string[];
+  findingIds: string[] | null;
+  evidenceIds: string[] | null;
+  remediationIds: string[] | null;
   lastAssessedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -35,9 +35,9 @@ export interface ComplianceFrameworkMeta {
 }
 
 export interface ComplianceFramework extends ComplianceFrameworkMeta {
-  controls: ComplianceControl[];
+  controls: ComplianceControl[] | null;
 }
 
 export interface ComplianceControlDetail extends ComplianceControl {
-  framework: ComplianceFrameworkMeta;
+  framework: ComplianceFrameworkMeta | null;
 }
