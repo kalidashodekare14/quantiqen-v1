@@ -2,6 +2,7 @@
 
 import type { CustomerRole } from "@/types/auth.types";
 import { useRole } from "@/hooks/use-role";
+import { AccessDenied } from "@/components/shared/AccessDenied";
 
 interface RequireRoleProps {
   allowedRoles: CustomerRole[];
@@ -9,7 +10,11 @@ interface RequireRoleProps {
   fallback?: React.ReactNode;
 }
 
-export function RequireRole({ allowedRoles, children, fallback = null }: RequireRoleProps) {
+export function RequireRole({ allowedRoles, children, fallback }: RequireRoleProps) {
   const { hasAnyRole } = useRole();
-  return hasAnyRole(allowedRoles) ? <>{children}</> : <>{fallback}</>;
+  return hasAnyRole(allowedRoles) ? (
+    <>{children}</>
+  ) : (
+    <>{fallback ?? <AccessDenied />}</>
+  );
 }

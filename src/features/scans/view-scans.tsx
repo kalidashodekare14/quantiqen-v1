@@ -5,6 +5,7 @@ import { Plus, Pencil, Radar, Trash2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/PageHeader";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -70,10 +71,20 @@ export const ViewScans = () => {
   const { hasAnyRole } = useRole();
   const isAdmin = hasAnyRole(["CUSTOMER_ADMIN"]);
 
-  const { data: policies, isLoading: policiesLoading, isError: policiesError, refetch: refetchPolicies } =
-    useScanPolicies();
-  const { data: jobs, isLoading: jobsLoading, isError: jobsError, refetch: refetchJobs } =
-    useScanJobs(jobStatus !== "ALL" ? jobStatus : undefined);
+  const {
+    data: policies,
+    isLoading: policiesLoading,
+    isError: policiesError,
+    error: policiesErrorDetail,
+    refetch: refetchPolicies,
+  } = useScanPolicies();
+  const {
+    data: jobs,
+    isLoading: jobsLoading,
+    isError: jobsError,
+    error: jobsErrorDetail,
+    refetch: refetchJobs,
+  } = useScanJobs(jobStatus !== "ALL" ? jobStatus : undefined);
 
   const updatePolicy = useUpdateScanPolicy();
   const deletePolicy = useDeleteScanPolicy();
@@ -173,12 +184,11 @@ export const ViewScans = () => {
             Loading scan policies…
           </div>
         ) : policiesError ? (
-          <div className="bg-card flex flex-col items-center gap-3 rounded-xl p-10 text-center">
-            <p className="text-destructive text-sm">Failed to load scan policies.</p>
-            <Button variant="outline" size="sm" onClick={() => refetchPolicies()}>
-              Retry
-            </Button>
-          </div>
+          <QueryErrorState
+            error={policiesErrorDetail}
+            message="Failed to load scan policies."
+            onRetry={refetchPolicies}
+          />
         ) : !policies || policies.length === 0 ? (
           <div className="bg-card flex items-center justify-center rounded-xl p-10">
             <p className="text-muted-foreground text-sm">No scan policies yet.</p>
@@ -268,12 +278,11 @@ export const ViewScans = () => {
       ) : jobsLoading ? (
         <div className="text-muted-foreground py-10 text-center text-sm">Loading scan jobs…</div>
       ) : jobsError ? (
-        <div className="bg-card flex flex-col items-center gap-3 rounded-xl p-10 text-center">
-          <p className="text-destructive text-sm">Failed to load scan jobs.</p>
-          <Button variant="outline" size="sm" onClick={() => refetchJobs()}>
-            Retry
-          </Button>
-        </div>
+        <QueryErrorState
+          error={jobsErrorDetail}
+          message="Failed to load scan jobs."
+          onRetry={refetchJobs}
+        />
       ) : !jobs || jobs.length === 0 ? (
         <div className="bg-card flex items-center justify-center rounded-xl p-10">
           <p className="text-muted-foreground text-sm">No scan jobs found.</p>

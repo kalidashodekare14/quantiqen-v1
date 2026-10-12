@@ -5,7 +5,7 @@ import { useState } from "react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatPills } from "@/components/shared/StatPills";
 import AppButton from "@/components/shared/AppButton";
-import { Button } from "@/components/ui/button";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { KeyRound, CheckCircle, XCircle, Clock, Activity } from "lucide-react";
 import { useRole } from "@/hooks/use-role";
 import type { RotateApiKeyResponse } from "@/types/platform/api-key.types";
@@ -27,7 +27,7 @@ const ViewApiManagement = () => {
   const { hasAnyRole } = useRole();
   const isAdmin = hasAnyRole(["CUSTOMER_ADMIN"]);
 
-  const { data: apiKeys, isLoading, isError, refetch } = useApiManagement();
+  const { data: apiKeys, isLoading, isError, error, refetch } = useApiManagement();
   const { data: usage } = useApiUsage();
 
   if (isLoading) {
@@ -49,12 +49,11 @@ const ViewApiManagement = () => {
     return (
       <div className="flex w-full flex-col gap-6">
         <h1 className="text-xl font-bold text-card-foreground">API Management</h1>
-        <div className="bg-card flex flex-col items-center gap-3 rounded-xl p-10 text-center">
-          <p className="text-destructive text-sm">Failed to load API keys. Please try again later.</p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
+        <QueryErrorState
+          error={error}
+          message="Failed to load API keys. Please try again later."
+          onRetry={refetch}
+        />
       </div>
     );
   }

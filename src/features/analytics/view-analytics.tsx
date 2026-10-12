@@ -4,7 +4,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Button } from "@/components/ui/button";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import {
   Select,
   SelectContent,
@@ -42,7 +42,7 @@ const DailyDecisionChart = dynamic(() => import("./components/DailyDecisionChart
 
 const ViewAnalytics = () => {
   const [days, setDays] = useState(14);
-  const { data, isFetching, isError, refetch } = useAnalytics(days);
+  const { data, isFetching, isError, error, refetch } = useAnalytics(days);
 
   const periodLabel = `Last ${days} days`;
 
@@ -68,14 +68,11 @@ const ViewAnalytics = () => {
             subtitle="Security insights and trends"
             action={rangeSelector}
           />
-          <div className="bg-card/80 border-foreground/10 flex flex-col items-center gap-3 rounded-xl border p-10 text-center">
-            <p className="text-muted-foreground text-sm">
-              Unable to load analytics data. Please try again.
-            </p>
-            <Button variant="outline" onClick={() => refetch()}>
-              Retry
-            </Button>
-          </div>
+          <QueryErrorState
+            error={error}
+            message="Unable to load analytics data. Please try again."
+            onRetry={refetch}
+          />
         </div>
       );
     }

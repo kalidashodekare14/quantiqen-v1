@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { RequireRole } from "@/components/auth/RequireRole";
 import { usePortalSessions, useRevokeSession } from "../hooks/useSessionManagement";
 import { SessionTable } from "./SessionTable";
@@ -22,7 +23,7 @@ type ConfirmTarget =
 export function SessionManagement() {
   const router = useRouter();
   const { clearAuth } = useAuth();
-  const { data: sessions, isLoading, isError } = usePortalSessions();
+  const { data: sessions, isLoading, isError, error } = usePortalSessions();
   const revokeSession = useRevokeSession();
   const [confirmTarget, setConfirmTarget] = useState<ConfirmTarget>(null);
 
@@ -125,9 +126,7 @@ export function SessionManagement() {
       </div>
 
       {isError ? (
-        <div className="text-muted-foreground py-8 text-center">
-          Failed to load sessions. Please try again.
-        </div>
+        <QueryErrorState error={error} message="Failed to load sessions. Please try again." />
       ) : (
         <SessionTable
           sessions={sessions ?? []}

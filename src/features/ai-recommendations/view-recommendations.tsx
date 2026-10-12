@@ -1,12 +1,13 @@
 "use client"
 
 import { PageHeader } from "@/components/shared/PageHeader"
+import { QueryErrorState } from "@/components/shared/QueryErrorState"
 import { useRecommendations } from "./hooks/useRecommendations"
 import RecommendationCard from "./components/RecommendationCard"
 import RecommendationsSkeleton from "./components/RecommendationsSkeleton"
 
 const ViewRecommendations = () => {
-  const { data, isLoading, isError } = useRecommendations()
+  const { data, isLoading, isError, error, refetch } = useRecommendations()
 
   if (isLoading) {
     return <RecommendationsSkeleton />
@@ -16,7 +17,11 @@ const ViewRecommendations = () => {
     return (
       <div className="flex w-full flex-col gap-6">
         <h1 className="text-xl font-bold text-card-foreground">AI Recommendations</h1>
-        <p className="text-destructive">Failed to load recommendations. Please try again later.</p>
+        <QueryErrorState
+          error={error}
+          message="Failed to load recommendations. Please try again later."
+          onRetry={refetch}
+        />
       </div>
     )
   }

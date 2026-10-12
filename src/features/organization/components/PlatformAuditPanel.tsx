@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { usePlatformAuditLog } from "../hooks/useAuditLog";
 import { PlatformAuditTable } from "./PlatformAuditTable";
 import type { PlatformAuditLogParams } from "@/types/platform/audit-api.types";
@@ -50,7 +51,7 @@ export function PlatformAuditPanel() {
     ...(to ? { to: new Date(to).toISOString() } : {}),
   };
 
-  const { data, isLoading, isError } = usePlatformAuditLog(params);
+  const { data, isLoading, isError, error } = usePlatformAuditLog(params);
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
@@ -163,9 +164,10 @@ export function PlatformAuditPanel() {
       {isLoading ? (
         <LoadingSkeleton variant="table" />
       ) : isError ? (
-        <div className="text-muted-foreground py-8 text-center">
-          Failed to load platform audit log. Please try again.
-        </div>
+        <QueryErrorState
+          error={error}
+          message="Failed to load platform audit log. Please try again."
+        />
       ) : (
         <PlatformAuditTable entries={data?.data ?? []} />
       )}

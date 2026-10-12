@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { RequireRole } from "@/components/auth/RequireRole";
 import { usePortalAuditLog } from "../hooks/useAuditLog";
 import { AuditLogTable } from "./AuditLogTable";
@@ -32,7 +33,7 @@ export function AuditLog() {
     ...(outcomeFilter ? { outcome: outcomeFilter } : {}),
   };
 
-  const { data, isLoading, isError } = usePortalAuditLog(
+  const { data, isLoading, isError, error } = usePortalAuditLog(
     source === "portal" ? params : undefined,
   );
 
@@ -123,9 +124,7 @@ export function AuditLog() {
         ) : isLoading ? (
           <LoadingSkeleton variant="table" />
         ) : isError ? (
-          <div className="text-muted-foreground py-8 text-center">
-            Failed to load audit log. Please try again.
-          </div>
+          <QueryErrorState error={error} message="Failed to load audit log. Please try again." />
         ) : (
           <AuditLogTable entries={data?.entries ?? []} />
         )}

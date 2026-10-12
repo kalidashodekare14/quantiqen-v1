@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import { toast } from "sonner";
 
 import { refreshAccessToken } from "./refresh-token";
 import { tokenManager } from "./token-manager";
@@ -25,6 +26,12 @@ platformApi.interceptors.response.use(
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
     if (error.response?.status !== 401 || originalRequest._retry || !originalRequest) {
+      if (error.response?.status === 403) {
+        const method = (originalRequest?.method ?? "get").toUpperCase();
+        if (method !== "GET" && method !== "HEAD") {
+          toast.error("You don't have permission to perform this action");
+        }
+      }
       return Promise.reject(error);
     }
 

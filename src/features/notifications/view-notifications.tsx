@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/PageHeader";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -56,7 +57,7 @@ export const ViewNotifications = () => {
     ...(status === "UNREAD" ? { unreadOnly: true } : {}),
   };
 
-  const { data, isLoading, isError, refetch } = useNotificationList(params);
+  const { data, isLoading, isError, error, refetch } = useNotificationList(params);
   const { data: unread } = useUnreadCount();
   const markRead = useMarkNotificationRead();
   const markAll = useMarkAllRead();
@@ -164,12 +165,7 @@ export const ViewNotifications = () => {
       </div>
 
       {isError ? (
-        <div className="bg-card/80 border border-foreground/10 flex flex-col items-center gap-3 rounded-xl p-10 text-center">
-          <p className="text-muted-foreground text-sm">Unable to load notifications.</p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
+        <QueryErrorState error={error} message="Unable to load notifications." onRetry={refetch} />
       ) : (
         <NotificationList
           notifications={(data?.items ?? []).map((log) => mapInboxNotification(log))}

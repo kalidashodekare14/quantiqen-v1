@@ -79,7 +79,10 @@ api.interceptors.response.use(
 
     if (error.response?.status !== 401 || originalRequest._retry) {
       if (error.response?.status === 403) {
-        toast.error("You don't have permission to perform this action");
+        const method = (originalRequest?.method ?? "get").toUpperCase();
+        if (method !== "GET" && method !== "HEAD") {
+          toast.error("You don't have permission to perform this action");
+        }
       }
       return Promise.reject(error);
     }

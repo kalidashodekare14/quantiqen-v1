@@ -6,6 +6,7 @@ import { Inbox, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -52,7 +53,7 @@ const DlqSection = () => {
     ...(recovered !== "ALL" ? { recovered: recoveredValue(recovered) as boolean } : {}),
   };
 
-  const { data, isLoading, isError, refetch } = useDlqFailures(params, true);
+  const { data, isLoading, isError, error, refetch } = useDlqFailures(params, true);
   const replay = useReplayFailure();
 
   const handleError = (error: unknown) => toast.error(getFriendlyError(error).message);
@@ -209,12 +210,11 @@ const DlqSection = () => {
       {isLoading ? (
         <p className="text-muted-foreground text-sm">Loading failures…</p>
       ) : isError ? (
-        <div className="flex flex-col items-center gap-3 py-6 text-center">
-          <p className="text-destructive text-sm">Failed to load DLQ failures.</p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
+        <QueryErrorState
+          error={error}
+          message="Failed to load DLQ failures."
+          onRetry={refetch}
+        />
       ) : !data || data.items.length === 0 ? (
         <p className="text-muted-foreground py-4 text-center text-sm">No failures found.</p>
       ) : (

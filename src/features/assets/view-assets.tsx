@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatPills } from "@/components/shared/StatPills";
 import AppButton from "@/components/shared/AppButton";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -63,7 +64,7 @@ const ViewAssets = () => {
   };
 
   const { data: allAssets, isLoading: isLoadingMeta } = useAssets();
-  const { data: assets, isLoading, isError, refetch } = useAssets(filters);
+  const { data: assets, isLoading, isError, error, refetch } = useAssets(filters);
 
   if (isLoading || isLoadingMeta) {
     return <AssetsSkeleton />;
@@ -186,12 +187,11 @@ const ViewAssets = () => {
       </div>
 
       {isError ? (
-        <div className="bg-card flex flex-col items-center gap-3 rounded-xl p-10 text-center">
-          <p className="text-destructive text-sm">Failed to load assets. Please try again later.</p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
+        <QueryErrorState
+          error={error}
+          message="Failed to load assets. Please try again later."
+          onRetry={refetch}
+        />
       ) : (
         <AssetTable
           assets={assets ?? []}

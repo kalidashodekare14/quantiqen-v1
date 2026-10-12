@@ -5,6 +5,7 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
 import { DataTable, type Column } from "@/components/shared/DataTable";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -162,7 +163,7 @@ export const ViewCompliance = () => {
   const [selectedFrameworkId, setSelectedFrameworkId] = useState<string | null>(null);
   const [selectedControlId, setSelectedControlId] = useState<string | null>(null);
 
-  const { data: frameworks, isLoading, isError, refetch } = useComplianceFrameworks();
+  const { data: frameworks, isLoading, isError, error, refetch } = useComplianceFrameworks();
   const { data: framework, isLoading: frameworkLoading } = useComplianceFramework(
     selectedFrameworkId ?? undefined,
   );
@@ -186,12 +187,11 @@ export const ViewCompliance = () => {
     return (
       <div className="flex w-full flex-col gap-6">
         <PageHeader title="Compliance" subtitle="Frameworks and control coverage" />
-        <div className="bg-card flex flex-col items-center gap-3 rounded-xl p-10 text-center">
-          <p className="text-destructive text-sm">Failed to load compliance frameworks.</p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
+        <QueryErrorState
+          error={error}
+          message="Failed to load compliance frameworks."
+          onRetry={refetch}
+        />
       </div>
     );
   }

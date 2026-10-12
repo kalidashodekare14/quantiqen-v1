@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Users, Shield, ScrollText, BookOpen, ListChecks, ClipboardCheck, UsersRound } from "lucide-react"
 import { PageHeader } from "@/components/shared/PageHeader"
+import { QueryErrorState } from "@/components/shared/QueryErrorState"
 import { RequireRole } from "@/components/auth/RequireRole"
 import { useOrganization } from "./hooks/useOrganization"
 import { useUsers } from "@/hooks/use-users"
@@ -60,7 +61,7 @@ const managementCards = [
 ]
 
 export const ViewOrganization = () => {
-  const { data: org, isLoading: orgLoading, isError } = useOrganization()
+  const { data: org, isLoading: orgLoading, isError, error } = useOrganization()
   const { data: users, isLoading: usersLoading } = useUsers()
   const { data: assets, isLoading: assetsLoading } = useAssets()
   const { data: apiKeys, isLoading: apiKeysLoading } = useApiManagement()
@@ -69,7 +70,20 @@ export const ViewOrganization = () => {
     return <OrganizationSkeleton />
   }
 
-  if (isError) return null
+  if (isError) {
+    return (
+      <div className="flex flex-col gap-6 w-full">
+        <PageHeader
+          title="Organization"
+          subtitle="Manage your organization profile and settings"
+        />
+        <QueryErrorState
+          error={error}
+          message="Failed to load organization. Please try again."
+        />
+      </div>
+    )
+  }
   if (!org) return null
 
   const counts = {

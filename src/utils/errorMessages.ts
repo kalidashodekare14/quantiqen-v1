@@ -11,6 +11,10 @@ function getStatusFromError(err: unknown): number | undefined {
   return undefined;
 }
 
+export function isForbidden(err: unknown): boolean {
+  return getStatusFromError(err) === 403;
+}
+
 function isNetworkError(err: unknown): boolean {
   if (err && typeof err === "object" && "message" in err) {
     const message = (err as { message?: string }).message ?? "";
@@ -52,11 +56,18 @@ function getServerMessage(err: unknown): string | undefined {
 export function getFriendlyError(err: unknown): ErrorResult {
   const status = getStatusFromError(err);
 
-  if (status === 401 || status === 403) {
+  if (status === 401) {
     const serverMsg = getServerMessage(err);
     return {
       message: serverMsg ?? "Your session has expired. Redirecting to login...",
       shouldRedirectToLogin: true,
+    };
+  }
+
+  if (status === 403) {
+    return {
+      message: getServerMessage(err) ?? "You don't have permission to perform this action.",
+      shouldRedirectToLogin: false,
     };
   }
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Eye, Pencil, Plus, UserRound } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatDateTime } from "@/utils/date/date";
@@ -22,7 +23,7 @@ export const ViewTeams = () => {
   const { hasAnyRole } = useRole();
   const isAdmin = hasAnyRole(["CUSTOMER_ADMIN"]);
 
-  const { data: teams, isLoading, isError, refetch } = useTeams();
+  const { data: teams, isLoading, isError, error, refetch } = useTeams();
 
   const filtered = (teams ?? []).filter((team) =>
     team.name.toLowerCase().includes(search.trim().toLowerCase()),
@@ -57,12 +58,7 @@ export const ViewTeams = () => {
       {isLoading ? (
         <div className="text-muted-foreground py-10 text-center text-sm">Loading teams…</div>
       ) : isError ? (
-        <div className="bg-card flex flex-col items-center gap-3 rounded-xl p-10 text-center">
-          <p className="text-destructive text-sm">Failed to load teams.</p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
+        <QueryErrorState error={error} message="Failed to load teams." onRetry={refetch} />
       ) : filtered.length === 0 ? (
         <div className="bg-card flex items-center justify-center rounded-xl p-10">
           <p className="text-muted-foreground text-sm">No teams found.</p>

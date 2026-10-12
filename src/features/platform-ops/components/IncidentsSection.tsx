@@ -6,6 +6,7 @@ import { Siren, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -61,7 +62,7 @@ const IncidentsSection = () => {
     ...(status !== "ALL" ? { status } : {}),
   };
 
-  const { data: incidents, isLoading, isError } = useIncidents(params);
+  const { data: incidents, isLoading, isError, error, refetch } = useIncidents(params);
   const updateIncident = useUpdateIncident();
 
   const handleError = (error: unknown) => toast.error(getFriendlyError(error).message);
@@ -184,7 +185,7 @@ const IncidentsSection = () => {
       {isLoading ? (
         <p className="text-muted-foreground text-sm">Loading incidents…</p>
       ) : isError ? (
-        <p className="text-destructive py-4 text-center text-sm">Failed to load incidents.</p>
+        <QueryErrorState error={error} message="Failed to load incidents." onRetry={refetch} />
       ) : !incidents || incidents.length === 0 ? (
         <p className="text-muted-foreground py-4 text-center text-sm">
           {view === "active" ? "No active incidents." : "No incidents found."}

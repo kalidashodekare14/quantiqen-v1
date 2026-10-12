@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { RequireRole } from "@/components/auth/RequireRole";
 import { usePortalPolicy } from "../hooks/usePolicyManagement";
 import { PolicyDisplay } from "./PolicyDisplay";
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 
 export function PolicyManagement() {
-  const { data: policy, isLoading, isError } = usePortalPolicy();
+  const { data: policy, isLoading, isError, error } = usePortalPolicy();
   const [editing, setEditing] = useState(false);
 
   if (isLoading) return <LoadingSkeleton variant="page" />;
@@ -34,9 +35,7 @@ export function PolicyManagement() {
       </div>
 
       {isError ? (
-        <div className="text-muted-foreground py-8 text-center">
-          Failed to load policy. Please try again.
-        </div>
+        <QueryErrorState error={error} message="Failed to load policy. Please try again." />
       ) : policy ? (
         editing ? (
           <PolicyEditForm policy={policy} onCancel={() => setEditing(false)} />

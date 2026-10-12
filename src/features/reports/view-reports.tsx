@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
 import AppButton from "@/components/shared/AppButton";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -73,7 +74,7 @@ export const ViewReports = () => {
     ...(dateTo ? { dateTo: new Date(dateTo).toISOString() } : {}),
   };
 
-  const { data, isLoading, isError, refetch } = useReports(params);
+  const { data, isLoading, isError, error, refetch } = useReports(params);
 
   const handleDownload = async (report: Report, format: ReportExportFormat) => {
     if (exportingId) return;
@@ -203,12 +204,7 @@ export const ViewReports = () => {
       </div>
 
       {isError ? (
-        <div className="bg-card flex flex-col items-center gap-3 rounded-xl p-10 text-center">
-          <p className="text-destructive text-sm">Failed to load reports</p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
+        <QueryErrorState error={error} message="Failed to load reports" onRetry={refetch} />
       ) : !data || data.reports.length === 0 ? (
         <div className="bg-card flex items-center justify-center rounded-xl p-10">
           <p className="text-muted-foreground text-sm">No reports found.</p>
