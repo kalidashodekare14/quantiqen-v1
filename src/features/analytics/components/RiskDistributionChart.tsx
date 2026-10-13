@@ -1,115 +1,129 @@
 "use client";
 
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
-import ChartCard from "@/components/shared/ChartCard";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+
+import ChartPanel from "./ChartPanel";
+import { tooltipContentStyle, useChartColors } from "../hooks/useChartColors";
 import type {
-  RiskDistributionPoint,
   AssetCategoryPoint,
+  RiskDistributionPoint,
+  SectionResult,
   ThreatDistributionPoint,
 } from "@/types/analytics.types";
 
 interface RiskDistributionChartProps {
-  riskDistribution: RiskDistributionPoint[];
-  assetsByCategory: AssetCategoryPoint[];
-  threatDistribution: ThreatDistributionPoint[];
+  riskSection: SectionResult<RiskDistributionPoint[]>;
+  assetSection: SectionResult<AssetCategoryPoint[]>;
+  threatSection: SectionResult<ThreatDistributionPoint[]>;
+  onRetry?: () => void;
 }
 
-const RISK_COLORS = ["#f87171", "#fb923c", "#fbbf24", "#34d399"];
-const ASSET_COLORS = ["#60a5fa", "#34d399", "#fbbf24", "#f87171", "#a78bfa"];
-const THREAT_COLORS = ["#f87171", "#fb923c", "#fbbf24", "#a78bfa", "#60a5fa"];
-
-const tooltipStyle = {
-  backgroundColor: "#141820",
-  border: "1px solid #2d3748",
-  borderRadius: "8px",
-  fontSize: "12px",
-};
-
 const RiskDistributionChart = ({
-  riskDistribution,
-  assetsByCategory,
-  threatDistribution,
+  riskSection,
+  assetSection,
+  threatSection,
+  onRetry,
 }: RiskDistributionChartProps) => {
+  const colors = useChartColors();
+
+  const riskData = riskSection.status === "ok" ? riskSection.data : [];
+  const assetData = assetSection.status === "ok" ? assetSection.data : [];
+  const threatData = threatSection.status === "ok" ? threatSection.data : [];
+
+  const riskColors = [colors.series[3], colors.series[2], colors.series[4], colors.series[1]];
+  const assetColors = [
+    colors.series[4],
+    colors.series[1],
+    colors.series[2],
+    colors.series[3],
+    colors.series[0],
+  ];
+  const threatColors = [
+    colors.series[3],
+    colors.series[2],
+    colors.series[4],
+    colors.series[0],
+    colors.series[1],
+  ];
+
   return (
     <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-3">
-      <ChartCard title="Risk Distribution" subtitle="By severity level">
+      <ChartPanel
+        title="Risk Distribution"
+        subtitle="Current snapshot"
+        status={riskSection.status}
+        isEmpty={riskData.length === 0}
+        height={200}
+        onRetry={onRetry}
+      >
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
-            <Pie
-              data={riskDistribution}
-              cx="50%"
-              cy="50%"
-              innerRadius={0}
-              outerRadius={70}
-              dataKey="value"
-            >
-              {riskDistribution.map((_, index) => (
-                <Cell
-                  key={index}
-                  fill={RISK_COLORS[index % RISK_COLORS.length]}
-                />
+            <Pie data={riskData} cx="50%" cy="50%" innerRadius={0} outerRadius={70} dataKey="value">
+              {riskData.map((_, index) => (
+                <Cell key={index} fill={riskColors[index % riskColors.length]} />
               ))}
             </Pie>
-            <Tooltip contentStyle={tooltipStyle} />
+            <Tooltip contentStyle={tooltipContentStyle(colors)} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>
-      </ChartCard>
+      </ChartPanel>
 
-      <ChartCard title="Assets by Category" subtitle="By asset type">
+      <ChartPanel
+        title="Assets by Category"
+        subtitle="Current snapshot"
+        status={assetSection.status}
+        isEmpty={assetData.length === 0}
+        height={200}
+        onRetry={onRetry}
+      >
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
-              data={assetsByCategory}
+              data={assetData}
               cx="50%"
               cy="50%"
               innerRadius={45}
               outerRadius={70}
               dataKey="value"
             >
-              {assetsByCategory.map((_, index) => (
-                <Cell
-                  key={index}
-                  fill={ASSET_COLORS[index % ASSET_COLORS.length]}
-                />
+              {assetData.map((_, index) => (
+                <Cell key={index} fill={assetColors[index % assetColors.length]} />
               ))}
             </Pie>
-            <Tooltip contentStyle={tooltipStyle} />
+            <Tooltip contentStyle={tooltipContentStyle(colors)} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>
-      </ChartCard>
+      </ChartPanel>
 
-      <ChartCard title="Threat Distribution" subtitle="By threat type">
+      <ChartPanel
+        title="Threat Distribution"
+        subtitle="Current snapshot"
+        status={threatSection.status}
+        isEmpty={threatData.length === 0}
+        height={200}
+        onRetry={onRetry}
+      >
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
-              data={threatDistribution}
+              data={threatData}
               cx="50%"
               cy="50%"
               innerRadius={0}
               outerRadius={70}
               dataKey="value"
             >
-              {threatDistribution.map((_, index) => (
-                <Cell
-                  key={index}
-                  fill={THREAT_COLORS[index % THREAT_COLORS.length]}
-                />
+              {threatData.map((_, index) => (
+                <Cell key={index} fill={threatColors[index % threatColors.length]} />
               ))}
             </Pie>
-            <Tooltip contentStyle={tooltipStyle} />
+            <Tooltip contentStyle={tooltipContentStyle(colors)} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>
-      </ChartCard>
+      </ChartPanel>
     </div>
   );
 };

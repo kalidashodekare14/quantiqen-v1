@@ -11,6 +11,10 @@ function getStatusFromError(err: unknown): number | undefined {
   return undefined;
 }
 
+export function isForbidden(err: unknown): boolean {
+  return getStatusFromError(err) === 403;
+}
+
 function isNetworkError(err: unknown): boolean {
   if (err && typeof err === "object" && "message" in err) {
     const message = (err as { message?: string }).message ?? "";
@@ -25,8 +29,26 @@ function isNetworkError(err: unknown): boolean {
 
 function getServerMessage(err: unknown): string | undefined {
   if (err && typeof err === "object" && "response" in err) {
-    const response = (err as { response?: { data?: { message?: string; error?: string } } }).response;
-    return response?.data?.message ?? response?.data?.error;
+    const data = (err as { response?: { data?: unknown } }).response?.data;
+
+    if (data && typeof data === "object") {
+      const envelope = data as { error?: unknown; message?: unknown };
+
+      if (envelope.error && typeof envelope.error === "object") {
+        const nested = envelope.error as { message?: unknown };
+        if (typeof nested.message === "string" && nested.message) {
+          return nested.message;
+        }
+      }
+
+      if (typeof envelope.message === "string" && envelope.message) {
+        return envelope.message;
+      }
+
+      if (typeof envelope.error === "string" && envelope.error) {
+        return envelope.error;
+      }
+    }
   }
   return undefined;
 }
@@ -34,11 +56,18 @@ function getServerMessage(err: unknown): string | undefined {
 export function getFriendlyError(err: unknown): ErrorResult {
   const status = getStatusFromError(err);
 
-  if (status === 401 || status === 403) {
+  if (status === 401) {
     const serverMsg = getServerMessage(err);
     return {
       message: serverMsg ?? "Your session has expired. Redirecting to login...",
       shouldRedirectToLogin: true,
+    };
+  }
+
+  if (status === 403) {
+    return {
+      message: getServerMessage(err) ?? "You don't have permission to perform this action.",
+      shouldRedirectToLogin: false,
     };
   }
 
@@ -49,9 +78,27 @@ export function getFriendlyError(err: unknown): ErrorResult {
     };
   }
 
+  if (status === 409) {
+    return {
+      message:
+        getServerMessage(err) ??
+        "This record was changed by someone else. Please refresh and try again.",
+      shouldRedirectToLogin: false,
+    };
+  }
+
   if (status === 404) {
     return {
-      message: "The requested resource was not found.",
+      message: getServerMessage(err) ?? "The requested resource was not found.",
+      shouldRedirectToLogin: false,
+    };
+  }
+
+  if (status === 429) {
+    return {
+      message:
+        getServerMessage(err) ??
+        "Too many requests. Please wait a moment and try again.",
       shouldRedirectToLogin: false,
     };
   }
@@ -66,6 +113,13 @@ export function getFriendlyError(err: unknown): ErrorResult {
   if (status !== undefined && status >= 500) {
     return {
       message: "A server error occurred. Please try again later.",
+      shouldRedirectToLogin: false,
+    };
+  }
+
+  if (status !== undefined) {
+    return {
+      message: getServerMessage(err) ?? "An unexpected error occurred.",
       shouldRedirectToLogin: false,
     };
   }

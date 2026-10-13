@@ -1,10 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { Users, Shield, ScrollText, BookOpen } from "lucide-react"
+import { Users, Shield, ScrollText, BookOpen, ListChecks, ClipboardCheck, UsersRound } from "lucide-react"
 import { PageHeader } from "@/components/shared/PageHeader"
+import { QueryErrorState } from "@/components/shared/QueryErrorState"
 import { RequireRole } from "@/components/auth/RequireRole"
 import { useOrganization } from "./hooks/useOrganization"
+import { useUsers } from "@/hooks/use-users"
+import { useAssets } from "@/features/assets/hooks/useAssets"
+import { useApiManagement } from "@/features/api-management/hooks/useApiManagement"
 import { OrgHeader } from "./components/OrgHeader"
 import { OrgDetails } from "./components/OrgDetails"
 import OrganizationSkeleton from "./components/OrganizationSkeleton"
@@ -16,6 +20,12 @@ const managementCards = [
     description: "Create and manage organization users, roles, and permissions",
     href: routes.organizationUsers,
     icon: Users,
+  },
+  {
+    title: "Teams",
+    description: "Manage teams, members, and leads for decision ownership",
+    href: routes.organizationTeams,
+    icon: UsersRound,
   },
   {
     title: "Sessions",
@@ -30,6 +40,18 @@ const managementCards = [
     icon: ScrollText,
   },
   {
+    title: "Guardrail Policies",
+    description: "Define decision guardrails, activate versions, and review history",
+    href: routes.organizationGuardrails,
+    icon: ListChecks,
+  },
+  {
+    title: "Compliance",
+    description: "Browse compliance frameworks and control coverage",
+    href: routes.organizationCompliance,
+    icon: ClipboardCheck,
+  },
+  {
     title: "Audit Log",
     description: "View organization activity and security events",
     href: routes.organizationAuditLog,
@@ -39,14 +61,37 @@ const managementCards = [
 ]
 
 export const ViewOrganization = () => {
-  const { data, isLoading, isError } = useOrganization()
+  const { data: org, isLoading: orgLoading, isError, error } = useOrganization()
+  const { data: users, isLoading: usersLoading } = useUsers()
+  const { data: assets, isLoading: assetsLoading } = useAssets()
+  const { data: apiKeys, isLoading: apiKeysLoading } = useApiManagement()
 
-  if (isLoading) {
+  if (orgLoading || usersLoading || assetsLoading || apiKeysLoading) {
     return <OrganizationSkeleton />
   }
 
-  if (isError) return null
-  if (!data) return null
+  if (isError) {
+    return (
+      <div className="flex flex-col gap-6 w-full">
+        <PageHeader
+          title="Organization"
+          subtitle="Manage your organization profile and settings"
+        />
+        <QueryErrorState
+          error={error}
+          message="Failed to load organization. Please try again."
+        />
+      </div>
+    )
+  }
+  if (!org) return null
+
+  const counts = {
+    users: users?.length ?? 0,
+    assets: assets?.length ?? 0,
+    domains: assets?.filter((asset) => asset.assetType === "DOMAIN").length ?? 0,
+    apiKeys: apiKeys?.length ?? 0,
+  }
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -54,9 +99,9 @@ export const ViewOrganization = () => {
         title="Organization"
         subtitle="Manage your organization profile and settings"
       />
-      <OrgHeader data={data} />
+      <OrgHeader data={org} />
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {managementCards.map((card) => {
           const Icon = card.icon
           const content = (
@@ -91,7 +136,7 @@ export const ViewOrganization = () => {
         })}
       </div>
 
-      <OrgDetails data={data} />
+      <OrgDetails org={org} counts={counts} />
     </div>
   )
 }

@@ -6,6 +6,7 @@ export const tokenManager = {
   },
   set(token: string): void {
     accessToken = token;
+    console.log("[auth] accessToken:", token);
   },
   clear(): void {
     accessToken = null;

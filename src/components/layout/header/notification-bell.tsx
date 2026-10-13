@@ -2,13 +2,13 @@
 
 import { Bell } from "lucide-react";
 import Link from "next/link";
-import { useNotifications } from "@/features/notifications/hooks/useNotifications";
+import { useUnreadCount } from "@/features/notifications/hooks/useNotifications";
 import { Button } from "@/components/ui/button";
 import { routes } from "@/constants/routes";
 
 export function NotificationBell() {
-  const { data } = useNotifications();
-  const unread = data?.unreadCount ?? 0;
+  const { data } = useUnreadCount();
+  const unread = data?.count ?? 0;
 
   return (
     <Button variant="ghost" size="icon" asChild className="relative">

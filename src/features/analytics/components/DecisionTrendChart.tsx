@@ -10,51 +10,59 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import ChartCard from "@/components/shared/ChartCard";
-import type { DecisionTrendPoint } from "@/types/analytics.types";
+
+import ChartPanel from "./ChartPanel";
+import { tooltipContentStyle, useChartColors } from "../hooks/useChartColors";
+import type { DecisionTrendPoint, SectionResult } from "@/types/analytics.types";
 
 interface DecisionTrendChartProps {
-  data: DecisionTrendPoint[];
+  section: SectionResult<DecisionTrendPoint[]>;
+  subtitle?: string;
+  onRetry?: () => void;
 }
 
-const DecisionTrendChart = ({ data }: DecisionTrendChartProps) => {
+const DecisionTrendChart = ({ section, subtitle, onRetry }: DecisionTrendChartProps) => {
+  const colors = useChartColors();
+  const data = section.status === "ok" ? section.data : [];
+  const [decisionsColor, resolvedColor, openColor] = [
+    colors.series[4],
+    colors.series[1],
+    colors.series[2],
+  ];
+
   return (
-    <ChartCard title="Decision Trend" subtitle="Last 14 days">
+    <ChartPanel
+      title="Decision Trend"
+      subtitle={subtitle}
+      status={section.status}
+      isEmpty={data.length === 0}
+      onRetry={onRetry}
+    >
       <ResponsiveContainer width="100%" height={220}>
         <AreaChart data={data}>
           <defs>
             <linearGradient id="decisionsGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#60a5fa" stopOpacity={0} />
+              <stop offset="5%" stopColor={decisionsColor} stopOpacity={0.2} />
+              <stop offset="95%" stopColor={decisionsColor} stopOpacity={0} />
             </linearGradient>
             <linearGradient id="resolvedGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#34d399" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
+              <stop offset="5%" stopColor={resolvedColor} stopOpacity={0.2} />
+              <stop offset="95%" stopColor={resolvedColor} stopOpacity={0} />
             </linearGradient>
-            <linearGradient id="pendingGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#fbbf24" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
+            <linearGradient id="openGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={openColor} stopOpacity={0.2} />
+              <stop offset="95%" stopColor={openColor} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
-          <XAxis
-            dataKey="date"
-            tick={{ fontSize: 11, fill: "#4a5568" }}
-          />
-          <YAxis tick={{ fontSize: 11, fill: "#4a5568" }} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#141820",
-              border: "1px solid #2d3748",
-              borderRadius: "8px",
-              fontSize: "12px",
-            }}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fill: colors.axis }} />
+          <YAxis tick={{ fontSize: 11, fill: colors.axis }} />
+          <Tooltip contentStyle={tooltipContentStyle(colors)} />
           <Legend />
           <Area
             type="monotone"
             dataKey="decisions"
-            stroke="#60a5fa"
+            stroke={decisionsColor}
             strokeWidth={2}
             fill="url(#decisionsGrad)"
             name="Decisions"
@@ -62,22 +70,22 @@ const DecisionTrendChart = ({ data }: DecisionTrendChartProps) => {
           <Area
             type="monotone"
             dataKey="resolved"
-            stroke="#34d399"
+            stroke={resolvedColor}
             strokeWidth={2}
             fill="url(#resolvedGrad)"
             name="Resolved"
           />
           <Area
             type="monotone"
-            dataKey="pending"
-            stroke="#fbbf24"
+            dataKey="open"
+            stroke={openColor}
             strokeWidth={2}
-            fill="url(#pendingGrad)"
-            name="Pending"
+            fill="url(#openGrad)"
+            name="Open"
           />
         </AreaChart>
       </ResponsiveContainer>
-    </ChartCard>
+    </ChartPanel>
   );
 };
 

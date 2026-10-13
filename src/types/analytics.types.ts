@@ -8,13 +8,12 @@ export interface DecisionTrendPoint {
   date: string;
   decisions: number;
   resolved: number;
-  pending: number;
+  open: number;
 }
 
 export interface ApiUsagePoint {
   date: string;
   requests: number;
-  errors: number;
 }
 
 export interface RiskDistributionPoint {
@@ -42,13 +41,17 @@ export interface ThreatDistributionPoint {
   value: number;
 }
 
-export interface AnalyticsData {
-  riskTrend: RiskTrendPoint[];
-  decisionTrend: DecisionTrendPoint[];
-  apiUsage: ApiUsagePoint[];
-  riskDistribution: RiskDistributionPoint[];
-  assetsByCategory: AssetCategoryPoint[];
-  securityScoreTimeline: SecurityScorePoint[];
-  dailyDecisionCount: DailyDecisionPoint[];
-  threatDistribution: ThreatDistributionPoint[];
+export type SectionStatus = "ok" | "error";
+
+export type SectionResult<T> = { status: "ok"; data: T } | { status: "error" };
+
+export interface AnalyticsResult {
+  riskTrend: SectionResult<RiskTrendPoint[]>;
+  decisionTrend: SectionResult<DecisionTrendPoint[]>;
+  apiUsage: SectionResult<ApiUsagePoint[]>;
+  riskDistribution: SectionResult<RiskDistributionPoint[]>;
+  assetsByCategory: SectionResult<AssetCategoryPoint[]>;
+  securityScoreTimeline: SectionResult<SecurityScorePoint[]>;
+  dailyDecisionCount: SectionResult<DailyDecisionPoint[]>;
+  threatDistribution: SectionResult<ThreatDistributionPoint[]>;
 }

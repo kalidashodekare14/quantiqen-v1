@@ -10,48 +10,40 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import ChartCard from "@/components/shared/ChartCard";
-import type { ApiUsagePoint } from "@/types/analytics.types";
+
+import ChartPanel from "./ChartPanel";
+import { tooltipContentStyle, useChartColors } from "../hooks/useChartColors";
+import type { ApiUsagePoint, SectionResult } from "@/types/analytics.types";
 
 interface ApiUsageChartProps {
-  data: ApiUsagePoint[];
+  section: SectionResult<ApiUsagePoint[]>;
+  subtitle?: string;
+  onRetry?: () => void;
 }
 
-const ApiUsageChart = ({ data }: ApiUsageChartProps) => {
+const ApiUsageChart = ({ section, subtitle, onRetry }: ApiUsageChartProps) => {
+  const colors = useChartColors();
+  const data = section.status === "ok" ? section.data : [];
+
   return (
-    <ChartCard title="API Usage" subtitle="Last 14 days">
+    <ChartPanel
+      title="API Usage"
+      subtitle={subtitle}
+      status={section.status}
+      isEmpty={data.length === 0}
+      onRetry={onRetry}
+    >
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} barSize={12}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
-          <XAxis
-            dataKey="date"
-            tick={{ fontSize: 11, fill: "#4a5568" }}
-          />
-          <YAxis tick={{ fontSize: 11, fill: "#4a5568" }} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#141820",
-              border: "1px solid #2d3748",
-              borderRadius: "8px",
-              fontSize: "12px",
-            }}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fill: colors.axis }} />
+          <YAxis tick={{ fontSize: 11, fill: colors.axis }} />
+          <Tooltip contentStyle={tooltipContentStyle(colors)} />
           <Legend />
-          <Bar
-            dataKey="requests"
-            fill="#60a5fa"
-            radius={[4, 4, 0, 0]}
-            name="Requests"
-          />
-          <Bar
-            dataKey="errors"
-            fill="#f87171"
-            radius={[4, 4, 0, 0]}
-            name="Errors"
-          />
+          <Bar dataKey="requests" fill={colors.series[4]} radius={[4, 4, 0, 0]} name="Requests" />
         </BarChart>
       </ResponsiveContainer>
-    </ChartCard>
+    </ChartPanel>
   );
 };
 

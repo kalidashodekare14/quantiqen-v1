@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-const ChartSkeleton = () => (
+export const ChartSkeleton = () => (
   <div className="bg-card ring-foreground/10 flex w-full flex-col gap-4 rounded-xl p-5 ring-1">
     <div className="flex flex-col gap-1.5">
       <Skeleton className="h-4 w-36" />

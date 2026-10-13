@@ -10,52 +10,58 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import ChartCard from "@/components/shared/ChartCard";
-import type { RiskTrendPoint } from "@/types/analytics.types";
+
+import ChartPanel from "./ChartPanel";
+import { tooltipContentStyle, useChartColors } from "../hooks/useChartColors";
+import type { RiskTrendPoint, SectionResult } from "@/types/analytics.types";
 
 interface RiskTrendChartProps {
-  data: RiskTrendPoint[];
+  section: SectionResult<RiskTrendPoint[]>;
+  subtitle?: string;
+  onRetry?: () => void;
 }
 
-const RiskTrendChart = ({ data }: RiskTrendChartProps) => {
+const RiskTrendChart = ({ section, subtitle, onRetry }: RiskTrendChartProps) => {
+  const colors = useChartColors();
+  const data = section.status === "ok" ? section.data : [];
+
   return (
-    <ChartCard title="Risk Trend" subtitle="Last 14 days">
+    <ChartPanel
+      title="Risk Trend"
+      subtitle={subtitle}
+      status={section.status}
+      isEmpty={data.length === 0}
+      onRetry={onRetry}
+    >
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
-          <XAxis
-            dataKey="date"
-            tick={{ fontSize: 11, fill: "#4a5568" }}
-          />
-          <YAxis tick={{ fontSize: 11, fill: "#4a5568" }} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#141820",
-              border: "1px solid #2d3748",
-              borderRadius: "8px",
-              fontSize: "12px",
-            }}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fill: colors.axis }} />
+          <YAxis yAxisId="left" tick={{ fontSize: 11, fill: colors.axis }} />
+          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: colors.axis }} />
+          <Tooltip contentStyle={tooltipContentStyle(colors)} />
           <Legend />
           <Line
+            yAxisId="left"
             type="monotone"
             dataKey="riskScore"
-            stroke="#f87171"
+            stroke={colors.series[3]}
             strokeWidth={2}
             dot={false}
-            name="Risk Score"
+            name="Avg Risk Score"
           />
           <Line
+            yAxisId="right"
             type="monotone"
             dataKey="threats"
-            stroke="#fb923c"
+            stroke={colors.series[2]}
             strokeWidth={2}
             dot={false}
-            name="Threats"
+            name="Total Risks"
           />
         </LineChart>
       </ResponsiveContainer>
-    </ChartCard>
+    </ChartPanel>
   );
 };
 

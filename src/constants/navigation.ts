@@ -12,6 +12,11 @@ import {
   Shield,
   ScrollText,
   BookOpen,
+  ListChecks,
+  ClipboardCheck,
+  ScanLine,
+  UsersRound,
+  HeartPulse,
   Bell,
   Settings,
   User,
@@ -24,6 +29,7 @@ export interface NavItem {
   href: string;
   icon: typeof LayoutDashboard;
   children?: { title: string; href: string; icon: typeof Users }[];
+  allowedRoles?: readonly string[];
 }
 
 export const navigationItems: NavItem[] = [
@@ -58,6 +64,17 @@ export const navigationItems: NavItem[] = [
     icon: ServerCog,
   },
   {
+    title: "Scans",
+    href: routes.scans,
+    icon: ScanLine,
+  },
+  {
+    title: "Platform Ops",
+    href: routes.platformOps,
+    icon: HeartPulse,
+    allowedRoles: ["CUSTOMER_ADMIN"],
+  },
+  {
     title: "AI Recommendations",
     href: routes.aiRecommendations,
     icon: Sparkles,
@@ -73,8 +90,11 @@ export const navigationItems: NavItem[] = [
     icon: Building2,
     children: [
       { title: "Users", href: routes.organizationUsers, icon: Users },
+      { title: "Teams", href: routes.organizationTeams, icon: UsersRound },
       { title: "Sessions", href: routes.organizationSessions, icon: Shield },
       { title: "Policy", href: routes.organizationPolicy, icon: ScrollText },
+      { title: "Guardrails", href: routes.organizationGuardrails, icon: ListChecks },
+      { title: "Compliance", href: routes.organizationCompliance, icon: ClipboardCheck },
       { title: "Audit Log", href: routes.organizationAuditLog, icon: BookOpen },
     ],
   },

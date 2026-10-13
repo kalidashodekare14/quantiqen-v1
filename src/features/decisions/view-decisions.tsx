@@ -2,145 +2,289 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+
 import { PageHeader } from "@/components/shared/PageHeader";
 import AppButton from "@/components/shared/AppButton";
-import { useFindings } from "./hooks/useFindings";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useHealthCheck } from "./hooks/useHealthCheck";
-import { useAIDecision } from "./hooks/useAIDecision";
-import type { AIDecisionItem, AIDecisionRequest } from "@/types/ai-engine.types";
-import type { Finding } from "@/types/finding.types";
-import FindingsTable from "./components/FindingsTable";
-import AIDecisionsTable from "./components/AIDecisionsTable";
+import { useAnalyzeDecisions, useDecisions } from "./hooks/useDecisions";
+import { useRole } from "@/hooks/use-role";
+import { useUsers } from "@/hooks/use-users";
+import { getFriendlyError } from "@/utils/errorMessages";
+import { toast } from "sonner";
+import type {
+  DecisionListStatus,
+  DecisionListItem,
+  RiskTier,
+} from "@/types/platform/decision-api.types";
+import DecisionTable from "./components/DecisionTable";
 import HealthBanner from "./components/HealthBanner";
 import DecisionsSkeleton from "./components/DecisionsSkeleton";
 
-const FindingSidePanel = dynamic(
-  () => import("./components/FindingSidePanel"),
-  { ssr: false }
-);
-const AIDecisionSidePanel = dynamic(
-  () => import("./components/AIDecisionSidePanel"),
-  { ssr: false }
-);
-
-const buildPayload = (findings: Finding[]): AIDecisionRequest => ({
-  organization: findings[0]?.organization ?? "Acme Corp",
-  findings: findings.map((f) => ({
-    finding_id: f.id,
-    title: f.title,
-    description: f.description,
-    severity: f.severity,
-    category: f.category,
-    affected_asset: f.affected_asset,
-    asset_type: f.asset_type,
-  })),
+const DecisionDetailPanel = dynamic(() => import("./components/DecisionDetailPanel"), {
+  ssr: false,
 });
 
+const LIST_STATUSES: DecisionListStatus[] = [
+  "PENDING",
+  "UNDER_REVIEW",
+  "APPROVED",
+  "IN_PROGRESS",
+  "RESOLVED",
+  "REJECTED",
+  "EXPIRED",
+];
+
+const RISK_TIERS: RiskTier[] = ["CRITICAL", "HIGH", "MEDIUM", "LOW"];
+const PAGE_SIZE = 20;
+const ANALYZE_POLL_INTERVAL_MS = 5000;
+const ANALYZE_POLL_WINDOW_MS = 30000;
+
+const dayStartIso = (value: string) => new Date(`${value}T00:00:00`).toISOString();
+const dayEndIso = (value: string) => new Date(`${value}T23:59:59.999`).toISOString();
+
+type AnalysisFeedbackTone = "success" | "info" | "error";
+
+interface AnalysisFeedback {
+  tone: AnalysisFeedbackTone;
+  message: string;
+}
+
+const analysisFeedbackClasses: Record<AnalysisFeedbackTone, string> = {
+  success: "text-chart-2",
+  info: "text-muted-foreground",
+  error: "text-destructive",
+};
+
 const ViewDecisions = () => {
-  const [activeTab, setActiveTab] = useState<"pending" | "analyzed">("pending");
-  const [selectedFinding, setSelectedFinding] = useState<Finding | null>(null);
-  const [selectedAIDecision, setSelectedAIDecision] = useState<AIDecisionItem | null>(null);
-  const [aiDecisions, setAIDecisions] = useState<AIDecisionItem[]>([]);
+  const [selectedDecisionId, setSelectedDecisionId] = useState<string | null>(null);
 
-  const analyzedIds = aiDecisions.map((d) => d.finding_id);
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [severityFilter, setSeverityFilter] = useState<string>("ALL");
+  const [ownerFilter, setOwnerFilter] = useState<string>("ALL");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [page, setPage] = useState(1);
+  const [pollUntil, setPollUntil] = useState(0);
+  const [analysisFeedback, setAnalysisFeedback] = useState<AnalysisFeedback | null>(null);
 
-  const { data: findingsData, isLoading } = useFindings();
+  const { hasAnyRole } = useRole();
+  const canQueueAnalysis = hasAnyRole(["CUSTOMER_ADMIN", "ANALYST"]);
+  const { data: users } = useUsers();
+
+  const listParams = {
+    page,
+    limit: PAGE_SIZE,
+    ...(statusFilter !== "ALL" ? { status: statusFilter as DecisionListStatus } : {}),
+    ...(severityFilter !== "ALL" ? { severity: severityFilter as RiskTier } : {}),
+    ...(ownerFilter !== "ALL" ? { assignedToUserId: ownerFilter } : {}),
+    ...(dateFrom ? { dateFrom: dayStartIso(dateFrom) } : {}),
+    ...(dateTo ? { dateTo: dayEndIso(dateTo) } : {}),
+  };
+
+  const {
+    data: decisionsData,
+    isLoading: decisionsLoading,
+    isError: decisionsError,
+    refetch: refetchDecisions,
+  } = useDecisions(listParams, {
+    refetchInterval: () => (Date.now() < pollUntil ? ANALYZE_POLL_INTERVAL_MS : false),
+  });
+
   const { isError: isHealthError } = useHealthCheck();
-  const { mutate, isPending } = useAIDecision();
+  const analyzeDecisions = useAnalyzeDecisions();
 
-  const handleBatchAnalyze = () => {
-    const pending = findingsData?.findings.filter((f) => !analyzedIds.includes(f.id)) ?? [];
-    if (pending.length === 0) return;
-    mutate(buildPayload(pending), {
+  const handleReanalysis = () => {
+    setAnalysisFeedback(null);
+    analyzeDecisions.mutate(undefined, {
       onSuccess: (data) => {
-        setAIDecisions((prev) => [...prev, ...data.decisions]);
-        setActiveTab("analyzed");
+        if (data.enqueuedCount > 0) {
+          const message = `Re-analysis queued for ${data.enqueuedCount} pending decision(s).`;
+          setAnalysisFeedback({ tone: "success", message });
+          toast.success(message);
+        } else {
+          const message = "No pending decisions to re-analyze.";
+          setAnalysisFeedback({ tone: "info", message });
+          toast.info(message);
+        }
+        setPollUntil(Date.now() + ANALYZE_POLL_WINDOW_MS);
+        refetchDecisions();
+      },
+      onError: (error) => {
+        const message = getFriendlyError(error).message;
+        setAnalysisFeedback({ tone: "error", message });
+        toast.error(message);
       },
     });
   };
 
-  const handleAnalyzeSingle = (finding: Finding) => {
-    mutate(buildPayload([finding]), {
-      onSuccess: (data) => {
-        setAIDecisions((prev) => [...prev, ...data.decisions]);
-        setSelectedFinding(null);
-        setActiveTab("analyzed");
-      },
-    });
+  const totalPages = decisionsData?.totalPages ?? 1;
+
+  const resetPageAndSet = (setter: (value: string) => void) => (value: string) => {
+    setter(value);
+    setPage(1);
   };
 
-  const pendingCount =
-    findingsData?.findings.filter((f) => !analyzedIds.includes(f.id)).length ?? 0;
-  const analyzedCount = aiDecisions.length;
-
-  const tabClass = (tab: "pending" | "analyzed") =>
-    `px-4 py-2 text-sm font-medium cursor-pointer transition-colors ${
-      activeTab === tab
-        ? "border-b-2 border-primary text-primary"
-        : "text-muted-foreground hover:text-foreground"
-    }`;
+  const headerAction = (
+    <div className="flex flex-col items-end gap-1">
+      <AppButton
+        variant="primary"
+        size="md"
+        disabled={analyzeDecisions.isPending || isHealthError}
+        loading={analyzeDecisions.isPending}
+        onClick={handleReanalysis}
+      >
+        Re-analysis
+      </AppButton>
+      {analysisFeedback && (
+        <p
+          role="status"
+          className={`text-xs ${analysisFeedbackClasses[analysisFeedback.tone]}`}
+        >
+          {analysisFeedback.message}
+        </p>
+      )}
+    </div>
+  );
 
   return (
     <div className="flex w-full flex-col gap-6">
       <HealthBanner />
 
-      <PageHeader
-        title="Decision Center"
-        action={
-          <AppButton
-            variant="primary"
-            size="md"
-            disabled={isPending || isHealthError || pendingCount === 0}
-            loading={isPending}
-            onClick={handleBatchAnalyze}
-          >
-            Run AI Analysis
-          </AppButton>
-        }
-      />
+      <PageHeader title="Decision Center" action={canQueueAnalysis ? headerAction : null} />
 
-      <div className="border-foreground/10 mb-4 flex border-b">
-        <button className={tabClass("pending")} onClick={() => setActiveTab("pending")}>
-          Pending
-          <span className="bg-primary/10 text-primary ml-2 rounded-full px-2 py-0.5 text-xs">
-            {pendingCount}
+      <div className="bg-card flex flex-wrap items-end gap-3 rounded-xl p-3">
+        <div className="flex flex-col gap-1">
+          <span className="text-muted-foreground text-xs">Status</span>
+          <Select value={statusFilter} onValueChange={resetPageAndSet(setStatusFilter)}>
+            <SelectTrigger className="h-9 w-44" aria-label="Filter by status">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All statuses</SelectItem>
+              {LIST_STATUSES.map((status) => (
+                <SelectItem key={status} value={status}>
+                  {status.replaceAll("_", " ")}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <span className="text-muted-foreground text-xs">Severity</span>
+          <Select value={severityFilter} onValueChange={resetPageAndSet(setSeverityFilter)}>
+            <SelectTrigger className="h-9 w-40" aria-label="Filter by severity">
+              <SelectValue placeholder="All severities" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All severities</SelectItem>
+              {RISK_TIERS.map((tier) => (
+                <SelectItem key={tier} value={tier}>
+                  {tier}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <span className="text-muted-foreground text-xs">Owner</span>
+          <Select value={ownerFilter} onValueChange={resetPageAndSet(setOwnerFilter)}>
+            <SelectTrigger className="h-9 w-48" aria-label="Filter by assigned owner">
+              <SelectValue placeholder="All owners" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All owners</SelectItem>
+              {users?.map((user) => (
+                <SelectItem key={user.id} value={user.id}>
+                  {user.name ?? user.email ?? user.qipUserId}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <span className="text-muted-foreground text-xs">From</span>
+          <Input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => {
+              setDateFrom(e.target.value);
+              setPage(1);
+            }}
+            className="h-9 w-38"
+            aria-label="Filter from date"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <span className="text-muted-foreground text-xs">To</span>
+          <Input
+            type="date"
+            value={dateTo}
+            onChange={(e) => {
+              setDateTo(e.target.value);
+              setPage(1);
+            }}
+            className="h-9 w-38"
+            aria-label="Filter to date"
+          />
+        </div>
+
+        <div className="ml-auto flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage((current) => Math.max(1, current - 1))}
+          >
+            Previous
+          </Button>
+          <span className="text-muted-foreground text-sm">
+            Page {page} of {totalPages}
           </span>
-        </button>
-        <button className={tabClass("analyzed")} onClick={() => setActiveTab("analyzed")}>
-          Analyzed
-          <span className="bg-primary/10 text-primary ml-2 rounded-full px-2 py-0.5 text-xs">
-            {analyzedCount}
-          </span>
-        </button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= totalPages}
+            onClick={() => setPage((current) => current + 1)}
+          >
+            Next
+          </Button>
+        </div>
       </div>
 
-      {isLoading ? (
+      {decisionsLoading ? (
         <DecisionsSkeleton />
-      ) : activeTab === "pending" ? (
-        <FindingsTable
-          findings={findingsData?.findings ?? []}
-          analyzedIds={analyzedIds}
-          onRowClick={setSelectedFinding}
-        />
+      ) : decisionsError ? (
+        <div className="bg-card flex flex-col items-center gap-3 rounded-xl p-10 text-center">
+          <p className="text-muted-foreground text-sm">Unable to load decisions.</p>
+          <Button variant="outline" size="sm" onClick={() => refetchDecisions()}>
+            Retry
+          </Button>
+        </div>
       ) : (
-        <AIDecisionsTable decisions={aiDecisions} onRowClick={setSelectedAIDecision} />
-      )}
-
-      {selectedFinding && (
-        <FindingSidePanel
-          finding={selectedFinding}
-          isAnalyzed={analyzedIds.includes(selectedFinding.id)}
-          isPending={isPending}
-          isHealthError={isHealthError}
-          onAnalyze={() => handleAnalyzeSingle(selectedFinding)}
-          onClose={() => setSelectedFinding(null)}
+        <DecisionTable
+          decisions={decisionsData?.decisions ?? []}
+          onRowClick={(decision: DecisionListItem) => setSelectedDecisionId(decision.id)}
+          pageSize={PAGE_SIZE}
         />
       )}
 
-      {selectedAIDecision && (
-        <AIDecisionSidePanel
-          decision={selectedAIDecision}
-          onClose={() => setSelectedAIDecision(null)}
+      {selectedDecisionId && (
+        <DecisionDetailPanel
+          decisionId={selectedDecisionId}
+          onClose={() => setSelectedDecisionId(null)}
         />
       )}
     </div>

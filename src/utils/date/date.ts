@@ -1,5 +1,12 @@
-export function formatDateTime(dateString: string): string {
+function parseDate(dateString: string): Date | null {
+  if (!dateString) return null;
   const date = new Date(dateString);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function formatDateTime(dateString: string): string {
+  const date = parseDate(dateString);
+  if (!date) return "—";
   return date.toLocaleString("en-US", {
     month: "short",
     day: "numeric",
@@ -10,9 +17,10 @@ export function formatDateTime(dateString: string): string {
 }
 
 export function formatRelativeTime(timestamp: string): string {
-  const now = Date.now();
-  const date = new Date(timestamp).getTime();
-  const diffMs = now - date;
+  const date = parseDate(timestamp);
+  if (!date) return "—";
+
+  const diffMs = Date.now() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMins / 60);
   const diffDays = Math.floor(diffHours / 24);
@@ -21,7 +29,7 @@ export function formatRelativeTime(timestamp: string): string {
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays < 30) return `${diffDays}d ago`;
-  return new Date(timestamp).toLocaleDateString("en-US", {
+  return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -29,7 +37,9 @@ export function formatRelativeTime(timestamp: string): string {
 }
 
 export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
+  const date = parseDate(dateString);
+  if (!date) return "—";
+  return date.toLocaleDateString("en-US", {
     month: "short",
     day: "2-digit",
     year: "numeric",
@@ -37,7 +47,9 @@ export function formatDate(dateString: string): string {
 }
 
 export function formatMonthYear(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
+  const date = parseDate(dateString);
+  if (!date) return "—";
+  return date.toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
   });

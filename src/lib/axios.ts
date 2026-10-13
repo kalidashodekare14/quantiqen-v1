@@ -1,5 +1,6 @@
 import axios from "axios";
 import { toast } from "sonner";
+import { refreshAccessToken } from "./refresh-token";
 import { tokenManager } from "./token-manager";
 
 let csrfToken: string | null = null;
@@ -78,7 +79,10 @@ api.interceptors.response.use(
 
     if (error.response?.status !== 401 || originalRequest._retry) {
       if (error.response?.status === 403) {
-        toast.error("You don't have permission to perform this action");
+        const method = (originalRequest?.method ?? "get").toUpperCase();
+        if (method !== "GET" && method !== "HEAD") {
+          toast.error("You don't have permission to perform this action");
+        }
       }
       return Promise.reject(error);
     }
@@ -100,13 +104,7 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const res = await axios.post(
-        "/api/v1/auth/refresh",
-        null,
-        { withCredentials: true },
-      );
-      const { accessToken: newToken } = res.data;
-      tokenManager.set(newToken);
+      const newToken = await refreshAccessToken();
       processQueue(null, newToken);
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return api(originalRequest);

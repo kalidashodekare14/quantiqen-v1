@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { RequireRole } from "@/components/auth/RequireRole";
 import { usePortalUsers } from "../hooks/useUserManagement";
 import { UserTable } from "./UserTable";
@@ -11,7 +12,7 @@ import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import type { PortalUser } from "../types/user-management.types";
 
 export function UserManagement() {
-  const { data: users, isLoading, isError } = usePortalUsers();
+  const { data: users, isLoading, isError, error } = usePortalUsers();
   const [editingUser, setEditingUser] = useState<PortalUser | null>(null);
   const [editOpen, setEditOpen] = useState(false);
 
@@ -35,9 +36,7 @@ export function UserManagement() {
       </div>
 
       {isError ? (
-        <div className="text-muted-foreground py-8 text-center">
-          Failed to load users. Please try again.
-        </div>
+        <QueryErrorState error={error} message="Failed to load users. Please try again." />
       ) : (
         <UserTable users={users ?? []} onEditUser={handleEditUser} />
       )}

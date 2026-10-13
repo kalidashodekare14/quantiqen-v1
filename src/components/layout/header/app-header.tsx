@@ -12,14 +12,15 @@ import { NotificationBell } from "./notification-bell";
 import { UserNav } from "./user-nav";
 import { ThemeToggle } from "@/components/theme";
 import { useProfile } from "@/features/profile/hooks/useProfile";
-import dashboardData from "@/mock-data/dashboard.json";
+import { useOrganization } from "@/hooks/use-organization";
 
 export function AppHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { data: profile, isLoading } = useProfile();
+  const { data: organization } = useOrganization();
 
-  const orgName = profile?.organizationName ?? "";
+  const orgName = organization?.orgName ?? profile?.organizationName ?? "";
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
@@ -66,7 +67,7 @@ export function AppHeader() {
           </Button>
 
           <span className="bg-primary/10 text-primary hidden rounded-full px-3 py-1 text-xs font-medium lg:inline">
-            {dashboardData.organization.plan} Plan
+            {organization?.planTier ?? "Free"} Plan
           </span>
 
           <ThemeToggle />

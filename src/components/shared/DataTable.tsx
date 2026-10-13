@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
-interface Column<T> {
+export interface Column<T> {
   key: Extract<keyof T, string>;
   label: string;
   render?: (row: T) => ReactNode;
@@ -32,6 +32,8 @@ interface DataTableProps<T> {
   };
   pageSize?: number;
   getRowId: (row: T) => string;
+  showPagination?: boolean;
+  showSummary?: boolean;
 }
 
 export const DataTable = <T,>({
@@ -43,6 +45,8 @@ export const DataTable = <T,>({
   filterOptions,
   getRowId,
   pageSize = 10,
+  showPagination = true,
+  showSummary = true,
 }: DataTableProps<T>) => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<string>("All");
@@ -166,29 +170,39 @@ export const DataTable = <T,>({
         </Table>
       </div>
 
-      <div className="bg-card text-muted-foreground flex items-center justify-between rounded-xl p-3 text-sm">
-        <span>{filtered.length > 0 ? `${from}-${to} of ${filtered.length}` : "0 of 0"}</span>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={safePage <= 1}
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            className="border-chart-5 border"
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={safePage >= totalPages}
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            className="border-chart-5 border"
-          >
-            Next
-          </Button>
+      {(showSummary || showPagination) && (
+        <div className="bg-card text-muted-foreground flex items-center justify-between rounded-xl p-3 text-sm">
+          <span>
+            {showSummary
+              ? filtered.length > 0
+                ? `${from}-${to} of ${filtered.length}`
+                : "0 of 0"
+              : ""}
+          </span>
+          {showPagination && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={safePage <= 1}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                className="border-chart-5 border"
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={safePage >= totalPages}
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                className="border-chart-5 border"
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 };

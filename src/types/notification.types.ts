@@ -1,19 +1,15 @@
-export type NotificationType =
-  "New Risk" | "Decision Generated" | "API Limit Warning" | "Subscription Expiry" | "System Update";
+import type { NotificationStream, NotificationType } from "@/types/platform/notification-api.types";
+import type { EventSeverity } from "@/types/severity.types";
 
-export type NotificationSeverity = "info" | "warning" | "critical" | "success";
-
-export interface Notification {
+export interface InboxNotification {
   id: string;
   type: NotificationType;
+  label: string;
   title: string;
   message: string;
-  timestamp: string;
-  severity: NotificationSeverity;
+  severity: EventSeverity;
+  stream: NotificationStream;
   read: boolean;
-}
-
-export interface NotificationsData {
-  notifications: Notification[];
-  unreadCount: number;
+  link: string;
+  createdAt: string;
 }

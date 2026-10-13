@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/PageHeader";
+import { QueryErrorState } from "@/components/shared/QueryErrorState";
 import { useProfile } from "./hooks/useProfile";
 import ProfileHeader from "./components/ProfileHeader";
 import ProfileDetails from "./components/ProfileDetails";
@@ -8,7 +9,7 @@ import SecuritySettings from "./components/SecuritySettings";
 import ProfileSkeleton from "./components/ProfileSkeleton";
 
 const ViewProfile = () => {
-  const { data: user, isLoading, isError } = useProfile();
+  const { data: user, isLoading, isError, error } = useProfile();
 
   if (isLoading) {
     return <ProfileSkeleton />;
@@ -21,9 +22,7 @@ const ViewProfile = () => {
           title="Profile"
           subtitle="Manage your personal information"
         />
-        <div className="text-muted-foreground py-8 text-center">
-          Failed to load profile. Please try again.
-        </div>
+        <QueryErrorState error={error} message="Failed to load profile. Please try again." />
       </div>
     );
   }

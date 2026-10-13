@@ -3,17 +3,23 @@
 import { motion } from "framer-motion";
 import { Users, Server, Globe, Key } from "lucide-react";
 import { StatPills } from "@/components/shared/StatPills";
-import { OrganizationData } from "@/types/organization.types";
-import { formatDate, formatMonthYear } from "@/utils/date/date";
+import { formatMonthYear } from "@/utils/date/date";
 import { fadeInUp } from "@/lib/motion";
+import type { PlatformOrganization } from "@/types/platform/organization.types";
 
-interface OrgDetailsProps {
-  data: OrganizationData;
+export interface OrgCounts {
+  users: number;
+  assets: number;
+  domains: number;
+  apiKeys: number;
 }
 
-export const OrgDetails = ({ data }: OrgDetailsProps) => {
-  const subscriptionProgress = Math.min((data.subscription.daysRemaining / 365) * 100, 100);
+interface OrgDetailsProps {
+  org: PlatformOrganization;
+  counts: OrgCounts;
+}
 
+export const OrgDetails = ({ org, counts }: OrgDetailsProps) => {
   const sections = [
     {
       title: "Overview",
@@ -21,81 +27,29 @@ export const OrgDetails = ({ data }: OrgDetailsProps) => {
       content: (
         <StatPills
           stats={[
-            { value: data.users, label: "Total Users", icon: Users },
-            { value: data.assets, label: "Total Assets", icon: Server },
-            { value: data.domains, label: "Domains", icon: Globe },
-            { value: data.apiKeys, label: "API Keys", icon: Key },
+            { value: counts.users, label: "Total Users", icon: Users },
+            { value: counts.assets, label: "Total Assets", icon: Server },
+            { value: counts.domains, label: "Domains", icon: Globe },
+            { value: counts.apiKeys, label: "API Keys", icon: Key },
           ]}
         />
       ),
     },
     {
-      title: "Subscription",
-      delay: 0.1,
-      content: (
-        <>
-          <div className="bg-card/80 backdrop-blur-md border border-foreground/10 rounded-xl p-5 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
-            <div className="mb-5 grid grid-cols-2 gap-4 md:grid-cols-4">
-              {[
-                { label: "Plan", value: data.subscription.plan },
-                { label: "Status", value: data.subscription.status },
-                {
-                  label: "Start Date",
-                  value: formatDate(data.subscription.startDate),
-                },
-                {
-                  label: "Expiry Date",
-                  value: formatDate(data.subscription.expiryDate),
-                },
-              ].map((item) => (
-                <div key={item.label}>
-                  <p className="text-muted-foreground text-xs lg:text-sm">{item.label}</p>
-                  <p className="text-card-foreground text-sm font-medium lg:text-base">
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground text-xs lg:text-sm">Days Remaining</span>
-                <span className="text-chart-2 text-xs lg:text-sm">
-                  {data.subscription.daysRemaining} days
-                </span>
-              </div>
-              <div className="bg-muted mt-2 h-2 w-full rounded-full">
-                <div
-                  className="bg-chart-2 h-full rounded-full"
-                  style={{
-                    width: `${subscriptionProgress}%`,
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </>
-      ),
-    },
-    {
       title: "Details",
-      delay: 0.2,
+      delay: 0.1,
       content: (
         <div className="bg-card/80 backdrop-blur-md border border-foreground/10 rounded-xl p-5 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
           {[
-            { label: "Organization ID", value: data.id },
-            { label: "Email", value: data.email },
-            { label: "Country", value: data.country },
-            {
-              label: "Member Since",
-              value: formatMonthYear(data.createdAt),
-            },
-            { label: "Website", value: data.website },
+            { label: "Organization ID", value: org.id },
+            { label: "Plan Tier", value: org.planTier },
+            { label: "Status", value: org.status },
+            { label: "Member Since", value: formatMonthYear(org.createdAt) },
           ].map((item, idx) => (
             <div
               key={item.label}
               className={`flex items-center justify-between py-3 ${
-                idx < 4 ? "border-border border-b" : ""
+                idx < 3 ? "border-border border-b" : ""
               }`}
             >
               <span className="text-muted-foreground text-sm lg:text-base">{item.label}</span>

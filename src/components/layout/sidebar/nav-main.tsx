@@ -49,9 +49,10 @@ export function NavMain() {
     setOrgOpen(true);
   }
 
-  const visibleItems = navigationItems.filter(
-    (item) => !item.children || item.children.some((c) => isChildVisible(c.href, hasAnyRole)),
-  );
+  const visibleItems = navigationItems.filter((item) => {
+    if (item.allowedRoles && !hasAnyRole([...item.allowedRoles])) return false;
+    return !item.children || item.children.some((c) => isChildVisible(c.href, hasAnyRole));
+  });
 
   return (
     <SidebarGroup>
