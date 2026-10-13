@@ -9,6 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -29,6 +36,7 @@ import {
   useDeleteNotificationPreference,
   useNotificationPreferences,
   useUpsertNotificationPreference,
+  useWebhooks,
 } from "../hooks/useNotifications";
 
 const typeLabel = (type: NotificationType) => type.replaceAll("_", " ").toLowerCase();
@@ -47,9 +55,34 @@ const PreferenceDialog = ({ state, onClose }: { state: PrefDialogState; onClose:
   );
   const [emails, setEmails] = useState((existing?.emailAddresses ?? []).join(", "));
   const [slackUrl, setSlackUrl] = useState(existing?.slackWebhookUrl ?? "");
+  const [webhookEndpointId, setWebhookEndpointId] = useState(
+    existing?.customWebhookEndpointId ?? "",
+  );
+  const [endpointError, setEndpointError] = useState<string | null>(null);
 
   const upsert = useUpsertNotificationPreference();
   const remove = useDeleteNotificationPreference();
+  const { data: webhooks, isLoading: webhooksLoading } = useWebhooks();
+
+  const webhookSelected = channels.includes("WEBHOOK");
+  const endpointOptions = (webhooks ?? []).filter((endpoint) => endpoint.active && !endpoint.deletedAt);
+  const selectedEndpointMissing =
+    Boolean(webhookEndpointId) &&
+    !webhooksLoading &&
+    !endpointOptions.some((endpoint) => endpoint.id === webhookEndpointId);
+
+  const endpointLabel = (endpoint: { url: string; description: string | null }) => {
+    if (endpoint.description) return endpoint.description;
+    try {
+      const parsed = new URL(endpoint.url);
+      const path = parsed.pathname && parsed.pathname !== "/" ? parsed.pathname : "";
+      const shortenedPath =
+        path.length > 20 ? `${path.slice(0, 20)}…` : path;
+      return `${parsed.host}${shortenedPath}`;
+    } catch {
+      return endpoint.url.length > 40 ? `${endpoint.url.slice(0, 40)}…` : endpoint.url;
+    }
+  };
 
   const handleError = (error: unknown) => toast.error(getFriendlyError(error).message);
 
@@ -62,6 +95,22 @@ const PreferenceDialog = ({ state, onClose }: { state: PrefDialogState; onClose:
   };
 
   const handleSave = () => {
+    if (webhookSelected) {
+      if (webhooksLoading) {
+        setEndpointError("Webhook endpoints are still loading — try again in a moment.");
+        return;
+      }
+      if (!webhookEndpointId) {
+        setEndpointError("Select a webhook endpoint for the WEBHOOK channel.");
+        return;
+      }
+      if (selectedEndpointMissing) {
+        setEndpointError("The saved webhook endpoint no longer exists — select a valid one.");
+        return;
+      }
+      setEndpointError(null);
+    }
+
     const emailAddresses = emails
       .split(",")
       .map((email) => email.trim())
@@ -74,6 +123,9 @@ const PreferenceDialog = ({ state, onClose }: { state: PrefDialogState; onClose:
         enabled,
         emailAddresses,
         ...(slackUrl.trim() ? { slackWebhookUrl: slackUrl.trim() } : {}),
+        ...(webhookSelected && webhookEndpointId
+          ? { customWebhookEndpointId: webhookEndpointId }
+          : {}),
       },
       {
         onSuccess: () => {
@@ -154,6 +206,52 @@ const PreferenceDialog = ({ state, onClose }: { state: PrefDialogState; onClose:
               placeholder="https://hooks.slack.com/services/…"
             />
           </div>
+
+          {webhookSelected && (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="pref-webhook-endpoint">Webhook endpoint</Label>
+              <Select
+                value={webhookEndpointId || undefined}
+                onValueChange={(value) => {
+                  setWebhookEndpointId(value);
+                  setEndpointError(null);
+                }}
+                disabled={webhooksLoading || endpointOptions.length === 0}
+              >
+                <SelectTrigger className="w-full" id="pref-webhook-endpoint">
+                  <SelectValue
+                    placeholder={
+                      webhooksLoading
+                        ? "Loading endpoints…"
+                        : endpointOptions.length === 0
+                          ? "No webhook endpoints registered"
+                          : "Select a webhook endpoint"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent className="max-w-70">
+                  {endpointOptions.map((endpoint) => (
+                    <SelectItem key={endpoint.id} value={endpoint.id}>
+                      <span className="block max-w-60 truncate">
+                        {endpointLabel(endpoint)}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {endpointError ? (
+                <p className="text-destructive text-xs">{endpointError}</p>
+              ) : selectedEndpointMissing ? (
+                <p className="text-destructive text-xs">
+                  The saved webhook endpoint no longer exists — select a valid one.
+                </p>
+              ) : !webhooksLoading && endpointOptions.length === 0 ? (
+                <p className="text-muted-foreground text-xs">
+                  No webhook endpoints registered — add one under Settings → Webhooks first.
+                </p>
+              ) : null}
+            </div>
+          )}
         </div>
 
         <DialogFooter className="flex-col gap-2 sm:flex-row">
@@ -199,6 +297,9 @@ const NotificationPreferencesCard = () => {
         emailAddresses: preference.emailAddresses,
         ...(preference.slackWebhookUrl
           ? { slackWebhookUrl: preference.slackWebhookUrl }
+          : {}),
+        ...(preference.customWebhookEndpointId
+          ? { customWebhookEndpointId: preference.customWebhookEndpointId }
           : {}),
       },
       {
