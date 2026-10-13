@@ -48,6 +48,7 @@ const ScanPolicyDialog = ({ policy, open, onClose }: ScanPolicyDialogProps) => {
   const [enabled, setEnabled] = useState(policy?.enabled ?? true);
 
   const { data: assets } = useAssets();
+  const scanEnabledAssets = (assets ?? []).filter((asset) => asset.scanEnabled === true);
   const createPolicy = useCreateScanPolicy();
   const updatePolicy = useUpdateScanPolicy();
   const isPending = createPolicy.isPending || updatePolicy.isPending;
@@ -128,14 +129,16 @@ const ScanPolicyDialog = ({ policy, open, onClose }: ScanPolicyDialogProps) => {
                   <SelectValue placeholder="Select an asset" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(assets ?? []).map((asset) => (
+                  {scanEnabledAssets.map((asset) => (
                     <SelectItem key={asset.id} value={asset.id}>
                       {asset.name} ({asset.identifier})
                     </SelectItem>
                   ))}
-                  {(assets ?? []).length === 0 && (
+                  {scanEnabledAssets.length === 0 && (
                     <SelectItem value="none" disabled>
-                      No assets available
+                      {(assets ?? []).length === 0
+                        ? "No assets available"
+                        : "No scan-enabled assets — enable scanning from an asset's detail panel"}
                     </SelectItem>
                   )}
                 </SelectContent>

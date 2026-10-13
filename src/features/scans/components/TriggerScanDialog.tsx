@@ -20,6 +20,7 @@ const TriggerScanDialog = ({ open, onClose }: { open: boolean; onClose: () => vo
   const [selected, setSelected] = useState<string[]>([]);
 
   const { data: assets } = useAssets();
+  const scanEnabledAssets = (assets ?? []).filter((asset) => asset.scanEnabled === true);
   const triggerScan = useTriggerScan();
 
   const toggleAsset = (id: string) => {
@@ -54,7 +55,7 @@ const TriggerScanDialog = ({ open, onClose }: { open: boolean; onClose: () => vo
 
         <div className="max-h-72 overflow-y-auto pr-1">
           <div className="flex flex-col gap-2">
-            {(assets ?? []).map((asset) => {
+            {scanEnabledAssets.map((asset) => {
               const isSelected = selected.includes(asset.id);
               return (
                 <button
@@ -75,9 +76,11 @@ const TriggerScanDialog = ({ open, onClose }: { open: boolean; onClose: () => vo
                 </button>
               );
             })}
-            {(assets ?? []).length === 0 && (
+            {scanEnabledAssets.length === 0 && (
               <p className="text-muted-foreground py-4 text-center text-sm">
-                No assets available.
+                {(assets ?? []).length === 0
+                  ? "No assets available."
+                  : "No scan-enabled assets — enable scanning from an asset's detail panel."}
               </p>
             )}
           </div>

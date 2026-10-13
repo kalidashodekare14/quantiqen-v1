@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -37,6 +38,7 @@ import {
   useCreateAssetRelationship,
   useDeleteAsset,
   useDeleteAssetRelationship,
+  useUpdateAsset,
 } from "../hooks/useAssets";
 import { assetStatusStyles, criticalityStyles } from "./AssetTable";
 import AssetFormDialog from "./AssetFormDialog";
@@ -79,12 +81,28 @@ const AssetDetailPanel = ({ assetId, onClose }: AssetDetailPanelProps) => {
     useAssetRelationships(assetId);
   const { data: allAssets } = useAssets();
   const deleteAsset = useDeleteAsset();
+  const updateAsset = useUpdateAsset();
   const createRelationship = useCreateAssetRelationship();
   const deleteRelationship = useDeleteAssetRelationship();
 
   const assetNameById = new Map(allAssets?.map((item) => [item.id, item.name]));
 
   const handleError = (error: unknown) => toast.error(getFriendlyError(error).message);
+
+  const handleScanToggle = (checked: boolean) => {
+    updateAsset.mutate(
+      { id: assetId, body: { scanEnabled: checked } },
+      {
+        onSuccess: () =>
+          toast.success(
+            checked
+              ? "Scanning enabled — this asset can now be scanned."
+              : "Scanning disabled — scan policies and triggers are blocked.",
+          ),
+        onError: handleError,
+      },
+    );
+  };
 
   const handleDelete = () => {
     deleteAsset.mutate(assetId, {
@@ -281,6 +299,29 @@ const AssetDetailPanel = ({ assetId, onClose }: AssetDetailPanelProps) => {
                   ))}
                 </div>
               )}
+
+              <div className="border-border flex items-center justify-between gap-3 border-t pt-4">
+                <div className="min-w-0">
+                  <p className="text-card-foreground text-sm font-medium">Scanning</p>
+                  <p className="text-muted-foreground text-xs">
+                    {asset.scanEnabled
+                      ? "Opted in — scan policies and triggers can target this asset."
+                      : "Not opted in — scan policies and triggers are blocked until enabled."}
+                  </p>
+                </div>
+                {isAdmin ? (
+                  <Switch
+                    checked={asset.scanEnabled}
+                    onCheckedChange={handleScanToggle}
+                    disabled={updateAsset.isPending}
+                    aria-label="Toggle scan opt-in"
+                  />
+                ) : (
+                  <Badge variant={asset.scanEnabled ? "secondary" : "outline"}>
+                    {asset.scanEnabled ? "Enabled" : "Not opted in"}
+                  </Badge>
+                )}
+              </div>
 
               <div className="border-border border-t pt-4">
                 <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">

@@ -910,6 +910,7 @@ None.
   "ownerUserId": "5f0a1b2c-3d4e-4f60-8a71-111122223333",
   "status": "ACTIVE",
   "discovered": false,
+  "scanEnabled": false,
   "firstSeenAt": "2026-09-24T12:00:00.000Z",
   "lastSeenAt": "2026-09-24T12:00:00.000Z",
   "tags": ["edge"],
@@ -1014,6 +1015,7 @@ No pagination.
     "ownerUserId": null,
     "status": "ACTIVE",
     "discovered": true,
+    "scanEnabled": true,
     "firstSeenAt": "2026-09-20T00:00:00.000Z",
     "lastSeenAt": "2026-09-24T00:00:00.000Z",
     "tags": [],
@@ -1084,6 +1086,7 @@ Query: none.
   "ownerUserId": null,
   "status": "ACTIVE",
   "discovered": false,
+  "scanEnabled": false,
   "firstSeenAt": null,
   "lastSeenAt": null,
   "tags": [],
@@ -1148,11 +1151,12 @@ Query: none.
 {
   "criticality": "CRITICAL",
   "dataSensitivity": 9,
-  "status": "ACTIVE"
+  "status": "ACTIVE",
+  "scanEnabled": true
 }
 ```
 
-All `CreateAssetDto` fields optional, plus `status` (`ACTIVE` | `INACTIVE` | `UNKNOWN`). Only defined fields written.
+All `CreateAssetDto` fields optional, plus `status` (`ACTIVE` | `INACTIVE` | `UNKNOWN`) and `scanEnabled` (boolean — **scan opt-in**; `false` by default, gates scan policy creation and scan triggers, §9). Only defined fields written. `scanEnabled` is accepted **here (PATCH) only** — `POST /assets` (§3.1) rejects it with 422.
 
 #### Success Response Schema (JSON)
 
@@ -1170,6 +1174,7 @@ All `CreateAssetDto` fields optional, plus `status` (`ACTIVE` | `INACTIVE` | `UN
   "ownerUserId": null,
   "status": "ACTIVE",
   "discovered": false,
+  "scanEnabled": true,
   "firstSeenAt": null,
   "lastSeenAt": null,
   "tags": [],
@@ -5914,7 +5919,7 @@ None.
 | `intervalMinutes` | int     | no       | `@Min(60) @Max(10080)` — default `1440`                                              |
 | `enabled`         | boolean | no       | default `true`                                                                       |
 
-Asset **opt-in is not checked on create** (only existence). Unique per `(organizationId, assetId)`.
+Asset **opt-in IS checked on create**: the asset must have `scanEnabled = true` (§3.4 PATCH) → else **403** `Asset {assetId} has not opted in to scanning (scanEnabled=false)` (as-built; earlier note "opt-in not checked on create" was wrong). Unique per `(organizationId, assetId)`.
 
 #### Success Response Schema (JSON)
 

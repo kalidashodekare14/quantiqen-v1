@@ -24,6 +24,7 @@ export interface PlatformAsset {
   ownerUserId: string | null;
   status: AssetStatus;
   discovered: boolean;
+  scanEnabled: boolean;
   firstSeenAt: string | null;
   lastSeenAt: string | null;
   tags: string[];
@@ -56,6 +57,7 @@ export interface CreateAssetRequest {
 
 export interface UpdateAssetRequest extends Partial<CreateAssetRequest> {
   status?: AssetStatus;
+  scanEnabled?: boolean;
 }
 
 export interface AssetRelationship {
