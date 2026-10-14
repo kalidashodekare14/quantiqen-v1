@@ -62,6 +62,7 @@ export const navigationItems: NavItem[] = [
     title: "API Management",
     href: routes.apiManagement,
     icon: ServerCog,
+    allowedRoles: ["CUSTOMER_ADMIN"],
   },
   {
     title: "Scans",
