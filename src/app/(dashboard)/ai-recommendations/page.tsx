@@ -1,7 +1,9 @@
-import ViewRecommendations from "@/features/ai-recommendations/view-recommendations";
+import { redirect } from "next/navigation";
+
+import { routes } from "@/constants/routes";
 
 const page = () => {
-  return <ViewRecommendations />;
+  redirect(routes.dashboard);
 };
 
 export default page;

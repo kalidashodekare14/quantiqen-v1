@@ -79,6 +79,7 @@ export const navigationItems: NavItem[] = [
     title: "AI Recommendations",
     href: routes.aiRecommendations,
     icon: Sparkles,
+    allowedRoles: [],
   },
   {
     title: "Reports",
